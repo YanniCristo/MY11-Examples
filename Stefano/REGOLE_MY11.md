@@ -58,6 +58,7 @@ formations/N/thumbnail.png
 ```
 - **Ogni `formations/N/manifest.json` deve iniziare con `"format":"my11-formation","version":1`.** Senza, l'app dice che il file è impossibile da importare.
 - **Una formazione:** si parte sempre dal **modello del modulo** (file Moduli). Si copia il suo manifest e si cambia solo quello che serve. Stile, stadio ("Filler (1)") e posizione degli slot restano quelli del modello.
+- **Altri sport:** i modelli (tennis, basket e futuri) stanno in `Stefano/Moduli altri sport/`. Tennis: `Modulo_tennis.my11`, 1 vs 1, un giocatore in alto e uno in basso, campo da tennis del catalogo (`h68996830h`).
 - **NBA / basket:** moduli di riferimento Base_nba (1-3-1) e Modulo_nba_2 (2-1-2), campo da basket del catalogo (`catalogStadiumId` g16040824g, immagine del campo inclusa nel file come fa l'app). Qui gli slot si possono spostare: PG e SG in basso, ali ai lati, centro sotto canestro. Titolo = nome squadra, logo squadra a sinistra e logo NBA a destra. Quintetto = i 5 con più partenze da titolare in stagione. Canotte nello stile MY11 con i colori reali della squadra.
 - **Moduli disponibili:** 3-4-2-1, 3-4-3, 3-5-2, 4-2-3-1, 4-4-2, 4-3-3, 4-1-4-1, 5-4-1, 5-3-2, 4-4-1-1, 4-3-2-1, 4-3-1-2.
 - **Non inventare moduli e non spostare gli slot.** Si usano solo i 12 moduli di riferimento, così come sono. Se il modulo reale non esiste (es. 3-5-1-1, 3-4-1-2, 4-2-2-2), si sceglie il più coerente tra quelli disponibili e lo si usa senza modifiche. Esempi: 3-5-1-1 → 3-5-2, 3-4-1-2 → 3-5-2, 4-2-2-2 → 4-4-2.
