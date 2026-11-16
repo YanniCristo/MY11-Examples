@@ -132,6 +132,9 @@ formations/N/thumbnail.png
 - **Slot con riserva:** la riduzione vale per lo slot e tiene conto anche del nome della riserva. Esempio: MENDY con riserva KEVIN CARLOS → 0,75.
 
 ### 4.8 Banner, stadio, anteprima
+- **Anteprima (thumbnail):** come sfondo si usa la base stadio di default (`Stadi/Base (1).jpg`; per il basket `Stadi/Basket.jpg`), con titolo e loghi nella barra nera in alto.
+- **Ordine:** le formazioni di una cartella vanno in ordine alfabetico.
+- **Slot che non si toccano:** nessuno slot (foto o etichetta) e nemmeno il banner deve toccare o sovrapporsi, neanche in parte, a un altro. Se succede si fanno micro-spostamenti (pinnedCenters), simmetrici, lasciando almeno lo spazio che c'è tra le righe della Roma di riferimento. Per il 3-4-2-1 si usano le posizioni della Roma.
 - **Banner "CREATED WITH MY11":** sempre **in basso a sinistra**, identico al modello (stesso id, file, posizione e scala). Le altre immagini libere del modello si tolgono.
 - **Stadio:** quello del modello, "Filler (1)".
 - **Anteprima (thumbnail):** quella semplice a **campo verde** con titolo, loghi, facce e nomi. Serve a riconoscere i file generati automaticamente.
