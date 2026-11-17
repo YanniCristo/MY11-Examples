@@ -26,7 +26,8 @@ Valgono per ogni file di tennis. Si parte sempre da `Moduli altri sport/Riferime
 
 ## Immagini dei giocatori
 - **Mezzobusto** (testa, spalle e busto), sfondo trasparente, circa 300×320 px, **base attaccata al fondo** dell'immagine.
-- Le foto le fornisce Stefano; Claude le scontorna/ritaglia e le inserisce (Claude non scarica foto di atleti dal web).
+- **Base immagini:** prima di chiedere foto, usare i mezzibusti già pronti in `Copia file Fulvio (con possibili modifiche)/Pics/ATP Giocatori/` (un PNG per giocatore, nome = etichetta, es. `SINNER.png`, `D.FOKINA.png`) o la cartella `Pics/ATP TENNIS PLAYERS.my11`. Etichette = solo cognome maiuscolo (nomi lunghi abbreviati: `D.FOKINA`, `A.-ALIASSIME`). Giocatori nuovi vanno aggiunti a entrambi.
+- Le foto mancanti le fornisce Stefano; Claude le scontorna/ritaglia e le inserisce (Claude non scarica foto di atleti dal web).
 
 ## Banner MY11
 - Banner "Created with MY11" come immagine libera, in basso a sinistra: centro `0.1889, 0.8705`, scala foto `2.032`.
