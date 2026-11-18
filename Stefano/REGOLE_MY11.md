@@ -17,22 +17,42 @@ Regole fisse da seguire per ogni file. Il riferimento approvato per le formazion
 
 ---
 
-## 2. Cartelle immagini (facce / giocatori)
+## 2. Cartelle immagini (facce / giocatori / maglie)
 
+### 2.1 Struttura del file
 - **Formato:** `"format":"my11-pics-folder"`
-  - **cartella singola:** `version 1`, solo `images`
+  - **cartella singola:** `version 2`, `images` + `"subfolders":[]`
   - **con sottocartelle:** `version 2`, `images` + `subfolders` e immagini in `images/sub_N/`
+- `folderName` = nome della cartella come la vuole Stefano (es. "PALERMO", "ATP TENNIS PLAYERS", "NBA").
 - **Ogni immagine:** `{"file":"images/img_N.png","libraryFileName":"slotimg_<id>_<N>.png","label":"COGNOME"}`
-- **Prima immagine di ogni (sotto)cartella:** lo **stemma della squadra**, senza label.
-- **Nome della sottocartella:**
-  - squadre attuali: nome squadra + stagione, es. "Cagliari 26/27"
-  - squadre dei videogiochi: nome squadra + gioco, es. "LAZIO FIFA99", "MILAN PES 5"
-- **Facce:**
-  - PNG trasparente, rapporto circa 15:16 (es. 350×373)
-  - soggetto centrato, base a filo del bordo inferiore
-  - circa 25–45 KB ciascuna
-- **Ritaglio da screenshot:** solo il busto del giocatore, senza la targhetta del nome e senza pezzi dei vicini.
-- **Omonimi nella stessa squadra:** distinguerli con l'iniziale, es. "NZOLA" e "G.NZOLA".
+- **Ordine:** quello indicato da Stefano (sinistra→destra, alto→basso nei collage); se non indicato, alfabetico.
+- **Prima immagine:** lo **stemma/logo della squadra** quando richiesto (label = nome squadra, es. `PALERMO`).
+
+### 2.2 Etichette (label)
+- Solo **cognome in MAIUSCOLO**, con gli accenti giusti (es. `ESTÉVEZ`, `LEHEČKA`).
+- Cognomi lunghi abbreviati come dice Stefano (es. `D.FOKINA`, `A.-ALIASSIME`).
+- Omonimi nella stessa squadra: iniziale davanti (es. `NZOLA` / `G.NZOLA`).
+- Sottocartelle: squadre attuali = nome + stagione ("Cagliari 26/27"); videogiochi = nome + gioco ("LAZIO FIFA99").
+
+### 2.3 Ritaglio delle foto
+- Le foto le fornisce Stefano (collage o singole); Claude **non scarica foto di persone dal web**.
+- Dai collage: individuare ogni riquadro, prendere **solo quel giocatore** (niente pezzi dei vicini, niente targhette).
+- **Mezzobusto:** testa, spalle e busto; sfondo trasparente (se non lo è, scontornare).
+- Se le foto hanno difetti in basso (es. braccia mancanti), tagliare **subito sopra la fine della manica**, solo quando Stefano lo chiede.
+
+### 2.4 Base a filo (obbligatorio)
+1. L'**ultima riga di pixel** dell'immagine deve essere **piena** (soggetto opaco fino al bordo). Nessuna riga trasparente o sfumata sotto: se c'è, tagliarla.
+2. **Proporzione minima 300×320** (larghezza × altezza). Se il soggetto è più largo che alto (es. 300×255), aggiungere **spazio trasparente in alto** fino a 300×320. Altrimenti l'app adatta l'immagine al riquadro, la centra in verticale e resta una striscia di campo tra maglia ed etichetta.
+3. Soggetto centrato in orizzontale; larghezza tipica 300 px.
+
+### 2.5 Peso
+- PNG ottimizzati; foto vere circa 60–130 KB ciascuna, maglie/canotte a tinta unita a palette (pochi KB).
+- Mai più pesanti degli originali.
+
+### 2.6 Controllo prima di consegnare
+- Anteprima a griglia con le etichette per verificare ordine e nomi.
+- Per ogni immagine: ultima riga piena e altezza ≥ 320 per larghezza 300.
+- Salvare su GitHub in `Copia file Fulvio (con possibili modifiche)/Pics/`; per il tennis anche i PNG singoli in `Pics/ATP Giocatori/`.
 
 ## 3. Cartelle loghi
 
