@@ -20,6 +20,7 @@ Regole fisse da seguire per ogni file. Il riferimento approvato per le formazion
 ## 2. Cartelle immagini (facce / giocatori / maglie)
 
 ### 2.1 Struttura del file
+- **File base:** partire da `Stefano/Modelli di riferimento/Riferimento_cartella_immagini.my11` (manifest e immagini già corretti).
 - **Formato:** `"format":"my11-pics-folder"`
   - **cartella singola:** `version 2`, `images` + `"subfolders":[]`
   - **con sottocartelle:** `version 2`, `images` + `subfolders` e immagini in `images/sub_N/`
