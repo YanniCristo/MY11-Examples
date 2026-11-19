@@ -184,3 +184,5 @@ formations/N/thumbnail.png
 - **File:** `manifest.json` valido e ogni file citato presente nello ZIP. Peso il più basso possibile.
 
 - **Controllo base (obbligatorio):** prima di consegnare, verificare che l'ultima riga di pixel di ogni immagine sia piena (soggetto opaco fino al bordo inferiore, nessuna riga trasparente o sfumata sotto). Se ci sono righe trasparenti in fondo, tagliarle. Inoltre l'immagine deve avere proporzione almeno **300×320** (alta quanto o più del riquadro dello slot): se il soggetto è più largo che alto, aggiungere spazio trasparente **in alto** fino a 300×320, altrimenti l'app lo centra e si stacca dal fondo.
+
+- **Prima di usare maglie o chiedere foto:** cercare sempre i volti già pronti su GitHub (`Pics/Serie A.my11` con le sottocartelle squadra "Como 26/27", "Inter 26/27"…, `Pics/PALERMO.my11`, `Pics/ATP Giocatori/`). Le maglie si usano solo se i volti non ci sono.
