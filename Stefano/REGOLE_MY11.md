@@ -172,6 +172,7 @@ formations/N/thumbnail.png
 - **Invio:** una sola volta per partita e squadra.
 - **Pagella:** solo per la squadra scelta (una delle squadre del file facce). L'avversaria può essere una qualunque. Se giocano due squadre scelte, si fanno due file.
 - **Ambiente:** deve funzionare a computer spento, a costo zero se possibile (vedi note per Fulvio).
+- **Fonte voti Serie A:** pagina `fantacalcio.it/voti-fantacalcio-serie-a/<stagione>/<giornata>`, primo voto della riga (Redazione Fantacalcio); "55" = senza voto. La pagina voti della singola partita mescola righe finte: non usarla.
 - **Archivio su GitHub:** ogni file partita con pagelle va **sia inviato in chat sia caricato** in `Stefano/Pagelle partite/Giornata N/` (una sottocartella per giornata, es. `Giornata 12`). Nome del file uguale al titolo (es. `NAP 1 - 1 LAZ.my11`). Se le squadre scelte sono due nella stessa partita, i due file vanno nella stessa giornata.
 
 ## 6. Controllo finale prima di consegnare
