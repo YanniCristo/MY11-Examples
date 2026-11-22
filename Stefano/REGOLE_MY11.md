@@ -167,7 +167,7 @@ formations/N/thumbnail.png
 
 ## 5. Pagelle automatiche
 
-- **Quando:** **175 minuti dopo il fischio d'inizio**. Se la partita non è finita, si ricontrolla **ogni 5 minuti**.
+- **Quando:** **115 minuti dopo il fischio d'inizio**. Se la partita non è finita, si ricontrolla **ogni 5 minuti**.
 - **Appena finita:** si crea il file e si invia. I dati mancanti restano vuoti, ma il file parte comunque.
 - **Invio:** una sola volta per partita e squadra.
 - **Pagella:** solo per la squadra scelta (una delle squadre del file facce). L'avversaria può essere una qualunque. Se giocano due squadre scelte, si fanno due file.
