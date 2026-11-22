@@ -55,6 +55,8 @@ Regole fisse da seguire per ogni file. Il riferimento approvato per le formazion
 - Per ogni immagine: ultima riga piena e altezza ≥ 320 per larghezza 300.
 - Salvare su GitHub in `Copia file Fulvio (con possibili modifiche)/Pics/`; per il tennis anche i PNG singoli in `Pics/ATP Giocatori/`.
 
+- **Etichette dettate da Stefano:** quando Stefano scrive la lista dei nomi, le etichette vanno messe **esattamente come le scrive** (es. JULIÁN ÁLVAREZ, D. MARTÍNEZ): non accorciarle al solo cognome.
+
 ## 3. Cartelle loghi
 
 - **Formato:** `"format":"my11-logos-folder"`, `version 2`, con le stesse chiavi delle cartelle immagini.
