@@ -289,12 +289,12 @@ class EditorController extends ChangeNotifier {
     }
   }
 
-  /// Tiene in memoria al massimo 4 pagine rese; le altre si rifanno al bisogno.
+  /// Tiene in memoria al massimo 3 pagine rese; le altre si rifanno al bisogno.
   void _touch(int i) {
     _recentPages
       ..remove(i)
       ..add(i);
-    while (_recentPages.length > 4) {
+    while (_recentPages.length > 3) {
       final victim = _recentPages.removeAt(0);
       if (victim != pageIndex && animation?.page.index != victim) {
         pages[victim].evict();

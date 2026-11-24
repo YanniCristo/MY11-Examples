@@ -85,3 +85,9 @@ Nell'app i frame vanno comunque ritagliati attorno al robot, e il movimento (ent
 - [ ] Milestone 8: rifiniture e prove su iPhone e Android veri
 
 Dettagli tecnici e comandi in `app/README.md`.
+
+## Qualità dei salvataggi
+
+- Le immagini si salvano nello stesso formato del file caricato (PNG, JPEG, WebP, GIF, BMP, TIFF), partendo dal file originale: pixel identici per tutti i formati senza perdita, profilo colore conservato, EXIF/GPS rimossi.
+- JPEG: qualità 100, colore pieno 4:4:4 (scarto medio ~1/255, invisibile). HEIC esce in JPEG qualità 100.
+- PDF: pagine non tagliate intatte; pagine tagliate a 300 DPI, JPEG qualità 100.

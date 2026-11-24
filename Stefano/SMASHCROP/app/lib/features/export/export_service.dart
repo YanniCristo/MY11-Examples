@@ -3,12 +3,11 @@ import 'dart:ui' as ui;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gal/gal.dart';
-import 'package:image/image.dart' as img;
 import 'package:share_plus/share_plus.dart';
 
 import '../editor/domain/strip_document.dart';
-import '../image_processing/domain/raster_image.dart';
 import '../image_processing/services/image_loader.dart';
+import 'image_encoder.dart';
 
 enum SaveOutcome { saved, denied, unavailable, failed }
 
@@ -18,8 +17,7 @@ class ExportedFile {
   final OutputFormat format;
   final String fileName;
   String get baseName => fileName.substring(0, fileName.lastIndexOf('.'));
-  String get mimeType =>
-      format == OutputFormat.png ? 'image/png' : 'image/jpeg';
+  String get mimeType => format.mimeType;
 }
 
 /// Genera il file finale a piena risoluzione dall'originale e dai tagli,
@@ -28,25 +26,37 @@ class ExportService {
   const ExportService();
 
   Future<ExportedFile> build(LoadedImage source, StripDocument doc) async {
-    final data = await source.image.toByteData(
-      format: ui.ImageByteFormat.rawStraightRgba,
-    );
-    if (data == null) throw StateError('Pixel non disponibili');
-    final job = _EncodeJob(
-      rgba: data.buffer.asUint8List(),
+    ImageEncodeJob job({Uint8List? rgba}) => ImageEncodeJob(
+      format: source.format,
       srcW: source.width,
       srcH: source.height,
       outW: doc.width,
       outH: doc.height,
       tiles: doc.tiles(),
-      png: source.format == OutputFormat.png,
+      original: rgba == null ? source.bytes : null,
+      rgba: rgba,
     );
-    final bytes = await compute(_encode, job);
+    // prima dal file originale (pixel e colori esatti), poi, se il formato
+    // non si legge qui (HEIC), dai pixel decodificati dal sistema
+    var bytes = source.bytes == null
+        ? null
+        : await compute(encodeImageJob, job());
+    if (bytes == null) {
+      final data = await source.image.toByteData(
+        format: ui.ImageByteFormat.rawStraightRgba,
+      );
+      if (data == null) throw StateError('Pixel non disponibili');
+      bytes = await compute(
+        encodeImageJob,
+        job(rgba: data.buffer.asUint8List()),
+      );
+    }
+    if (bytes == null) throw StateError('Esportazione non riuscita');
     final name = baseFileName();
     return ExportedFile(
       bytes,
       source.format,
-      '$name.${source.format == OutputFormat.png ? 'png' : 'jpg'}',
+      '$name.${source.format.extension}',
     );
   }
 
@@ -116,36 +126,4 @@ class ExportService {
       return false;
     }
   }
-}
-
-class _EncodeJob {
-  _EncodeJob({
-    required this.rgba,
-    required this.srcW,
-    required this.srcH,
-    required this.outW,
-    required this.outH,
-    required this.tiles,
-    required this.png,
-  });
-  final Uint8List rgba;
-  final int srcW, srcH, outW, outH;
-  final List<List<int>> tiles;
-  final bool png;
-}
-
-Uint8List _encode(_EncodeJob j) {
-  final original = RasterImage(j.srcW, j.srcH, j.rgba);
-  final out = RasterImage.composeTiles(original, j.outW, j.outH, j.tiles);
-  final image = img.Image.fromBytes(
-    width: out.width,
-    height: out.height,
-    bytes: out.rgba.buffer,
-    numChannels: 4,
-    order: img.ChannelOrder.rgba,
-  );
-  // JPEG solo per sorgenti senza trasparenza; qualità alta per non degradare.
-  return j.png
-      ? img.encodePng(image, level: 6)
-      : img.encodeJpg(image, quality: 95);
 }

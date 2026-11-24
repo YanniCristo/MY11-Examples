@@ -39,10 +39,10 @@ class PdfSession {
   final PdfDocument document;
   final String name;
 
-  /// Risoluzione di lavoro: abbastanza per stampare bene, senza esagerare
-  /// con la memoria. Il lato lungo resta entro 2600 px.
-  static const double maxDpi = 200;
-  static const double maxSidePx = 2600;
+  /// Risoluzione di lavoro: 300 DPI, la qualità di stampa; il lato lungo
+  /// resta entro 5000 px per non esaurire la memoria con fogli enormi.
+  static const double maxDpi = 300;
+  static const double maxSidePx = 5000;
 
   /// Apre il PDF. Se è protetto, la password la inserisce l'utente con
   /// [askPassword]: l'app non prova mai ad aggirare la protezione.
@@ -288,5 +288,5 @@ Uint8List _encodePage(_PageJob j) {
     numChannels: 4,
     order: img.ChannelOrder.rgba,
   );
-  return img.encodeJpg(image, quality: 92);
+  return img.encodeJpg(image, quality: 100, chroma: img.JpegChroma.yuv444);
 }
