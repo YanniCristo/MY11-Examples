@@ -158,11 +158,20 @@ class _EditorScreenState extends State<EditorScreen>
           mimeType: 'application/pdf',
         );
         // su web il file viene scaricato senza conferma
-        if (uri != null || kIsWeb) _toast(S.pdfSaved);
+        if (uri != null || kIsWeb) _toast(kIsWeb ? S.downloaded : S.pdfSaved);
         return;
       }
       final file = await c.buildImageExport();
       if (file == null) return;
+      if (kIsWeb) {
+        final ok = await c.exporter.download(
+          file.bytes,
+          file.fileName,
+          file.mimeType,
+        );
+        _toast(ok ? S.downloaded : S.saveFailed);
+        return;
+      }
       final outcome = await c.exporter.saveToPhotos(file);
       _toast(switch (outcome) {
         SaveOutcome.saved => S.saved,

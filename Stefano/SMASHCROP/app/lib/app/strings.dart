@@ -23,6 +23,7 @@ class S {
       'Non riesco ad aprire questo PDF. Il file potrebbe essere danneggiato.';
   static const pdfRenderFailed = 'Non riesco a mostrare questa pagina.';
   static const pdfSaved = 'PDF salvato';
+  static const downloaded = 'File scaricato';
   static const pdfOpening = 'Apro il PDF…';
   static const layoutPdf = 'Layout PDF';
   static const layoutTitle = 'Scegli layout del PDF';

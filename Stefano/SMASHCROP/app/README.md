@@ -16,6 +16,18 @@ Prima della pubblicazione:
 - **Bundle ID** provvisorio: `com.stefanofancello.smashcrop`. Va sostituito con quello definitivo in Xcode (iOS) e in `android/app/build.gradle.kts`.
 - **Icone dell'app** già generate dall'icona 3D (`branding_src/app_icon_1024.png`). Per rigenerarle: `dart run flutter_launcher_icons`.
 
+## Web app
+
+La stessa app gira anche nel browser (telefono o computer) ed è installabile sulla schermata Home come web app.
+
+```bash
+flutter build web --release --no-web-resources-cdn --base-href /MY11-Examples/
+```
+
+- **Salva nel browser.** Scarica il file: l'immagine nel suo formato, il PDF come PDF. Non può salvare direttamente nelle Foto.
+- **Condividi** usa la condivisione del browser dove esiste (Safari e Chrome su telefono), altrimenti scarica il file.
+- **Tutto resta sul dispositivo**: nessun file viene caricato su un server.
+
 ## Cosa fa
 
 - **Home** con il prima/dopo e SMASH. Load Image apre la libreria foto.

@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gal/gal.dart';
 import 'package:image/image.dart' as img;
@@ -54,6 +55,25 @@ class ExportService {
     final t = DateTime.now();
     String two(int v) => v.toString().padLeft(2, '0');
     return 'SmashCrop_${t.year}${two(t.month)}${two(t.day)}_${two(t.hour)}${two(t.minute)}${two(t.second)}';
+  }
+
+  /// Nel browser "Salva" scarica il file (oppure, dove il browser lo
+  /// permette, apre la finestra per scegliere dove metterlo).
+  Future<bool> download(
+    Uint8List bytes,
+    String fileName,
+    String mimeType,
+  ) async {
+    try {
+      await FilePicker.saveFile(
+        fileName: fileName,
+        bytes: bytes,
+        mimeType: mimeType,
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<SaveOutcome> saveToPhotos(ExportedFile file) async {
