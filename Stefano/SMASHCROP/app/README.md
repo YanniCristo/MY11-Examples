@@ -24,8 +24,9 @@ La stessa app gira anche nel browser (telefono o computer) ed è installabile su
 flutter build web --release --no-web-resources-cdn --base-href /MY11-Examples/
 ```
 
-- **Salva nel browser.** Scarica il file: l'immagine nel suo formato, il PDF come PDF. Non può salvare direttamente nelle Foto.
-- **Condividi** usa la condivisione del browser dove esiste (Safari e Chrome su telefono), altrimenti scarica il file.
+- **Salva nel browser del telefono** (iPhone e Android). L'app prepara il file e mostra "File pronto" con il pulsante **Salva in Galleria** (immagini) o **Salva in File** (PDF). Il pulsante apre il menu di condivisione del telefono: da lì «Salva immagine» mette l'immagine nelle Foto e «Salva su File» salva il PDF. Il passaggio dal menu è obbligatorio, perché il browser non può scrivere da solo nelle Foto. "Scarica" resta come alternativa.
+- **Salva sul computer.** Il file finisce in Download.
+- **Condividi** apre il menu di condivisione del telefono; dove non c'è, scarica il file.
 - **Tutto resta sul dispositivo**: nessun file viene caricato su un server.
 
 ## Cosa fa

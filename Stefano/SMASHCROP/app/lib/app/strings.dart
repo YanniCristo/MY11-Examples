@@ -24,6 +24,13 @@ class S {
   static const pdfRenderFailed = 'Non riesco a mostrare questa pagina.';
   static const pdfSaved = 'PDF salvato';
   static const downloaded = 'File scaricato';
+  static const fileReady = 'File pronto';
+  static const saveToGalleryHint =
+      'Nel menu che si apre scegli «Salva immagine» per metterla in Galleria/Foto.';
+  static const saveToFilesHint = 'Nel menu che si apre scegli «Salva su File».';
+  static const saveToGallery = 'Salva in Galleria';
+  static const saveToFiles = 'Salva in File';
+  static const download = 'Scarica';
   static const pdfOpening = 'Apro il PDF…';
   static const layoutPdf = 'Layout PDF';
   static const layoutTitle = 'Scegli layout del PDF';

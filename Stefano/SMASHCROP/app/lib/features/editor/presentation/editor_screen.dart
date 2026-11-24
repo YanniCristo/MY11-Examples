@@ -13,6 +13,7 @@ import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/brand.dart';
 import '../../animation/application/smash_frames.dart';
 import '../../export/export_service.dart';
+import '../../export/web_share/web_share.dart' as web_share;
 import '../../image_processing/services/image_loader.dart';
 import '../../pdf_processing/domain/page_layout.dart';
 import '../../pdf_processing/presentation/layout_panel.dart';
@@ -152,8 +153,13 @@ class _EditorScreenState extends State<EditorScreen>
       if (c.isPdf) {
         final bytes = await c.buildPdfExport();
         if (bytes == null) return;
+        final name = '${ExportService.baseFileName()}.pdf';
+        if (kIsWeb) {
+          await _webSave(bytes, name, 'application/pdf', image: false);
+          return;
+        }
         final uri = await FilePicker.saveFile(
-          fileName: '${ExportService.baseFileName()}.pdf',
+          fileName: name,
           bytes: bytes,
           mimeType: 'application/pdf',
         );
@@ -164,12 +170,7 @@ class _EditorScreenState extends State<EditorScreen>
       final file = await c.buildImageExport();
       if (file == null) return;
       if (kIsWeb) {
-        final ok = await c.exporter.download(
-          file.bytes,
-          file.fileName,
-          file.mimeType,
-        );
-        _toast(ok ? S.downloaded : S.saveFailed);
+        await _webSave(file.bytes, file.fileName, file.mimeType, image: true);
         return;
       }
       final outcome = await c.exporter.saveToPhotos(file);
@@ -182,6 +183,57 @@ class _EditorScreenState extends State<EditorScreen>
     } catch (_) {
       _toast(S.saveFailed);
     }
+  }
+
+  /// Nel browser del telefono si passa dal menu di condivisione: da lì
+  /// "Salva immagine" mette l'immagine in Galleria/Foto e "Salva su File"
+  /// salva il PDF. Il menu va aperto con un tocco, per questo c'è il
+  /// pulsante nella finestra. Sul computer il file si scarica.
+  Future<void> _webSave(
+    Uint8List bytes,
+    String name,
+    String mime, {
+    required bool image,
+  }) async {
+    if (!web_share.canShareFile(bytes, name, mime)) {
+      final ok = await c.exporter.download(bytes, name, mime);
+      _toast(ok ? S.downloaded : S.saveFailed);
+      return;
+    }
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: const Text(S.fileReady),
+        content: Text(
+          image ? S.saveToGalleryHint : S.saveToFilesHint,
+          style: const TextStyle(color: AppColors.textMuted, fontSize: 15),
+        ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final ok = await c.exporter.download(bytes, name, mime);
+              _toast(ok ? S.downloaded : S.saveFailed);
+            },
+            child: const Text(S.download),
+          ),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.red),
+            onPressed: () {
+              Navigator.pop(context);
+              web_share.shareFile(bytes, name, mime);
+            },
+            icon: Icon(
+              image ? Icons.photo_library_outlined : Icons.folder_outlined,
+            ),
+            label: Text(image ? S.saveToGallery : S.saveToFiles),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _share() async {
