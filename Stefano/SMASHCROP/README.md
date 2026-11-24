@@ -54,6 +54,19 @@ Sequenza: entrata 002–003 · carica 004–005 · pugno 006–007 · detriti 00
 
 Nell'app i frame vanno comunque ritagliati attorno al robot, e il movimento (entrata, epicentro del pugno, uscita) va gestito dal codice.
 
+## Impostazioni dell'animazione (scelte il 24/11/2026 dalla pagina di prova)
+
+| Parametro | Valore |
+|---|---|
+| Velocità SMASH | 10 fotogrammi/s (il pollice alzato, frame 016, dura 3 fotogrammi; il 015 ne dura 2) |
+| Dimensione SMASH | robot alto il 32% della larghezza del viewport |
+| Durata ricongiungimento | 320 ms, curva ease-in-out |
+| Pausa prima della nuova selezione | 0,80 s, contata dal ricongiungimento completato |
+| Punto d'impatto nel frame | il pugno del frame 006 (in `frames_hd/`: x≈555, y≈975 sulla tela 901×1744) va sull'epicentro della fascia |
+| Inizio del ricongiungimento | 2 fotogrammi dopo l'impatto |
+
+**Maniglie A/B fuori dall'immagine.** In modalità orizzontale stanno a sinistra (A) e a destra (B) del documento; in verticale sopra (A) e sotto (B). Il viewport riserva un margine di 34 pt solo sull'asse dove si trovano le maniglie.
+
 ## Stato
 
 - [x] Specifiche, mockup e asset raccolti
