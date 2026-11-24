@@ -11,8 +11,14 @@ class S {
   static const homeHint = 'Scegli un\'immagine o un documento PDF per iniziare';
   static const loadImage = 'Load Image';
   static const loadPdf = 'Load PDF';
-  static const pdfPassword =
-      'Questo PDF è protetto da password: SmashCrop non può aprirlo.';
+  static const pdfPassword = 'Serve la password per aprire questo PDF.';
+  static const pdfLocked =
+      'Il proprietario di questo PDF non consente di modificarlo, quindi SmashCrop non può aprirlo.';
+  static const passwordTitle = 'PDF protetto';
+  static const passwordBody = 'Inserisci la password del documento.';
+  static const passwordWrong = 'Password non corretta, riprova.';
+  static const passwordHint = 'Password';
+  static const open = 'Apri';
   static const pdfInvalid =
       'Non riesco ad aprire questo PDF. Il file potrebbe essere danneggiato.';
   static const pdfRenderFailed = 'Non riesco a mostrare questa pagina.';

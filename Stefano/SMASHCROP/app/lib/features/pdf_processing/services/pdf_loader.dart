@@ -7,13 +7,13 @@ class PdfLoader {
   const PdfLoader();
 
   /// `null` se l'utente annulla la scelta.
-  Future<PdfSession?> pick() async {
+  Future<PdfSession?> pick({PasswordPrompt? askPassword}) async {
     final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: const ['pdf'],
     );
     if (file == null) return null;
     final bytes = await file.xFile.readAsBytes();
-    return PdfSession.open(bytes, file.name);
+    return PdfSession.open(bytes, file.name, askPassword: askPassword);
   }
 }

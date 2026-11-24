@@ -6,7 +6,7 @@ Editor per immagini e PDF (milestone 1–7 del Master Prompt). Manca la mileston
 
 ```bash
 flutter pub get
-flutter test          # 49 test: motore di taglio, cronologia, geometria, SMASH, editor, impaginazione PDF
+flutter test          # 53 test: motore di taglio, cronologia, geometria, SMASH, editor, impaginazione PDF
 flutter run           # su iPhone/Android collegato o simulatore
 ```
 
@@ -67,7 +67,8 @@ test/                       test unitari e del controller
 ## Limiti noti di questa versione
 
 - **Pagine PDF tagliate.** Diventano immagini: niente testo selezionabile, link o firme valide su quelle pagine. Il pannello Layout lo dice all'utente.
-- **PDF protetti da password.** Non si aprono: l'app mostra un messaggio e non prova ad aggirare la protezione.
+- **PDF protetti da password.** Si aprono solo se l'utente inserisce la password giusta: l'app la chiede e non prova mai ad aggirarla. Il PDF salvato non ha password.
+- **PDF in cui il proprietario ha vietato la modifica.** Non si aprono, e l'app spiega perché. Nella versione web, dove il motore PDF non riporta i permessi, vengono letti direttamente dal file.
 - **JPEG.** Una foto JPEG/HEIC salvata viene ricompressa (qualità 95): i pixel restano quelli dell'originale, ma la compressione JPEG ne altera leggermente i valori. Le sorgenti PNG restano identiche.
 - **Immagini enormi.** Oltre 8192 px per lato il risultato a schermo si disegna a blocchi invece che come immagine unica (funziona, ma è un po' più lento). Oltre 16.000 px l'immagine viene rifiutata.
 - **Pressione prolungata sulle maniglie** per farle scorrere lungo la linea: rimandata. Con le maniglie fuori dall'immagine non serve; la si può aggiungere se servirà.

@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../core/widgets/password_dialog.dart';
+
 import '../../app/strings.dart';
 import '../../app/theme.dart';
 import '../../core/widgets/app_button.dart';
@@ -55,7 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_loading) return;
     setState(() => _loading = true);
     try {
-      final pdf = await _pdfLoader.pick();
+      final pdf = await _pdfLoader.pick(
+        askPassword: ({required bool wrong}) =>
+            askPdfPassword(context, wrong: wrong),
+      );
       if (pdf == null || !mounted) return;
       await Navigator.of(context).push(
         MaterialPageRoute(
@@ -64,7 +69,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     } on PdfOpenException catch (e) {
-      _toast(e.password ? S.pdfPassword : S.pdfInvalid);
+      if (!e.cancelled) {
+        _toast(
+          e.locked ? S.pdfLocked : (e.password ? S.pdfPassword : S.pdfInvalid),
+        );
+      }
     } catch (_) {
       _toast(S.pdfInvalid);
     } finally {

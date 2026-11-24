@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../core/widgets/password_dialog.dart';
+
 import '../../../app/strings.dart';
 import '../../../app/theme.dart';
 import '../../../core/widgets/app_button.dart';
@@ -123,10 +125,17 @@ class _EditorScreenState extends State<EditorScreen>
 
   Future<void> _loadPdf() => _withLoading(S.pdfOpening, () async {
     try {
-      final pdf = await _pdfLoader.pick();
+      final pdf = await _pdfLoader.pick(
+        askPassword: ({required bool wrong}) =>
+            askPdfPassword(context, wrong: wrong),
+      );
       if (pdf != null) c.replaceWithPdf(pdf);
     } on PdfOpenException catch (e) {
-      _toast(e.password ? S.pdfPassword : S.pdfInvalid);
+      if (!e.cancelled) {
+        _toast(
+          e.locked ? S.pdfLocked : (e.password ? S.pdfPassword : S.pdfInvalid),
+        );
+      }
     } catch (_) {
       _toast(S.pdfInvalid);
     }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -9,9 +10,25 @@ import '../../editor/application/editor_page.dart';
 import '../../image_processing/domain/raster_image.dart';
 import '../domain/page_layout.dart';
 
+/// Chiede la password all'utente. [wrong] è vero se la precedente era
+/// sbagliata. Restituisce `null` se l'utente rinuncia.
+typedef PasswordPrompt = Future<String?> Function({required bool wrong});
+
 class PdfOpenException implements Exception {
-  PdfOpenException({this.password = false});
+  PdfOpenException({
+    this.password = false,
+    this.cancelled = false,
+    this.locked = false,
+  });
+
+  /// Password richiesta ma non fornita.
   final bool password;
+
+  /// L'utente ha annullato l'inserimento della password.
+  final bool cancelled;
+
+  /// Il proprietario del PDF non consente di modificarlo.
+  final bool locked;
 }
 
 /// Un PDF aperto: il documento originale resta aperto finché si lavora,
@@ -27,24 +44,81 @@ class PdfSession {
   static const double maxDpi = 200;
   static const double maxSidePx = 2600;
 
-  static Future<PdfSession> open(Uint8List bytes, String name) async {
+  /// Apre il PDF. Se è protetto, la password la inserisce l'utente con
+  /// [askPassword]: l'app non prova mai ad aggirare la protezione.
+  static Future<PdfSession> open(
+    Uint8List bytes,
+    String name, {
+    PasswordPrompt? askPassword,
+  }) async {
+    var attempts = 0;
+    var cancelled = false;
     try {
       final doc = await PdfDocument.openData(
         bytes,
         sourceName: 'smashcrop:$name:${bytes.length}',
+        passwordProvider: askPassword == null
+            ? null
+            : () async {
+                final pw = await askPassword(wrong: attempts > 0);
+                attempts++;
+                if (pw == null) cancelled = true;
+                return pw;
+              },
       );
       if (doc.pages.isEmpty) {
         await doc.dispose();
         throw PdfOpenException();
       }
+      // rispetta i permessi del documento: se il proprietario non consente
+      // di modificarlo, non lo si apre per la modifica
+      // (bit 4 dei permessi PDF, valore 8: "modificare il contenuto")
+      final perms = doc.permissions;
+      final modifyAllowed = perms != null
+          ? (!doc.isEncrypted || (perms.permissions & 8) != 0)
+          : (scanModifyPermission(bytes) ?? true);
+      if (!modifyAllowed) {
+        await doc.dispose();
+        throw PdfOpenException(locked: true);
+      }
       return PdfSession._(doc, name);
     } on PdfPasswordException {
-      throw PdfOpenException(password: true);
+      throw PdfOpenException(password: true, cancelled: cancelled);
     } on PdfOpenException {
       rethrow;
     } catch (_) {
       throw PdfOpenException();
     }
+  }
+
+  /// Lettura diretta del dizionario /Encrypt, usata quando il motore PDF
+  /// non riporta i permessi (succede nella versione web). `null` se il file
+  /// non è cifrato o il dato non si trova.
+  @visibleForTesting
+  static bool? scanModifyPermission(Uint8List bytes) {
+    final text = latin1.decode(bytes, allowInvalid: true);
+    final ref = RegExp(r'/Encrypt\s+(\d+)\s+(\d+)\s+R')
+        .allMatches(text)
+        .lastOrNull;
+    String? dict;
+    if (ref != null) {
+      final obj = RegExp(
+        '(?:^|[^0-9])${ref.group(1)}\\s+${ref.group(2)}\\s+obj(.*?)endobj',
+        dotAll: true,
+      ).allMatches(text).lastOrNull;
+      dict = obj?.group(1);
+    } else {
+      final inline = RegExp(
+        r'/Encrypt\s*<<(.*?)>>',
+        dotAll: true,
+      ).allMatches(text).lastOrNull;
+      dict = inline?.group(1);
+    }
+    if (dict == null) return null;
+    final p = RegExp(r'/P\s+(-?\d+)').firstMatch(dict);
+    if (p == null) return null;
+    final value = int.parse(p.group(1)!);
+    return (value & 8) != 0;
   }
 
   int get pageCount => document.pages.length;
