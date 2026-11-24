@@ -28,14 +28,22 @@ design/
   animation/      GIF di riferimento del movimento di SMASH (layout vecchio)
 assets/
   branding/       icone 3D e flat (sorgente 1254 px + 1024 px per lo store), SMASH pollice alzato in alta risoluzione
-  characters/smash/frames_gif/   20 frame dell'animazione estratti dalla GIF
+  characters/smash/frames_hd/    18 frame HD rifatti (001–018): versione in uso
+  characters/smash/frames_gif/   20 frame originali estratti dalla GIF (archivio)
 ```
 
 Ordine di priorità in caso di conflitto: **Master Prompt → interfacce approvate → mockup 01–09 → buone pratiche UX**.
 
 ## Note sugli asset di SMASH
 
-I frame in `frames_gif/` sono **provvisori**:
+**Versione in uso: `frames_hd/`**, 18 frame rifatti in alta definizione:
+- tela comune 901×1744, robot alto circa 250 px, piedi allineati a y≈1110;
+- 006, 007, 008, 009 e 015 sono stati riscalati per uniformarli al resto della sequenza;
+- alcuni frame sono un po' fuori modello (cresta rosa nell'011, sirena nel 012, braccio-cannone nel 018, occhi verdi nel 010). Si è scelto di tenerli così: l'animazione è veloce e non si notano;
+- sequenza: entrata 001–003 · carica 004–005 · pugno 006–007 · detriti 008–009 · recupero 010–014 · pollice 015–016 · uscita 017–018;
+- anteprima animata: `anteprima_frames_hd.gif`, a 12 fps.
+
+I frame in `frames_gif/` sono l'archivio della versione vecchia:
 
 - **Bassa risoluzione.** Il robot è alto circa 130 px; su iPhone ne servono 350–400.
 - **Residui della schermata originale** in alcuni frame: "AU" nel 002, "5.5" e riquadri nell'008, linee rosse nel 009 e nel 012, puntini nel 006.
@@ -44,7 +52,7 @@ I frame in `frames_gif/` sono **provvisori**:
 
 Sequenza: entrata 002–003 · carica 004–005 · pugno 006–007 · detriti 008–009 · recupero 010–014 · pollice 015–016 · uscita 017–018.
 
-**Da fare:** rigenerare l'animazione partendo da `smash_thumbsup_hires.png` ed esportarla come video ad alta risoluzione, poi estrarre frame puliti che sostituiranno questi.
+Nell'app i frame vanno comunque ritagliati attorno al robot, e il movimento (entrata, epicentro del pugno, uscita) va gestito dal codice.
 
 ## Stato
 
