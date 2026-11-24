@@ -43,6 +43,7 @@ class _EditorViewportState extends State<EditorViewport> {
         child: LayoutBuilder(
           builder: (context, box) {
             c.setViewportSize(box.biggest);
+            c.devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
               onScaleStart: (d) => c.gestureStart(d.localFocalPoint),

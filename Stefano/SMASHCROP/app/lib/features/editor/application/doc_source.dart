@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:material_ui/material_ui.dart';
 
 import '../domain/strip_document.dart';
@@ -24,7 +25,9 @@ class DocSource {
     if (doc.width == original.width && doc.height == original.height) {
       return DocSource._(original, doc, original, false);
     }
-    if (doc.width > maxFlatSide || doc.height > maxFlatSide) {
+    // nel browser niente copia appiattita: si disegnano i blocchi
+    // dell'originale, così ogni pagina occupa la memoria una volta sola
+    if (kIsWeb || doc.width > maxFlatSide || doc.height > maxFlatSide) {
       return DocSource._(original, doc, null, false);
     }
     final rec = ui.PictureRecorder();

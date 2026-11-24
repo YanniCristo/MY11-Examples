@@ -38,10 +38,13 @@ class PdfOpenException implements Exception {
 /// Un PDF aperto: il documento originale resta aperto finché si lavora,
 /// così le pagine non modificate si copiano intatte nel file finale.
 class PdfSession {
-  PdfSession._(this.document, this.name);
+  PdfSession._(this.document, this.name, this.fileSize);
 
   final PdfDocument document;
   final String name;
+
+  /// Peso del file in byte: con file molto grandi si risparmia memoria.
+  final int fileSize;
 
   /// Risoluzione sullo schermo: basta per leggere bene anche ingrandendo, e
   /// resta leggera. Nel browser (iPhone in particolare) la memoria è poca:
@@ -49,14 +52,28 @@ class PdfSession {
   static const double displayDpi = kIsWeb ? 150 : 200;
   static const double displayMaxSidePx = kIsWeb ? 2000 : 2600;
 
+  /// Tetto di pixel per pagina sullo schermo (fogli enormi, es. tavole A0,
+  /// scendono di risoluzione); più basso nel browser con file pesanti.
+  double get displayMaxPixels =>
+      kIsWeb ? (fileSize > 80 << 20 ? 1.5e6 : 2.4e6) : 6e6;
+
   /// Risoluzione del file salvato: 300 DPI, qualità di stampa. Ogni pagina
   /// tagliata si rende di nuovo a questa risoluzione solo al salvataggio,
   /// una alla volta, e la memoria si libera subito dopo.
   static const double exportDpi = 300;
   static const double exportMaxSidePx = kIsWeb ? 4000 : 5000;
+  static const double exportMaxPixels = kIsWeb ? 12e6 : 35e6;
 
-  static double _scale(ui.Size pt, double dpi, double maxSide) =>
-      math.min(dpi / 72, maxSide / math.max(pt.width, pt.height));
+  static double _scale(
+    ui.Size pt,
+    double dpi,
+    double maxSide,
+    double maxPixels,
+  ) => [
+    dpi / 72,
+    maxSide / math.max(pt.width, pt.height),
+    math.sqrt(maxPixels / (pt.width * pt.height)),
+  ].reduce(math.min);
 
   /// Apre il PDF. Se è protetto, la password la inserisce l'utente con
   /// [askPassword]: l'app non prova mai ad aggirare la protezione.
@@ -95,7 +112,7 @@ class PdfSession {
         await doc.dispose();
         throw PdfOpenException(locked: true);
       }
-      return PdfSession._(doc, name);
+      return PdfSession._(doc, name, bytes.length);
     } on PdfPasswordException {
       throw PdfOpenException(password: true, cancelled: cancelled);
     } on PdfOpenException {
@@ -146,6 +163,7 @@ class PdfSession {
             ui.Size(p.width, p.height),
             displayDpi,
             displayMaxSidePx,
+            displayMaxPixels,
           );
           return EditorPage(
             index: p.pageNumber - 1,
@@ -172,6 +190,28 @@ class PdfSession {
     return im;
   }
 
+  /// Rende solo un pezzo della pagina, [f] volte più definito della resa
+  /// di lavoro: serve per lo zoom (si rende ad alta definizione solo ciò che
+  /// si vede). Coordinate in pixel di lavoro.
+  Future<ui.Image?> renderRegion(
+    EditorPage page,
+    int x,
+    int y,
+    int w,
+    int h,
+    double f,
+  ) {
+    return document.pages[page.index].renderForDisplay(
+      x: (x * f).round(),
+      y: (y * f).round(),
+      width: math.max(1, (w * f).round()),
+      height: math.max(1, (h * f).round()),
+      fullWidth: page.widthPx * f,
+      fullHeight: page.heightPx * f,
+      backgroundColor: 0xFFFFFFFF,
+    );
+  }
+
   /// Costruisce il PDF finale: stesso numero e ordine di pagine; le pagine
   /// non tagliate sono copiate così come sono, quelle tagliate diventano
   /// un'immagine con la propria impaginazione.
@@ -193,7 +233,7 @@ class PdfSession {
         // la pagina si rende di nuovo a 300 DPI; i tagli fatti sullo
         // schermo si riportano in proporzione
         final pt = page.originalPointSize!;
-        final k = _scale(pt, exportDpi, exportMaxSidePx);
+        final k = _scale(pt, exportDpi, exportMaxSidePx, exportMaxPixels);
         final ew = math.max(1, (pt.width * k).round());
         final eh = math.max(1, (pt.height * k).round());
         final source = await document.pages[page.index].renderForDisplay(

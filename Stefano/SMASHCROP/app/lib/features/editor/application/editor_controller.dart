@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:math' as math;
+import 'dart:ui' as ui;
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:material_ui/material_ui.dart';
 
 import '../../animation/domain/cut_timeline.dart';
@@ -16,6 +19,7 @@ import '../domain/strip_document.dart';
 import '../domain/viewport_transform.dart';
 import 'doc_source.dart';
 import 'editor_page.dart';
+import 'saved_work.dart';
 
 enum LineHandle { a, b }
 
@@ -148,6 +152,16 @@ class EditorController extends ChangeNotifier {
   double zoom = 1;
   Offset pan = Offset.zero;
   Size viewportSize = Size.zero;
+  double devicePixelRatio = 1;
+
+  /// Pezzo della pagina reso ad alta definizione per lo zoom.
+  ZoomPatch? zoomPatch;
+  Timer? _patchTimer;
+  int _patchGen = 0;
+  Object? _patchKey;
+
+  Timer? _saveTimer;
+  Object? _saveKey;
   LineHandle? draggingHandle;
 
   final List<int> _recentPages = [];
@@ -298,12 +312,15 @@ class EditorController extends ChangeNotifier {
     }
   }
 
-  /// Tiene in memoria al massimo 3 pagine rese; le altre si rifanno al bisogno.
+  /// Pagine rese tenute in memoria (nel browser la memoria è poca); le
+  /// altre si rifanno al bisogno.
+  static const int keptPages = kIsWeb ? 2 : 3;
+
   void _touch(int i) {
     _recentPages
       ..remove(i)
       ..add(i);
-    while (_recentPages.length > 3) {
+    while (_recentPages.length > keptPages) {
       final victim = _recentPages.removeAt(0);
       if (victim != pageIndex && animation?.page.index != victim) {
         pages[victim].evict();
@@ -380,6 +397,196 @@ class EditorController extends ChangeNotifier {
   }
 
   // --- zoom e spostamento --------------------------------------------------
+
+  @override
+  void notifyListeners() {
+    _watchZoomPatch();
+    _watchAutosave();
+    super.notifyListeners();
+  }
+
+  // --- salvataggio automatico del lavoro -------------------------------------
+
+  String? get _workName => isPdf ? pdf?.name : imageSource?.name;
+  int? get _workSize => isPdf ? pdf?.fileSize : imageSource?.bytes?.length;
+
+  void _watchAutosave() {
+    if (_disposed || _workName == null || _workSize == null) return;
+    if (animation != null && !animation!.committed) return;
+    final key = Object.hashAll([
+      pageIndex,
+      nextPagesLayout,
+      for (final p in pages) Object.hash(p.history.cursor, p.history.length),
+    ]);
+    if (key == _saveKey) return;
+    _saveKey = key;
+    _saveTimer?.cancel();
+    _saveTimer = Timer(const Duration(milliseconds: 400), _autosave);
+  }
+
+  void _autosave() {
+    final name = _workName, size = _workSize;
+    if (name == null || size == null) return;
+    final w = SavedWork.capture(
+      isPdf: isPdf,
+      name: name,
+      size: size,
+      pageIndex: pageIndex,
+      pages: pages,
+      nextPagesLayout: nextPagesLayout?.mode,
+    );
+    if (w != null) {
+      preferences.setSavedWork(w.encode());
+      return;
+    }
+    // tutto annullato: si toglie il salvataggio, se era di questo file
+    final old = SavedWork.decode(preferences.savedWork);
+    if (old != null && old.matches(isPdf: isPdf, name: name, size: size)) {
+      preferences.clearSavedWork();
+    }
+  }
+
+  /// Riprende un lavoro salvato sul file appena riaperto.
+  void restoreWork(SavedWork w) {
+    w.replayOn(pages);
+    for (final p in pages) {
+      p.selection = SelectionState.initial(
+        width: p.doc.width,
+        height: p.doc.height,
+      );
+    }
+    final next = w.nextPagesLayout;
+    nextPagesLayout = next == null ? null : PageLayout(next);
+    final i = w.pageIndex.clamp(0, pages.length - 1);
+    if (i != pageIndex) {
+      pageIndex = i;
+      if (page.isReady) {
+        _touch(i);
+      } else {
+        _ensureRendered(i);
+      }
+    }
+    notifyListeners();
+  }
+
+  /// Quando la vista si ferma per un attimo, la parte visibile si rende di
+  /// nuovo ad alta definizione: la pagina intera resta leggera in memoria,
+  /// ma ingrandendo il testo resta nitido.
+  void _watchZoomPatch() {
+    if (_disposed) return;
+    final zp = zoomPatch;
+    if (zp != null &&
+        (!isPdf ||
+            pages.isEmpty ||
+            !identical(zp.page, page) ||
+            !identical(zp.doc, doc))) {
+      zp.dispose();
+      zoomPatch = null;
+    }
+    if (!isPdf || pdf == null || pages.isEmpty) return;
+    final key = Object.hash(
+      pageIndex,
+      identityHashCode(doc),
+      zoom,
+      pan,
+      positioning,
+      animation == null,
+      viewportSize,
+      previewLayout,
+    );
+    if (key == _patchKey) return;
+    _patchKey = key;
+    _patchGen++;
+    _patchTimer?.cancel();
+    _patchTimer = Timer(const Duration(milliseconds: 250), _buildZoomPatch);
+  }
+
+  Future<void> _buildZoomPatch() async {
+    final session = pdf;
+    if (_disposed || session == null || !pageReady) return;
+    if (animation != null || positioning || viewportSize.isEmpty) return;
+    final t = transform;
+    final dpr = math.min(devicePixelRatio, kIsWeb ? 2.0 : 3.0);
+    var factor = t.scale * dpr;
+    final d = doc;
+    final bounds = Rect.fromLTWH(0, 0, d.width.toDouble(), d.height.toDouble());
+    var vis = Rect.fromPoints(
+      screenToContent(Offset.zero),
+      screenToContent(viewportSize.bottomRight(Offset.zero)),
+    ).intersect(bounds);
+    if (factor <= 1.1 || vis.width <= 0 || vis.height <= 0) {
+      if (zoomPatch != null) {
+        zoomPatch!.dispose();
+        zoomPatch = null;
+        super.notifyListeners();
+      }
+      return;
+    }
+    // un po' di margine intorno, per piccoli spostamenti
+    vis = vis.inflate(vis.shortestSide * .15).intersect(bounds);
+    vis = Rect.fromLTRB(
+      vis.left.floorToDouble(),
+      vis.top.floorToDouble(),
+      vis.right.ceilToDouble(),
+      vis.bottom.ceilToDouble(),
+    );
+    final maxPx = kIsWeb ? 4e6 : 8e6;
+    final area = vis.width * vis.height;
+    if (area * factor * factor > maxPx) factor = math.sqrt(maxPx / area);
+    if (factor <= 1.1) return;
+    final tiles = d.tiles(
+      x0: vis.left.toInt(),
+      y0: vis.top.toInt(),
+      x1: vis.right.toInt(),
+      y1: vis.bottom.toInt(),
+    );
+    if (tiles.length > 48) return;
+    final gen = _patchGen;
+    final pg = page;
+    final pieces = <(Rect, ui.Image)>[];
+    void drop() {
+      for (final p in pieces) {
+        p.$2.dispose();
+      }
+    }
+
+    try {
+      for (final tl in tiles) {
+        final img = await session.renderRegion(
+          pg,
+          tl[0],
+          tl[1],
+          tl[4],
+          tl[5],
+          factor,
+        );
+        if (img == null) continue;
+        pieces.add((
+          Rect.fromLTWH(
+            tl[2].toDouble(),
+            tl[3].toDouble(),
+            tl[4].toDouble(),
+            tl[5].toDouble(),
+          ),
+          img,
+        ));
+        if (gen != _patchGen || _disposed) {
+          drop();
+          return;
+        }
+      }
+    } catch (_) {
+      drop();
+      return;
+    }
+    if (gen != _patchGen || _disposed || !identical(pg, page)) {
+      drop();
+      return;
+    }
+    zoomPatch?.dispose();
+    zoomPatch = ZoomPatch(pg, d, pieces);
+    super.notifyListeners();
+  }
 
   double _zoom0 = 1;
   Offset _pan0 = Offset.zero;
@@ -759,9 +966,31 @@ class EditorController extends ChangeNotifier {
 
   @override
   void dispose() {
+    if (_saveTimer?.isActive ?? false) {
+      _saveTimer!.cancel();
+      _autosave();
+    }
     _disposed = true;
+    _patchTimer?.cancel();
+    _patchGen++;
+    zoomPatch?.dispose();
+    zoomPatch = null;
     _closeCurrent();
     frameTick.dispose();
     super.dispose();
+  }
+}
+
+/// Pezzi della pagina resi ad alta definizione, in pixel del documento.
+class ZoomPatch {
+  ZoomPatch(this.page, this.doc, this.pieces);
+  final EditorPage page;
+  final StripDocument doc;
+  final List<(Rect, ui.Image)> pieces;
+
+  void dispose() {
+    for (final p in pieces) {
+      p.$2.dispose();
+    }
   }
 }

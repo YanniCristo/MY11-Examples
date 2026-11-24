@@ -33,6 +33,9 @@ class EditHistory {
 
   Iterable<EditStep> get _applied => _steps.take(_cursor);
 
+  /// Passi applicati, nell'ordine (per salvare il lavoro).
+  List<EditStep> get appliedSteps => _applied.toList();
+
   /// Documento allo stato attuale.
   StripDocument get current {
     var doc = original;

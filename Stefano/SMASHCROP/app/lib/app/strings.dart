@@ -39,6 +39,22 @@ class S {
     return '$msg\n($d)';
   }
 
+  static const largeTitle = 'PDF molto grande';
+  static String largeBody(int mb) =>
+      'Questo PDF pesa $mb MB. Nel browser del telefono potrebbe chiudersi '
+      'per mancanza di memoria: per sicurezza usa l\'app. Se vai avanti, i '
+      'tagli si salvano mentre lavori e puoi riprendere da dove eri.';
+  static const openAnyway = 'Apri comunque';
+
+  static const resumeTitle = 'Lavoro in sospeso';
+  static String resumeBody(String name, int cuts) =>
+      '$name · ${cuts == 1 ? '1 taglio' : '$cuts tagli'}';
+  static const resumeHint = 'Per riprendere, scegli di nuovo lo stesso file.';
+  static const resume = 'Riprendi';
+  static const discard = 'Elimina';
+  static String resumeWrongFile(String name) =>
+      'Non è lo stesso file: per riprendere scegli «$name».';
+
   static const pdfOpening = 'Apro il PDF…';
   static const layoutPdf = 'Layout PDF';
   static const layoutTitle = 'Scegli layout del PDF';

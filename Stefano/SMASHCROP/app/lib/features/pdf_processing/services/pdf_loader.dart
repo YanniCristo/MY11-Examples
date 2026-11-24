@@ -8,13 +8,21 @@ class PdfLoader {
   const PdfLoader();
 
   /// `null` se l'utente annulla la scelta.
-  Future<PdfSession?> pick({PasswordPrompt? askPassword}) async {
+  /// [confirmSize] riceve il peso del file prima di leggerlo: se risponde
+  /// `false` l'apertura si annulla.
+  Future<PdfSession?> pick({
+    PasswordPrompt? askPassword,
+    Future<bool> Function(int bytes)? confirmSize,
+  }) async {
     final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: const ['pdf'],
       webOptions: pickerWebOptions,
     );
     if (file == null) return null;
+    if (confirmSize != null && !await confirmSize(await file.length() ?? 0)) {
+      return null;
+    }
     final bytes = await file.xFile.readAsBytes();
     return PdfSession.open(bytes, file.name, askPassword: askPassword);
   }

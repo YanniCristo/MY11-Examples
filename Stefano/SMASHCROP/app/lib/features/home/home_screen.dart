@@ -1,11 +1,13 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../core/widgets/large_file_dialog.dart';
 import '../../core/widgets/password_dialog.dart';
 
 import '../../app/strings.dart';
 import '../../app/theme.dart';
 import '../../core/widgets/app_button.dart';
 import '../../core/widgets/brand.dart';
+import '../editor/application/saved_work.dart';
 import '../editor/presentation/editor_screen.dart';
 import '../image_processing/services/image_loader.dart';
 import '../pdf_processing/services/pdf_loader.dart';
@@ -27,23 +29,62 @@ class _HomeScreenState extends State<HomeScreen> {
   final _loader = ImageLoader();
   final _pdfLoader = const PdfLoader();
   bool _loading = false;
+  SavedWork? _saved;
+
+  @override
+  void initState() {
+    super.initState();
+    _saved = SavedWork.decode(widget.preferences.savedWork);
+  }
+
+  void _refreshSaved() {
+    if (mounted) {
+      setState(() => _saved = SavedWork.decode(widget.preferences.savedWork));
+    }
+  }
+
+  Future<void> _discard() async {
+    await widget.preferences.clearSavedWork();
+    _refreshSaved();
+  }
+
+  void _resume() {
+    final w = _saved;
+    if (w == null) return;
+    _toast(S.resumeHint);
+    w.isPdf ? _loadPdf(resume: w) : _loadImage(resume: w);
+  }
 
   void _toast(String msg) => ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(msg)));
 
-  Future<void> _loadImage() async {
+  Future<void> _loadImage({SavedWork? resume}) async {
     if (_loading) return;
     setState(() => _loading = true);
     try {
       final img = await _loader.pick();
       if (img == null || !mounted) return;
+      if (resume != null &&
+          !resume.matches(
+            isPdf: false,
+            name: img.name,
+            size: img.bytes?.length ?? -1,
+          )) {
+        _toast(S.resumeWrongFile(resume.name));
+        return;
+      }
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       await Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) =>
-              EditorScreen(image: img, preferences: widget.preferences),
+          builder: (_) => EditorScreen(
+            image: img,
+            preferences: widget.preferences,
+            restore: resume,
+          ),
         ),
       );
+      _refreshSaved();
     } on ImageLoadException catch (e) {
       _toast(e.tooLarge ? S.tooLarge : S.loadFailed);
     } catch (_) {
@@ -53,21 +94,34 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _loadPdf() async {
+  Future<void> _loadPdf({SavedWork? resume}) async {
     if (_loading) return;
     setState(() => _loading = true);
     try {
       final pdf = await _pdfLoader.pick(
         askPassword: ({required bool wrong}) =>
             askPdfPassword(context, wrong: wrong),
+        confirmSize: (bytes) => confirmLargePdf(context, bytes),
       );
       if (pdf == null || !mounted) return;
+      if (resume != null &&
+          !resume.matches(isPdf: true, name: pdf.name, size: pdf.fileSize)) {
+        await pdf.dispose();
+        _toast(S.resumeWrongFile(resume.name));
+        return;
+      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       await Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) =>
-              EditorScreen(pdf: pdf, preferences: widget.preferences),
+          builder: (_) => EditorScreen(
+            pdf: pdf,
+            preferences: widget.preferences,
+            restore: resume,
+          ),
         ),
       );
+      _refreshSaved();
     } on PdfOpenException catch (e) {
       if (!e.cancelled) {
         _toast(
@@ -117,6 +171,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     const Flexible(child: _DemoCard()),
                     const SizedBox(height: 18),
+                    if (_saved != null) ...[
+                      _ResumeCard(
+                        work: _saved!,
+                        onResume: _loading ? null : _resume,
+                        onDiscard: _loading ? null : _discard,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
                     Row(
                       children: [
                         Expanded(
@@ -255,6 +317,93 @@ class _DemoCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Lavoro rimasto a metà (per esempio dopo un ricaricamento della pagina).
+class _ResumeCard extends StatelessWidget {
+  const _ResumeCard({
+    required this.work,
+    required this.onResume,
+    required this.onDiscard,
+  });
+
+  final SavedWork work;
+  final VoidCallback? onResume;
+  final VoidCallback? onDiscard;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 10, 10, 10),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.red.withValues(alpha: .6)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            work.isPdf ? Icons.description_outlined : Icons.image_outlined,
+            color: AppColors.red,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  S.resumeTitle,
+                  maxLines: 1,
+                  style: TextStyle(
+                    color: AppColors.text,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  S.resumeBody(work.name, work.cutCount),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 100,
+                child: AppButton(
+                  label: S.resume,
+                  style: AppButtonStyle.primary,
+                  height: 38,
+                  fontSize: 15,
+                  onPressed: onResume,
+                ),
+              ),
+              SizedBox(
+                height: 30,
+                child: TextButton(
+                  onPressed: onDiscard,
+                  child: const Text(
+                    S.discard,
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

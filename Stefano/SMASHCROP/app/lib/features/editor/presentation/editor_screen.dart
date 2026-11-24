@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../core/widgets/large_file_dialog.dart';
 import '../../../core/widgets/password_dialog.dart';
 
 import '../../../app/strings.dart';
@@ -20,6 +21,7 @@ import '../../pdf_processing/services/pdf_loader.dart';
 import '../../pdf_processing/services/pdf_service.dart';
 import '../../settings/preferences.dart';
 import '../application/editor_controller.dart';
+import '../application/saved_work.dart';
 import '../domain/cut_operation.dart';
 import '../domain/viewport_transform.dart';
 import 'editor_viewport.dart';
@@ -31,11 +33,15 @@ class EditorScreen extends StatefulWidget {
     required this.preferences,
     this.image,
     this.pdf,
+    this.restore,
   }) : assert((image == null) != (pdf == null));
 
   final AppPreferences preferences;
   final LoadedImage? image;
   final PdfSession? pdf;
+
+  /// Lavoro salvato da riprendere sul file appena aperto.
+  final SavedWork? restore;
 
   @override
   State<EditorScreen> createState() => _EditorScreenState();
@@ -64,6 +70,7 @@ class _EditorScreenState extends State<EditorScreen>
             session: widget.pdf!,
             preferences: widget.preferences,
           );
+    if (widget.restore != null) c.restoreWork(widget.restore!);
     _ticker = createTicker(c.tick);
     c.addListener(_syncTicker);
     SmashFrames.load()
@@ -128,6 +135,7 @@ class _EditorScreenState extends State<EditorScreen>
       final pdf = await _pdfLoader.pick(
         askPassword: ({required bool wrong}) =>
             askPdfPassword(context, wrong: wrong),
+        confirmSize: (bytes) => confirmLargePdf(context, bytes),
       );
       if (pdf != null) c.replaceWithPdf(pdf);
     } on PdfOpenException catch (e) {

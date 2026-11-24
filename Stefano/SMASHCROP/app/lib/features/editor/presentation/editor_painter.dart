@@ -37,6 +37,29 @@ class EditorPainter extends CustomPainter {
         dst,
         _docPaint,
       );
+      final zp = c.zoomPatch;
+      if (zp != null &&
+          !c.positioning &&
+          identical(zp.page, c.page) &&
+          identical(zp.doc, d)) {
+        canvas.save();
+        canvas.clipRect(dst);
+        final sx = dst.width / d.width, sy = dst.height / d.height;
+        for (final (r, img) in zp.pieces) {
+          canvas.drawImageRect(
+            img,
+            Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
+            Rect.fromLTWH(
+              dst.left + r.left * sx,
+              dst.top + r.top * sy,
+              r.width * sx,
+              r.height * sy,
+            ),
+            _docPaint,
+          );
+        }
+        canvas.restore();
+      }
       if (c.positioning) {
         canvas.drawRect(
           dst.deflate(1),

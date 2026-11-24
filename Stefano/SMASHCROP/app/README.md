@@ -82,6 +82,12 @@ test/                       test unitari e del controller
 - **Pagine PDF tagliate.** Diventano immagini: niente testo selezionabile, link o firme valide su quelle pagine. Il pannello Layout lo dice all'utente.
 - **PDF protetti da password.** Si aprono solo se l'utente inserisce la password giusta: l'app la chiede e non prova mai ad aggirarla. Il PDF salvato non ha password.
 - **PDF in cui il proprietario ha vietato la modifica.** Non si aprono, e l'app spiega perché. Nella versione web, dove il motore PDF non riporta i permessi, vengono letti direttamente dal file.
+- **Memoria e PDF grandi.**
+  - Sullo schermo le pagine sono leggere (150 DPI nel browser, 200 nell'app; fogli enormi scendono ancora). Il file salvato è sempre a 300 DPI: ogni pagina tagliata si rende di nuovo al salvataggio, una alla volta.
+  - Zoom: la parte visibile si rende ad alta definizione quando la vista si ferma, quindi il testo resta nitido senza tenere in memoria la pagina intera ad alta risoluzione.
+  - Nel browser: il file è in memoria una volta sola, al massimo 2 pagine pronte, niente copie appiattite.
+  - Il lavoro si salva sul dispositivo a ogni modifica (solo nome e peso del file e coordinate dei tagli). Se la pagina si ricarica, la home propone "Riprendi": si riapre lo stesso file e tornano tutti i tagli.
+  - Nel browser, sopra 150 MB (telefono) o 500 MB (computer) compare un avviso prima di aprire il PDF; si può aprire comunque.
 - **Qualità dei salvataggi.**
   - PNG, WebP, GIF, BMP, TIFF: pixel identici all'originale (WebP lossless, GIF con la tavolozza originale, senza retinatura). Verificato nei test pixel per pixel.
   - JPEG: si risalva in JPEG, quindi una ricompressione c'è per forza; a qualità 100 e 4:4:4 lo scarto medio misurato è circa 1 livello su 255, invisibile.
