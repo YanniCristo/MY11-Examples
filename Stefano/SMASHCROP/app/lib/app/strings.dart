@@ -31,6 +31,14 @@ class S {
   static const saveToGallery = 'Salva in Galleria';
   static const saveToFiles = 'Salva in File';
   static const download = 'Scarica';
+
+  /// Messaggio con l'errore tecnico tra parentesi, accorciato.
+  static String withDetail(String msg, String? detail) {
+    if (detail == null || detail.isEmpty) return msg;
+    final d = detail.length > 160 ? '${detail.substring(0, 160)}…' : detail;
+    return '$msg\n($d)';
+  }
+
   static const pdfOpening = 'Apro il PDF…';
   static const layoutPdf = 'Layout PDF';
   static const layoutTitle = 'Scegli layout del PDF';

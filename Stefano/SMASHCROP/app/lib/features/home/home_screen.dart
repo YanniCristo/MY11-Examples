@@ -71,11 +71,15 @@ class _HomeScreenState extends State<HomeScreen> {
     } on PdfOpenException catch (e) {
       if (!e.cancelled) {
         _toast(
-          e.locked ? S.pdfLocked : (e.password ? S.pdfPassword : S.pdfInvalid),
+          e.locked
+              ? S.pdfLocked
+              : (e.password
+                    ? S.pdfPassword
+                    : S.withDetail(S.pdfInvalid, e.detail)),
         );
       }
-    } catch (_) {
-      _toast(S.pdfInvalid);
+    } catch (e) {
+      _toast(S.withDetail(S.pdfInvalid, '$e'));
     } finally {
       if (mounted) setState(() => _loading = false);
     }

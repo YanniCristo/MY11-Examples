@@ -19,7 +19,11 @@ class PdfOpenException implements Exception {
     this.password = false,
     this.cancelled = false,
     this.locked = false,
+    this.detail,
   });
+
+  /// Errore tecnico originale, mostrato per capire cosa non va.
+  final String? detail;
 
   /// Password richiesta ma non fornita.
   final bool password;
@@ -68,7 +72,7 @@ class PdfSession {
       );
       if (doc.pages.isEmpty) {
         await doc.dispose();
-        throw PdfOpenException();
+        throw PdfOpenException(detail: 'nessuna pagina');
       }
       // rispetta i permessi del documento: se il proprietario non consente
       // di modificarlo, non lo si apre per la modifica
@@ -86,8 +90,8 @@ class PdfSession {
       throw PdfOpenException(password: true, cancelled: cancelled);
     } on PdfOpenException {
       rethrow;
-    } catch (_) {
-      throw PdfOpenException();
+    } catch (e) {
+      throw PdfOpenException(detail: '$e');
     }
   }
 

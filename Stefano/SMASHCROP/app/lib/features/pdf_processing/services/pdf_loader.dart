@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 
 import 'pdf_service.dart';
+import 'picker_options/picker_options.dart';
 
 /// Importa un PDF scelto dall'utente.
 class PdfLoader {
@@ -11,6 +12,7 @@ class PdfLoader {
     final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: const ['pdf'],
+      webOptions: pickerWebOptions,
     );
     if (file == null) return null;
     final bytes = await file.xFile.readAsBytes();
