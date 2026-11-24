@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:material_ui/material_ui.dart';
 
@@ -6,15 +7,19 @@ import '../../animation/domain/cut_timeline.dart';
 import '../../animation/domain/smash_config.dart';
 import '../../export/export_service.dart';
 import '../../image_processing/services/image_loader.dart';
+import '../../pdf_processing/domain/page_layout.dart';
+import '../../pdf_processing/services/pdf_service.dart';
 import '../../settings/preferences.dart';
 import '../domain/cut_operation.dart';
-import '../domain/edit_history.dart';
 import '../domain/selection_state.dart';
 import '../domain/strip_document.dart';
 import '../domain/viewport_transform.dart';
 import 'doc_source.dart';
+import 'editor_page.dart';
 
 enum LineHandle { a, b }
+
+enum DocumentKind { image, pdf }
 
 /// Un frammento della fascia distrutta da SMASH.
 class Shard {
@@ -29,39 +34,71 @@ class Shard {
 /// solo ciò che serve a mostrarlo.
 class CutAnimation {
   CutAnimation({
+    required this.page,
     required this.op,
     required this.before,
     required this.after,
+    required this.frame0,
+    required this.frame1,
     required this.t0,
     required this.t1,
     required this.timeline,
     required this.placement,
     required this.shards,
+    required this.firstCutOnPdfPage,
   });
 
+  final EditorPage page;
   final CutOperation op;
   final DocSource before;
   final DocSource after;
+  final PageFrame frame0;
+  final PageFrame frame1;
   final ViewportTransform t0;
   final ViewportTransform t1;
   final CutTimeline timeline;
   final SmashPlacement? placement;
   final List<Shard> shards;
+  final bool firstCutOnPdfPage;
   double elapsedMs = 0;
   bool committed = false;
 }
 
-/// Stato e logica dell'editor. I widget leggono da qui e chiamano i metodi;
-/// il taglio vero è fatto dal modello [StripDocument], non dall'animazione.
+/// Stato e logica dell'editor, per immagini e PDF. I widget leggono da qui
+/// e chiamano i metodi; il taglio vero è fatto dal modello [StripDocument],
+/// non dall'animazione.
 class EditorController extends ChangeNotifier {
-  EditorController({
+  EditorController.image({
     required LoadedImage image,
     required this.preferences,
     this.settings = const CutAnimationSettings(),
     this.exporter = const ExportService(),
   }) {
-    _open(image);
-    smashEnabled = preferences.smashEnabled;
+    _openImage(image);
+    _initPrefs();
+  }
+
+  EditorController.pdf({
+    required PdfSession session,
+    required this.preferences,
+    this.settings = const CutAnimationSettings(),
+    this.exporter = const ExportService(),
+  }) {
+    _openPdf(session);
+    _initPrefs();
+  }
+
+  /// Pagine PDF già pronte, senza documento sorgente (per i test).
+  @visibleForTesting
+  EditorController.pdfPages({
+    required this.pages,
+    required this.preferences,
+    this.settings = const CutAnimationSettings(),
+    this.exporter = const ExportService(),
+  }) {
+    kind = DocumentKind.pdf;
+    _resetView();
+    _initPrefs();
   }
 
   final AppPreferences preferences;
@@ -71,77 +108,226 @@ class EditorController extends ChangeNotifier {
   /// Notifica i ridisegni durante l'animazione senza ricostruire i widget.
   final ValueNotifier<int> frameTick = ValueNotifier(0);
 
-  late LoadedImage source;
-  late EditHistory _history;
-  late DocSource _view;
-  late SelectionState selection;
+  late DocumentKind kind;
+  LoadedImage? imageSource;
+  PdfSession? pdf;
+  List<EditorPage> pages = [];
+  int pageIndex = 0;
+
   bool smashEnabled = true;
 
   /// Diventa vero quando i frame di SMASH sono caricati.
   bool smashAvailable = false;
+
+  /// Impaginazione proposta per le pagine appena tagliate.
+  PdfLayoutMode layoutSuggestion = PdfLayoutMode.top;
+
   bool _selectionSuppressed = false;
   CutAnimation? animation;
   Timer? _reappear;
   bool busyExporting = false;
+  bool _disposed = false;
+
+  // pannello Layout PDF
+  bool layoutPanelOpen = false;
+  PageLayout? previewLayout;
+
+  // Personalizza posizione
+  bool positioning = false;
+  Offset positionOffset = Offset.zero;
 
   double zoom = 1;
   Offset pan = Offset.zero;
   Size viewportSize = Size.zero;
   LineHandle? draggingHandle;
 
+  final List<int> _recentPages = [];
+  final Set<int> _rendering = {};
+  Object? renderError;
+
+  void _initPrefs() {
+    smashEnabled = preferences.smashEnabled;
+    layoutSuggestion = preferences.layoutSuggestion;
+  }
+
   // --- lettura dello stato -------------------------------------------------
 
-  StripDocument get doc => _history.current;
-  DocSource get view => _view;
-  bool get canUndo => _history.canUndo && !isCutting;
-  bool get canRedo => _history.canRedo && !isCutting;
+  bool get isPdf => kind == DocumentKind.pdf;
+  EditorPage get page => pages[pageIndex];
+  bool get pageReady => page.isReady;
+  int get pageCount => pages.length;
+  StripDocument get doc => page.doc;
+  DocSource get view => page.view;
+  SelectionState get selection => page.selection;
+  set selection(SelectionState s) => page.selection = s;
+
+  bool get _modal => layoutPanelOpen || positioning;
   bool get isCutting => animation != null && !animation!.committed;
   bool get isAnimating => animation != null;
+  bool get canUndo => page.history.canUndo && !isCutting && !_modal;
+  bool get canRedo => page.history.canRedo && !isCutting && !_modal;
+  bool get canNavigate => !isCutting && !_modal && !busyExporting;
 
   /// La selezione è visibile (non nascosta dall'utente né in attesa).
-  bool get selectionVisible => selection.isVisible && !_selectionSuppressed;
+  bool get selectionVisible =>
+      pageReady && selection.isVisible && !_selectionSuppressed && !_modal;
   CutOrientation get layoutOrientation => selection.mode ?? selection.lastMode;
 
   bool get canCut =>
       selectionVisible && !isCutting && !busyExporting && _pendingCut() != null;
 
-  ViewportTransform get transform => ViewportTransform(
+  /// Foglio attuale: per le immagini coincide con il contenuto.
+  PageFrame get frame {
+    final override = positioning
+        ? PageLayout(PdfLayoutMode.custom, positionOffset)
+        : previewLayout;
+    return page.frame(layoutSuggestion, override: override);
+  }
+
+  ViewportTransform transformFor(PageFrame f) => ViewportTransform(
     viewport: viewportSize,
-    content: Size(doc.width.toDouble(), doc.height.toDouble()),
+    content: f.size,
     gutters: Gutters.forOrientation(layoutOrientation),
     zoom: zoom,
     pan: pan,
   ).clamped();
 
+  ViewportTransform get transform => transformFor(frame);
+
+  /// Rettangolo a schermo del contenuto (dentro il foglio, per i PDF).
+  Rect get contentScreenRect => transform.regionToScreen(frame.contentRect);
+
+  Offset contentToScreen(Offset p) =>
+      transform.contentToScreen(p + frame.contentOffset);
+  Offset screenToContent(Offset s) =>
+      transform.screenToContent(s) - frame.contentOffset;
+
   // --- documento -----------------------------------------------------------
 
-  void _open(LoadedImage image) {
-    source = image;
-    _history = EditHistory(StripDocument.original(image.width, image.height));
-    _view = DocSource.build(image.image, doc);
-    selection = SelectionState.initial(width: doc.width, height: doc.height);
+  void _openImage(LoadedImage image) {
+    kind = DocumentKind.image;
+    imageSource = image;
+    pdf = null;
+    pages = [
+      EditorPage(
+        index: 0,
+        widthPx: image.width,
+        heightPx: image.height,
+        image: image.image,
+      ),
+    ];
+    _resetView();
+  }
+
+  void _openPdf(PdfSession session) {
+    kind = DocumentKind.pdf;
+    imageSource = null;
+    pdf = session;
+    pages = session.createPages();
+    _resetView();
+    _ensureRendered(0);
+  }
+
+  void _resetView() {
+    pageIndex = 0;
+    _recentPages.clear();
     _selectionSuppressed = false;
+    layoutPanelOpen = false;
+    previewLayout = null;
+    positioning = false;
     zoom = 1;
     pan = Offset.zero;
   }
 
-  /// Sostituisce il documento con una nuova immagine importata.
-  void replaceImage(LoadedImage image) {
+  void _closeCurrent() {
     _cancelAnimation();
-    final old = _view;
-    final oldSource = source;
-    _open(image);
-    old.dispose();
-    if (!identical(oldSource.image, image.image)) oldSource.image.dispose();
+    for (final p in pages) {
+      p.evict();
+    }
+    final old = pdf;
+    if (old != null) old.dispose();
+  }
+
+  void replaceWithImage(LoadedImage image) {
+    _closeCurrent();
+    _openImage(image);
+    notifyListeners();
+  }
+
+  void replaceWithPdf(PdfSession session) {
+    _closeCurrent();
+    _openPdf(session);
     notifyListeners();
   }
 
   void setViewportSize(Size s) => viewportSize = s;
 
+  // --- pagine PDF ------------------------------------------------------------
+
+  Future<void> _ensureRendered(int i) async {
+    final session = pdf;
+    if (session == null || pages[i].isReady || _rendering.contains(i)) return;
+    _rendering.add(i);
+    final target = pages[i];
+    try {
+      final img = await session.render(target);
+      if (_disposed ||
+          !identical(pdf, session) ||
+          pages.length <= i ||
+          !identical(pages[i], target)) {
+        img.dispose();
+        return;
+      }
+      target.attach(img);
+      renderError = null;
+      _touch(i);
+    } catch (e) {
+      renderError = e;
+    } finally {
+      _rendering.remove(i);
+      if (!_disposed) notifyListeners();
+    }
+  }
+
+  /// Tiene in memoria al massimo 4 pagine rese; le altre si rifanno al bisogno.
+  void _touch(int i) {
+    _recentPages
+      ..remove(i)
+      ..add(i);
+    while (_recentPages.length > 4) {
+      final victim = _recentPages.removeAt(0);
+      if (victim != pageIndex && animation?.page.index != victim) {
+        pages[victim].evict();
+      }
+    }
+  }
+
+  void goToPage(int i) {
+    if (!isPdf ||
+        !canNavigate ||
+        i < 0 ||
+        i >= pages.length ||
+        i == pageIndex) {
+      return;
+    }
+    _cancelAnimation();
+    pageIndex = i;
+    zoom = 1;
+    pan = Offset.zero;
+    if (page.isReady) {
+      _touch(i);
+    } else {
+      _ensureRendered(i);
+    }
+    // prepara anche la pagina successiva
+    if (i + 1 < pages.length) _ensureRendered(i + 1);
+    notifyListeners();
+  }
+
   // --- selezione -----------------------------------------------------------
 
   void tapOrientation(CutOrientation o) {
-    if (isCutting) return;
+    if (isCutting || _modal || !pageReady) return;
     if (_selectionSuppressed) {
       _reappear?.cancel();
       _selectionSuppressed = false;
@@ -165,7 +351,7 @@ class EditorController extends ChangeNotifier {
     final h = draggingHandle;
     final mode = selection.mode;
     if (h == null || mode == null) return;
-    final c = transform.screenToContent(viewportPos);
+    final c = screenToContent(viewportPos);
     final len = doc.lengthFor(mode);
     final v = (mode == CutOrientation.horizontal ? c.dy : c.dx)
         .clamp(0, len)
@@ -189,6 +375,7 @@ class EditorController extends ChangeNotifier {
   double _zoom0 = 1;
   Offset _pan0 = Offset.zero;
   Offset _focal0 = Offset.zero;
+  Offset _lastFocal = Offset.zero;
 
   void setZoom(double z) {
     final t = transform.zoomedAround(viewportSize.center(Offset.zero), z);
@@ -201,10 +388,24 @@ class EditorController extends ChangeNotifier {
     _zoom0 = zoom;
     _pan0 = pan;
     _focal0 = focal;
+    _lastFocal = focal;
   }
 
   void gestureUpdate(Offset focal, double scale) {
-    if (draggingHandle != null || isCutting) return;
+    if (positioning) {
+      // Personalizza posizione: il dito sposta l'intero contenuto, senza
+      // ridimensionarlo
+      final delta = (focal - _lastFocal) / transform.scale;
+      _lastFocal = focal;
+      positionOffset = PageFrame.clampOffset(
+        positionOffset + delta,
+        page.originalSize,
+        frame.contentSize,
+      );
+      notifyListeners();
+      return;
+    }
+    if (draggingHandle != null || isCutting || !pageReady) return;
     final base = transform.copyWith(zoom: _zoom0, pan: _pan0);
     final t = base
         .zoomedAround(_focal0, _zoom0 * scale)
@@ -233,23 +434,34 @@ class EditorController extends ChangeNotifier {
   bool removePortion() {
     if (!canCut) return false;
     final op = _pendingCut()!;
-    final before = _view;
-    final t0 = transform;
+    final p = page;
+    final img = p.image!;
+    final frame0 = frame;
+    final t0 = transformFor(frame0);
     final afterDoc = doc.apply(op);
-    final after = DocSource.build(source.image, afterDoc);
-    final t1 = t0.copyWith(
+    final after = DocSource.build(img, afterDoc);
+    final firstCut = isPdf && !p.history.hasCuts && p.history.layout == null;
+    final layout1 = isPdf
+        ? (p.history.layout ?? PageLayout(layoutSuggestion))
+        : null;
+    final frame1 = PageFrame.compute(
+      original: p.originalSize,
       content: Size(afterDoc.width.toDouble(), afterDoc.height.toDouble()),
+      layout: layout1,
     );
+    final t1 = t0.copyWith(content: frame1.size);
     final smash = smashEnabled && smashAvailable;
-    final timeline = CutTimeline(settings: settings, smash: smash);
-    final impact = _impactPoint(t0, op);
+    final impact = _impactPoint(t0, frame0, op);
     animation = CutAnimation(
+      page: p,
       op: op,
-      before: before,
+      before: p.view,
       after: after,
+      frame0: frame0,
+      frame1: frame1,
       t0: t0,
       t1: t1,
-      timeline: timeline,
+      timeline: CutTimeline(settings: settings, smash: smash),
       placement: smash
           ? SmashPlacement(
               viewport: viewportSize,
@@ -257,7 +469,8 @@ class EditorController extends ChangeNotifier {
               robotHeight: viewportSize.width * settings.robotHeightFraction,
             )
           : null,
-      shards: smash ? _makeShards(t0, op, impact) : const [],
+      shards: smash ? _makeShards(t0, frame0, op, impact) : const [],
+      firstCutOnPdfPage: firstCut,
     );
     _selectionSuppressed = true;
     notifyListeners();
@@ -265,27 +478,33 @@ class EditorController extends ChangeNotifier {
   }
 
   /// Epicentro: a metà tra A e B sull'asse del taglio, al centro della parte
-  /// visibile del documento sull'altro asse.
-  Offset _impactPoint(ViewportTransform t, CutOperation op) {
-    final visible = t.contentRect.intersect(Offset.zero & viewportSize);
+  /// visibile del contenuto sull'altro asse.
+  Offset _impactPoint(ViewportTransform t, PageFrame f, CutOperation op) {
+    final content = t.regionToScreen(f.contentRect);
+    final visible = content.intersect(Offset.zero & viewportSize);
     final mid = (op.start + op.end) / 2;
     if (op.orientation == CutOrientation.horizontal) {
-      final y = t.contentToScreen(Offset(0, mid)).dy;
+      final y = t.contentToScreen(Offset(0, f.contentOffset.dy + mid)).dy;
       return Offset(
         visible.center.dx,
         y.clamp(0, viewportSize.height).toDouble(),
       );
     }
-    final x = t.contentToScreen(Offset(mid, 0)).dx;
+    final x = t.contentToScreen(Offset(f.contentOffset.dx + mid, 0)).dx;
     return Offset(x.clamp(0, viewportSize.width).toDouble(), visible.center.dy);
   }
 
-  List<Shard> _makeShards(ViewportTransform t, CutOperation op, Offset impact) {
+  List<Shard> _makeShards(
+    ViewportTransform t,
+    PageFrame f,
+    CutOperation op,
+    Offset impact,
+  ) {
     final w = doc.width.toDouble(), h = doc.height.toDouble();
     final src = op.orientation == CutOrientation.horizontal
         ? Rect.fromLTWH(0, op.start.toDouble(), w, op.removed.toDouble())
         : Rect.fromLTWH(op.start.toDouble(), 0, op.removed.toDouble(), h);
-    final dst = t.regionToScreen(src);
+    final dst = t.regionToScreen(src.shift(f.contentOffset));
     final cols = (dst.width / 38).round().clamp(3, 12);
     final rows = (dst.height / 38).round().clamp(2, 12);
     var seed = 7;
@@ -337,21 +556,29 @@ class EditorController extends ChangeNotifier {
 
   void _commit(CutAnimation a) {
     a.committed = true;
-    _history.push(a.op);
-    _view = a.after;
+    final p = a.page;
+    p.history.push(a.op);
+    p.adoptView(a.after);
     zoom = a.t1.zoom;
     pan = a.t1.pan;
-    selection = selection.afterCut(
+    p.selection = p.selection.afterCut(
       a.op.orientation,
-      width: doc.width,
-      height: doc.height,
+      width: p.doc.width,
+      height: p.doc.height,
     );
-    // il conteggio parte solo ora, a ricongiungimento completato
     _reappear?.cancel();
-    _reappear = Timer(settings.reappearDelay, () {
-      _selectionSuppressed = false;
-      notifyListeners();
-    });
+    if (a.firstCutOnPdfPage) {
+      // primo taglio della pagina: si sceglie l'impaginazione; la nuova
+      // selezione aspetta che il pannello si chiuda
+      layoutPanelOpen = true;
+      previewLayout = PageLayout(layoutSuggestion);
+    } else {
+      // il conteggio parte solo ora, a ricongiungimento completato
+      _reappear = Timer(settings.reappearDelay, () {
+        _selectionSuppressed = false;
+        if (!_disposed) notifyListeners();
+      });
+    }
     notifyListeners();
   }
 
@@ -368,18 +595,110 @@ class EditorController extends ChangeNotifier {
 
   // --- cronologia ----------------------------------------------------------
 
-  void undo() => _step(_history.undo);
-  void redo() => _step(_history.redo);
+  void undo() => _step(() => page.history.undo());
+  void redo() => _step(() => page.history.redo());
 
   void _step(bool Function() move) {
-    if (isCutting) return;
+    if (isCutting || _modal) return;
     _cancelAnimation();
     if (!move()) return;
-    final old = _view;
-    _view = DocSource.build(source.image, doc);
-    old.dispose();
+    page.refreshView();
     selection = selection.ensureValid(width: doc.width, height: doc.height);
     pan = transform.pan;
+    notifyListeners();
+  }
+
+  // --- impaginazione PDF -------------------------------------------------------
+
+  void openLayoutPanel() {
+    if (!isPdf || !canNavigate || !pageReady) return;
+    _reappear?.cancel();
+    layoutPanelOpen = true;
+    previewLayout =
+        page.effectiveLayout(layoutSuggestion) ?? PageLayout(layoutSuggestion);
+    notifyListeners();
+  }
+
+  /// Anteprima di una modalità mentre il pannello è aperto.
+  void previewLayoutMode(PdfLayoutMode m) {
+    if (!layoutPanelOpen) return;
+    previewLayout = m == PdfLayoutMode.custom
+        ? PageLayout(m, frame.contentOffset)
+        : PageLayout(m);
+    notifyListeners();
+  }
+
+  /// Applica e continua (Centrato, In alto, Riduci pagina); con
+  /// Personalizza posizione apre il trascinamento.
+  void applyLayout() {
+    final l = previewLayout;
+    if (!layoutPanelOpen || l == null) return;
+    if (l.mode == PdfLayoutMode.custom) {
+      startPositioning();
+      return;
+    }
+    if (page.history.hasCuts && page.history.layout != l) {
+      page.history.pushLayout(l);
+    }
+    layoutSuggestion = l.mode;
+    preferences.setLayoutSuggestion(l.mode);
+    _closePanel();
+  }
+
+  /// Applica la modalità a tutte le pagine già tagliate (dopo conferma).
+  int applyLayoutToAllModified(PdfLayoutMode m) {
+    if (m == PdfLayoutMode.custom) return 0;
+    var n = 0;
+    for (final p in pages) {
+      if (p.history.hasCuts && p.history.layout != PageLayout(m)) {
+        p.history.pushLayout(PageLayout(m));
+        n++;
+      }
+    }
+    layoutSuggestion = m;
+    preferences.setLayoutSuggestion(m);
+    _closePanel();
+    return n;
+  }
+
+  void dismissLayoutPanel() {
+    if (!layoutPanelOpen) return;
+    _closePanel();
+  }
+
+  void _closePanel() {
+    layoutPanelOpen = false;
+    previewLayout = null;
+    _selectionSuppressed = false;
+    pan = transform.pan;
+    notifyListeners();
+  }
+
+  void startPositioning() {
+    if (!isPdf || !pageReady || !page.history.hasCuts) return;
+    final start = frame.contentOffset;
+    layoutPanelOpen = false;
+    previewLayout = null;
+    positioning = true;
+    positionOffset = start;
+    zoom = 1;
+    pan = Offset.zero;
+    notifyListeners();
+  }
+
+  void confirmPosition() {
+    if (!positioning) return;
+    final l = PageLayout(PdfLayoutMode.custom, positionOffset);
+    if (page.history.layout != l) page.history.pushLayout(l);
+    positioning = false;
+    _selectionSuppressed = false;
+    notifyListeners();
+  }
+
+  void cancelPositioning() {
+    if (!positioning) return;
+    positioning = false;
+    _selectionSuppressed = false;
     notifyListeners();
   }
 
@@ -393,22 +712,28 @@ class EditorController extends ChangeNotifier {
 
   // --- esportazione ---------------------------------------------------------
 
-  Future<ExportedFile?> buildExport() async {
+  Future<ExportedFile?> buildImageExport() =>
+      _busy(() => exporter.build(imageSource!, doc));
+
+  Future<Uint8List?> buildPdfExport() =>
+      _busy(() => pdf!.export(pages, layoutSuggestion));
+
+  Future<T?> _busy<T>(Future<T> Function() job) async {
     if (busyExporting) return null;
     busyExporting = true;
     notifyListeners();
     try {
-      return await exporter.build(source, doc);
+      return await job();
     } finally {
       busyExporting = false;
-      notifyListeners();
+      if (!_disposed) notifyListeners();
     }
   }
 
   @override
   void dispose() {
-    _cancelAnimation();
-    _view.dispose();
+    _disposed = true;
+    _closeCurrent();
     frameTick.dispose();
     super.dispose();
   }

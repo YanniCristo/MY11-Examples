@@ -58,6 +58,16 @@ class _EditorViewportState extends State<EditorViewport> {
                     ),
                   ),
                   ..._selection(box.biggest),
+                  if (!c.pageReady)
+                    const Center(
+                      child: SizedBox.square(
+                        dimension: 28,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.6,
+                          color: AppColors.red,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             );
@@ -71,12 +81,11 @@ class _EditorViewportState extends State<EditorViewport> {
     final mode = c.selection.mode;
     final pair = c.selection.active;
     if (!c.selectionVisible || mode == null || pair == null) return const [];
-    final t = c.transform;
-    final r = t.contentRect;
+    final r = c.contentScreenRect;
     final horizontal = mode == CutOrientation.horizontal;
     double screen(double v) => horizontal
-        ? t.contentToScreen(Offset(0, v)).dy
-        : t.contentToScreen(Offset(v, 0)).dx;
+        ? c.contentToScreen(Offset(0, v)).dy
+        : c.contentToScreen(Offset(v, 0)).dx;
     final pa = screen(pair.a), pb = screen(pair.b);
     final lo = pa < pb ? pa : pb, hi = pa < pb ? pb : pa;
     final out = <Widget>[

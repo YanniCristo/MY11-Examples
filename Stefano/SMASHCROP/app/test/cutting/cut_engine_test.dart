@@ -25,7 +25,10 @@ RasterImage coded(int w, int h) {
 ({int x, int y}) origin(RasterImage im, int x, int y) {
   final i = (y * im.width + x) * 4;
   final hi = im.rgba[i + 2];
-  return (x: im.rgba[i] | ((hi & 0x0f) << 8), y: im.rgba[i + 1] | ((hi >> 4) << 8));
+  return (
+    x: im.rgba[i] | ((hi & 0x0f) << 8),
+    y: im.rgba[i + 1] | ((hi >> 4) << 8),
+  );
 }
 
 CutOperation op(CutOrientation o, double a, double b, int len) =>
@@ -85,21 +88,35 @@ void main() {
   group('validità', () {
     test('fascia di ampiezza nulla rifiutata', () {
       expect(
-          CutOperation.fromLines(
-              orientation: CutOrientation.horizontal, a: 40, b: 40.2, length: 100),
-          isNull);
+        CutOperation.fromLines(
+          orientation: CutOrientation.horizontal,
+          a: 40,
+          b: 40.2,
+          length: 100,
+        ),
+        isNull,
+      );
     });
 
     test('taglio che elimina tutto rifiutato', () {
       expect(
-          CutOperation.fromLines(
-              orientation: CutOrientation.vertical, a: 0, b: 100, length: 100),
-          isNull);
+        CutOperation.fromLines(
+          orientation: CutOrientation.vertical,
+          a: 0,
+          b: 100,
+          length: 100,
+        ),
+        isNull,
+      );
     });
 
     test('coordinate fuori dal documento vengono limitate', () {
       final c = CutOperation.fromLines(
-          orientation: CutOrientation.horizontal, a: -20, b: 30, length: 100)!;
+        orientation: CutOrientation.horizontal,
+        a: -20,
+        b: 30,
+        length: 100,
+      )!;
       expect(c.start, 0);
       expect(c.end, 30);
     });
@@ -107,38 +124,55 @@ void main() {
     test('taglio non coerente con le dimensioni rifiutato dal motore', () {
       final im = coded(10, 10);
       expect(
-          () => im.cut(const CutOperation(
-              orientation: CutOrientation.horizontal, start: 2, end: 4, lengthBefore: 12)),
-          throwsStateError);
+        () => im.cut(
+          const CutOperation(
+            orientation: CutOrientation.horizontal,
+            start: 2,
+            end: 4,
+            lengthBefore: 12,
+          ),
+        ),
+        throwsStateError,
+      );
     });
   });
 
   group('tagli consecutivi', () {
-    test('runs e motore pixel danno lo stesso risultato su sequenze casuali', () {
-      final rnd = Random(42);
-      for (var round = 0; round < 40; round++) {
-        final w = 5 + rnd.nextInt(60);
-        final h = 5 + rnd.nextInt(60);
-        final original = coded(w, h);
-        var raster = original;
-        var doc = StripDocument.original(w, h);
-        for (var i = 0; i < 6; i++) {
-          final o = rnd.nextBool() ? CutOrientation.horizontal : CutOrientation.vertical;
-          final len = doc.lengthFor(o);
-          if (len < 3) continue;
-          final a = rnd.nextInt(len).toDouble();
-          final b = rnd.nextInt(len).toDouble();
-          final c = CutOperation.fromLines(orientation: o, a: a, b: b, length: len);
-          if (c == null) continue;
-          raster = raster.cut(c);
-          doc = doc.apply(c);
-          expect(doc.width, raster.width);
-          expect(doc.height, raster.height);
+    test(
+      'runs e motore pixel danno lo stesso risultato su sequenze casuali',
+      () {
+        final rnd = Random(42);
+        for (var round = 0; round < 40; round++) {
+          final w = 5 + rnd.nextInt(60);
+          final h = 5 + rnd.nextInt(60);
+          final original = coded(w, h);
+          var raster = original;
+          var doc = StripDocument.original(w, h);
+          for (var i = 0; i < 6; i++) {
+            final o = rnd.nextBool()
+                ? CutOrientation.horizontal
+                : CutOrientation.vertical;
+            final len = doc.lengthFor(o);
+            if (len < 3) continue;
+            final a = rnd.nextInt(len).toDouble();
+            final b = rnd.nextInt(len).toDouble();
+            final c = CutOperation.fromLines(
+              orientation: o,
+              a: a,
+              b: b,
+              length: len,
+            );
+            if (c == null) continue;
+            raster = raster.cut(c);
+            doc = doc.apply(c);
+            expect(doc.width, raster.width);
+            expect(doc.height, raster.height);
+          }
+          final composed = RasterImage.compose(original, doc);
+          expect(composed.rgba, raster.rgba, reason: 'round $round');
         }
-        final composed = RasterImage.compose(original, doc);
-        expect(composed.rgba, raster.rgba, reason: 'round $round');
-      }
-    });
+      },
+    );
 
     test('dimensioni corrette dopo più tagli misti', () {
       var doc = StripDocument.original(1080, 2400);

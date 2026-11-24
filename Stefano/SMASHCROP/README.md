@@ -81,7 +81,7 @@ Nell'app i frame vanno comunque ritagliati attorno al robot, e il movimento (ent
 - [x] Milestone 3: editor interattivo, linee A/B, zoom, spostamento, orientamento
 - [x] Milestone 4: tagli continui, interruttori di visibilità, Undo/Redo, Salva e Condividi
 - [x] Milestone 7: SMASH (frame HD, pugno sull'epicentro, entrata e uscita, toggle)
-- [ ] Milestone 5–6: PDF (importazione, pagine, layout, esportazione)
+- [x] Milestone 5–6: PDF (importazione, pagine di misure diverse, 4 impaginazioni per pagina, Personalizza posizione, esportazione con pagine intatte)
 - [ ] Milestone 8: rifiniture e prove su iPhone e Android veri
 
 Dettagli tecnici e comandi in `app/README.md`.

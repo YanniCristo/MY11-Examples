@@ -41,16 +41,19 @@ class ExportService {
       png: source.format == OutputFormat.png,
     );
     final bytes = await compute(_encode, job);
-    final stamp = DateTime.now();
-    String two(int v) => v.toString().padLeft(2, '0');
-    final name =
-        'SmashCrop_${stamp.year}${two(stamp.month)}${two(stamp.day)}_'
-        '${two(stamp.hour)}${two(stamp.minute)}${two(stamp.second)}';
+    final name = baseFileName();
     return ExportedFile(
       bytes,
       source.format,
       '$name.${source.format == OutputFormat.png ? 'png' : 'jpg'}',
     );
+  }
+
+  /// Nome file con data e ora, es. SmashCrop_20261124_212300.
+  static String baseFileName() {
+    final t = DateTime.now();
+    String two(int v) => v.toString().padLeft(2, '0');
+    return 'SmashCrop_${t.year}${two(t.month)}${two(t.day)}_${two(t.hour)}${two(t.minute)}${two(t.second)}';
   }
 
   Future<SaveOutcome> saveToPhotos(ExportedFile file) async {
@@ -71,18 +74,20 @@ class ExportService {
   }
 
   /// `true` se il foglio di condivisione si è aperto correttamente.
-  Future<bool> share(ExportedFile file, {ui.Rect? origin}) async {
+  Future<bool> share(ExportedFile file, {ui.Rect? origin}) =>
+      shareBytes(file.bytes, file.mimeType, file.fileName, origin: origin);
+
+  Future<bool> shareBytes(
+    Uint8List bytes,
+    String mimeType,
+    String fileName, {
+    ui.Rect? origin,
+  }) async {
     try {
       final result = await SharePlus.instance.share(
         ShareParams(
-          files: [
-            XFile.fromData(
-              file.bytes,
-              mimeType: file.mimeType,
-              name: file.fileName,
-            ),
-          ],
-          fileNameOverrides: [file.fileName],
+          files: [XFile.fromData(bytes, mimeType: mimeType, name: fileName)],
+          fileNameOverrides: [fileName],
           sharePositionOrigin: origin,
         ),
       );

@@ -4,7 +4,11 @@ import 'package:smashcrop/features/editor/domain/edit_history.dart';
 import 'package:smashcrop/features/editor/domain/strip_document.dart';
 
 CutOperation h(int a, int b, int len) => CutOperation(
-    orientation: CutOrientation.horizontal, start: a, end: b, lengthBefore: len);
+  orientation: CutOrientation.horizontal,
+  start: a,
+  end: b,
+  lengthBefore: len,
+);
 
 void main() {
   test('undo e redo ripristinano gli stati', () {

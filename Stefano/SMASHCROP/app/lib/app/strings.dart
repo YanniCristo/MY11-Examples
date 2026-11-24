@@ -11,7 +11,31 @@ class S {
   static const homeHint = 'Scegli un\'immagine o un documento PDF per iniziare';
   static const loadImage = 'Load Image';
   static const loadPdf = 'Load PDF';
-  static const pdfSoon = 'Il PDF arriva con la prossima versione';
+  static const pdfPassword =
+      'Questo PDF è protetto da password: SmashCrop non può aprirlo.';
+  static const pdfInvalid =
+      'Non riesco ad aprire questo PDF. Il file potrebbe essere danneggiato.';
+  static const pdfRenderFailed = 'Non riesco a mostrare questa pagina.';
+  static const pdfSaved = 'PDF salvato';
+  static const pdfOpening = 'Apro il PDF…';
+  static const layoutPdf = 'Layout PDF';
+  static const layoutTitle = 'Scegli layout del PDF';
+  static const applyAndContinue = 'Applica e continua';
+  static const placeContent = 'Posiziona il contenuto';
+  static const applyToAll = 'Applica a tutte le pagine modificate';
+  static const applyToAllTitle = 'Applicare a tutte le pagine?';
+  static String applyToAllBody(String mode) =>
+      'Tutte le pagine già tagliate useranno "$mode". Le pagine con una posizione personalizzata la perderanno.';
+  static const cancel = 'Annulla';
+  static const apply = 'Applica';
+  static const rasterNote =
+      'Le pagine tagliate diventano immagini: il testo non sarà più selezionabile e '
+      'le firme digitali non resteranno valide. Le pagine non tagliate restano intatte.';
+  static const positionTitle = 'Personalizza posizione';
+  static const positionHint =
+      'Trascina il contenuto per scegliere dove metterlo nel foglio. La dimensione non cambia.';
+  static const confirmPosition = 'Conferma posizione';
+  static String pageOf(int page, int total) => 'Pag. $page di $total';
 
   static const share = 'Condividi';
   static const save = 'Salva';

@@ -96,7 +96,8 @@ class AppButton extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if (showIcon) ...[
+                          if (showIcon && label.isEmpty) icon!,
+                          if (showIcon && label.isNotEmpty) ...[
                             IconTheme(
                               data: IconThemeData(
                                 color: AppColors.text,

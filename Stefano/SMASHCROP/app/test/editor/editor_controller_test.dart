@@ -12,7 +12,12 @@ import 'package:smashcrop/features/settings/preferences.dart';
 Future<ui.Image> solidImage(int w, int h) async {
   final px = Uint8List(w * h * 4)..fillRange(0, w * h * 4, 200);
   final buf = await ui.ImmutableBuffer.fromUint8List(px);
-  final desc = ui.ImageDescriptor.raw(buf, width: w, height: h, pixelFormat: ui.PixelFormat.rgba8888);
+  final desc = ui.ImageDescriptor.raw(
+    buf,
+    width: w,
+    height: h,
+    pixelFormat: ui.PixelFormat.rgba8888,
+  );
   final codec = await desc.instantiateCodec();
   return (await codec.getNextFrame()).image;
 }
@@ -24,35 +29,58 @@ void main() {
     prefs = await AppPreferences.load();
   });
 
-  Future<EditorController> make(WidgetTester tester, {bool smash = true}) async {
+  Future<EditorController> make(
+    WidgetTester tester, {
+    bool smash = true,
+  }) async {
     final img = (await tester.runAsync(() => solidImage(300, 600)))!;
-    final c = EditorController(
-      image: LoadedImage(image: img, format: OutputFormat.png, name: 't.png'),
-      preferences: prefs,
-    )
-      ..setViewportSize(const ui.Size(360, 480))
-      ..smashAvailable = true;
+    final c =
+        EditorController.image(
+            image: LoadedImage(
+              image: img,
+              format: OutputFormat.png,
+              name: 't.png',
+            ),
+            preferences: prefs,
+          )
+          ..setViewportSize(const ui.Size(360, 480))
+          ..smashAvailable = true;
     c.setSmash(smash);
     return c;
   }
 
   for (final smash in [true, false]) {
-    testWidgets('taglio completo con SMASH ${smash ? 'attivo' : 'spento'}', (tester) async {
+    testWidgets('taglio completo con SMASH ${smash ? 'attivo' : 'spento'}', (
+      tester,
+    ) async {
       final c = await make(tester, smash: smash);
-      c.selection = c.selection.withLines(CutOrientation.horizontal, const LinePair(100, 250));
+      c.selection = c.selection.withLines(
+        CutOrientation.horizontal,
+        const LinePair(100, 250),
+      );
       expect(c.removePortion(), isTrue);
-      expect(c.selectionVisible, isFalse, reason: 'le linee spariscono durante il taglio');
+      expect(
+        c.selectionVisible,
+        isFalse,
+        reason: 'le linee spariscono durante il taglio',
+      );
       expect(c.canCut, isFalse, reason: 'niente doppio comando');
 
       final tl = c.animation!.timeline;
       c.tick(Duration(milliseconds: (tl.joinEndMs - 1).floor()));
-      expect(c.doc.height, 600, reason: 'prima del ricongiungimento il documento non cambia');
+      expect(
+        c.doc.height,
+        600,
+        reason: 'prima del ricongiungimento il documento non cambia',
+      );
       c.tick(Duration(milliseconds: tl.joinEndMs.ceil()));
       expect(c.doc.height, 450);
       expect(c.canUndo, isTrue);
 
       // la nuova selezione arriva dopo la pausa, contata dal ricongiungimento
-      await tester.pump(c.settings.reappearDelay - const Duration(milliseconds: 20));
+      await tester.pump(
+        c.settings.reappearDelay - const Duration(milliseconds: 20),
+      );
       expect(c.selectionVisible, isFalse);
       await tester.pump(const Duration(milliseconds: 40));
       expect(c.selectionVisible, isTrue);

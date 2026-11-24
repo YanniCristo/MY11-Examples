@@ -22,8 +22,14 @@ void main() {
     });
 
     test('andata e ritorno tra coordinate senza deriva', () {
-      final z = t.zoomedAround(const Offset(150, 300), 3.3).panned(const Offset(-40, 25));
-      for (final p in const [Offset(0, 0), Offset(540, 960), Offset(1079, 1919)]) {
+      final z = t
+          .zoomedAround(const Offset(150, 300), 3.3)
+          .panned(const Offset(-40, 25));
+      for (final p in const [
+        Offset(0, 0),
+        Offset(540, 960),
+        Offset(1079, 1919),
+      ]) {
         final back = z.screenToContent(z.contentToScreen(p));
         expect((back - p).distance, lessThan(1e-6));
       }
@@ -38,7 +44,9 @@ void main() {
 
     test('lo zoom non cambia le coordinate del taglio', () {
       // la linea a y=800 del documento resta y=800 qualunque sia lo zoom
-      final z = t.zoomedAround(const Offset(200, 250), 4).panned(const Offset(30, -60));
+      final z = t
+          .zoomedAround(const Offset(200, 250), 4)
+          .panned(const Offset(30, -60));
       final screenY = z.contentToScreen(const Offset(0, 800)).dy;
       expect(z.screenToContent(Offset(0, screenY)).dy, closeTo(800, 1e-6));
     });
@@ -69,7 +77,10 @@ void main() {
     });
 
     test('premere la modalità attiva nasconde, ripremere ripristina', () {
-      var x = s().withLines(CutOrientation.horizontal, const LinePair(300, 900));
+      var x = s().withLines(
+        CutOrientation.horizontal,
+        const LinePair(300, 900),
+      );
       x = x.tap(CutOrientation.horizontal, width: 1000, height: 2000);
       expect(x.isVisible, isFalse);
       x = x.tap(CutOrientation.horizontal, width: 1000, height: 2000);
@@ -83,7 +94,10 @@ void main() {
     });
 
     test('coordinate non più valide tornano alla posizione iniziale', () {
-      var x = s().withLines(CutOrientation.horizontal, const LinePair(1500, 1900));
+      var x = s().withLines(
+        CutOrientation.horizontal,
+        const LinePair(1500, 1900),
+      );
       x = x.hidden().ensureValid(width: 1000, height: 1200);
       x = x.tap(CutOrientation.horizontal, width: 1000, height: 1200);
       expect(x.active!.high, lessThanOrEqualTo(1200));

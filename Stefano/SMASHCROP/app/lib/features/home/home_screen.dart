@@ -6,6 +6,8 @@ import '../../core/widgets/app_button.dart';
 import '../../core/widgets/brand.dart';
 import '../editor/presentation/editor_screen.dart';
 import '../image_processing/services/image_loader.dart';
+import '../pdf_processing/services/pdf_loader.dart';
+import '../pdf_processing/services/pdf_service.dart';
 import '../settings/preferences.dart';
 
 /// Schermata iniziale: spiega l'app con il prima/dopo e porta all'editor
@@ -21,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _loader = ImageLoader();
+  final _pdfLoader = const PdfLoader();
   bool _loading = false;
 
   void _toast(String msg) => ScaffoldMessenger.of(context)
@@ -43,6 +46,27 @@ class _HomeScreenState extends State<HomeScreen> {
       _toast(e.tooLarge ? S.tooLarge : S.loadFailed);
     } catch (_) {
       _toast(S.loadFailed);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _loadPdf() async {
+    if (_loading) return;
+    setState(() => _loading = true);
+    try {
+      final pdf = await _pdfLoader.pick();
+      if (pdf == null || !mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) =>
+              EditorScreen(pdf: pdf, preferences: widget.preferences),
+        ),
+      );
+    } on PdfOpenException catch (e) {
+      _toast(e.password ? S.pdfPassword : S.pdfInvalid);
+    } catch (_) {
+      _toast(S.pdfInvalid);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -99,8 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             icon: const Icon(Icons.description_outlined),
                             height: 58,
                             fontSize: 18,
-                            dimmed: true,
-                            onPressed: () => _toast(S.pdfSoon),
+                            onPressed: _loading ? null : _loadPdf,
                           ),
                         ),
                       ],

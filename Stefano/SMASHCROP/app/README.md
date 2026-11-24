@@ -1,12 +1,12 @@
 # SmashCrop: app Flutter
 
-Prima versione funzionante dell'editor per le immagini (milestone 1–4 e 7 del Master Prompt). Il PDF arriva nelle milestone 5–6.
+Editor per immagini e PDF (milestone 1–7 del Master Prompt). Manca la milestone 8: rifiniture e prove su iPhone e Android veri.
 
 ## Come avviarla
 
 ```bash
 flutter pub get
-flutter test          # 35 test: motore di taglio, cronologia, geometria, SMASH, editor
+flutter test          # 49 test: motore di taglio, cronologia, geometria, SMASH, editor, impaginazione PDF
 flutter run           # su iPhone/Android collegato o simulatore
 ```
 
@@ -27,6 +27,13 @@ Prima della pubblicazione:
 - **Zoom** da 1x a 5x con lo slider o con due dita; spostamento con un dito quando l'immagine è ingrandita. Le linee restano agganciate al contenuto.
 - **Undo e Redo** su tutta la cronologia. L'originale non viene mai toccato.
 - **Salva** nelle Foto e **Condividi** con il foglio di sistema, a piena risoluzione: PNG se la sorgente è PNG/WebP/GIF, altrimenti JPEG qualità 95.
+- **PDF** di qualsiasi formato, anche con pagine di misure diverse. Il navigatore "Pag. 2 di 4" e il pulsante **Layout PDF** stanno in una sola riga compatta.
+- **Pagine renderizzate solo quando servono**, fino a 200 DPI con il lato lungo entro 2600 px. In memoria restano al massimo 4 pagine.
+- **Impaginazione.** Al primo taglio di ogni pagina si apre il pannello con le **4 impaginazioni** (Centrato, In alto, Riduci pagina, Personalizza posizione), con anteprima dal vivo. "In alto" è il suggerimento iniziale; poi diventa l'ultima scelta fatta.
+- **Personalizza posizione**: si trascina il blocco intero dentro il foglio, senza ridimensionarlo, e si chiude con **Conferma posizione** o **Annulla**.
+- **Ogni pagina è indipendente**: tagli, impaginazione, posizione, Undo/Redo. "Applica a tutte le pagine modificate" chiede conferma.
+- **PDF finale**: stesse pagine, stesso ordine. Le pagine non tagliate sono copiate intatte, testo selezionabile compreso. Quelle tagliate diventano un'immagine (JPEG qualità 92) nel foglio scelto. Le misure in punti sono esatte, e prima di confermare il file viene riaperto per controllarlo.
+- **Salvataggio del PDF** con il selettore di sistema (File su iPhone, Documenti su Android) oppure **Condividi**.
 
 ## Come è fatta
 
@@ -41,6 +48,7 @@ lib/
       application/          EditorController: stato, taglio, animazione, timer
       presentation/         schermata, viewport con gesti e maniglie, painter, toggle SMASH
     image_processing/       motore pixel (RasterImage) e importazione immagini
+    pdf_processing/         impaginazione (PageFrame), apertura/resa/esportazione PDF (pdfrx), pannello Layout
     animation/              frame e tempi di SMASH, posizione del pugno
     export/                 file finale, Salva nelle Foto, Condividi
     settings/               preferenze locali
@@ -58,8 +66,9 @@ test/                       test unitari e del controller
 
 ## Limiti noti di questa versione
 
-- **PDF** non ancora implementato: Load PDF mostra un avviso.
+- **Pagine PDF tagliate.** Diventano immagini: niente testo selezionabile, link o firme valide su quelle pagine. Il pannello Layout lo dice all'utente.
+- **PDF protetti da password.** Non si aprono: l'app mostra un messaggio e non prova ad aggirare la protezione.
 - **JPEG.** Una foto JPEG/HEIC salvata viene ricompressa (qualità 95): i pixel restano quelli dell'originale, ma la compressione JPEG ne altera leggermente i valori. Le sorgenti PNG restano identiche.
 - **Immagini enormi.** Oltre 8192 px per lato il risultato a schermo si disegna a blocchi invece che come immagine unica (funziona, ma è un po' più lento). Oltre 16.000 px l'immagine viene rifiutata.
 - **Pressione prolungata sulle maniglie** per farle scorrere lungo la linea: rimandata. Con le maniglie fuori dall'immagine non serve; la si può aggiungere se servirà.
-- **Mai provata su un telefono vero.** Controllata con i test e con una build web in Chrome.
+- **Mai provata su un telefono vero.** Controllata con i test e con una build web in Chrome: è stato provato un PDF di 4 pagine di misure diverse, con Centrato, Riduci pagina e Personalizza posizione, e il file salvato è stato verificato.
