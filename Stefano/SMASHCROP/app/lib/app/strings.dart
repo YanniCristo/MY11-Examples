@@ -44,10 +44,7 @@ class S {
   static const layoutTitle = 'Scegli layout del PDF';
   static const applyAndContinue = 'Applica e continua';
   static const placeContent = 'Posiziona il contenuto';
-  static const applyToAll = 'Applica a tutte le pagine modificate';
-  static const applyToAllTitle = 'Applicare a tutte le pagine?';
-  static String applyToAllBody(String mode) =>
-      'Tutte le pagine già tagliate useranno "$mode". Le pagine con una posizione personalizzata la perderanno.';
+  static const layoutForNext = 'Usa questo layout anche per le prossime pagine';
   static const cancel = 'Annulla';
   static const apply = 'Applica';
   static const rasterNote =

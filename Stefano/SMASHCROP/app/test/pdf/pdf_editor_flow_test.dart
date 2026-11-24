@@ -170,23 +170,63 @@ void main() {
     c.dispose();
   });
 
-  testWidgets('applica a tutte solo le pagine tagliate', (tester) async {
+  testWidgets('layout per le prossime pagine: le precedenti non cambiano', (
+    tester,
+  ) async {
     final c = await fourPages(tester);
+    // pagina 1: In alto, senza casella
     cut(c, CutOrientation.horizontal, 100, 200);
+    expect(c.layoutPanelOpen, isTrue);
+    c.previewLayoutMode(PdfLayoutMode.top);
     c.applyLayout();
+    // pagina 2: Riduci pagina, con la casella spuntata
+    c.goToPage(1);
+    cut(c, CutOrientation.horizontal, 100, 200);
+    expect(c.layoutForNext, isFalse);
+    c.previewLayoutMode(PdfLayoutMode.shrink);
+    c.setLayoutForNext(true);
+    c.applyLayout();
+    expect(
+      c.pages[0].history.layout,
+      const PageLayout(PdfLayoutMode.top),
+      reason: 'la pagina già fatta resta come era',
+    );
+    // pagina 3: il pannello non si riapre, prende Riduci pagina da sola
     c.goToPage(2);
     cut(c, CutOrientation.vertical, 50, 100);
-    final n = c.applyLayoutToAllModified(PdfLayoutMode.shrink);
-    expect(n, 2);
-    expect(c.pages[0].history.layout, const PageLayout(PdfLayoutMode.shrink));
-    expect(
-      c.pages[1].history.layout,
-      isNull,
-      reason: 'pagina non tagliata: resta intatta',
-    );
+    expect(c.layoutPanelOpen, isFalse);
     expect(c.pages[2].history.layout, const PageLayout(PdfLayoutMode.shrink));
+    // dal pulsante Layout PDF si toglie la casella: si torna a chiedere
+    c.openLayoutPanel();
+    expect(c.layoutForNext, isTrue);
+    c.setLayoutForNext(false);
+    c.applyLayout();
+    c.goToPage(3);
+    cut(c, CutOrientation.horizontal, 100, 200);
+    expect(c.layoutPanelOpen, isTrue);
+    c.dismissLayoutPanel();
+    expect(c.pages[1].history.layout, const PageLayout(PdfLayoutMode.shrink));
     c.dispose();
   });
+
+  testWidgets(
+    'Personalizza come layout per le prossime: il pannello si riapre',
+    (tester) async {
+      final c = await fourPages(tester);
+      cut(c, CutOrientation.horizontal, 100, 200);
+      c.previewLayoutMode(PdfLayoutMode.custom);
+      c.setLayoutForNext(true);
+      c.applyLayout();
+      expect(c.positioning, isTrue);
+      c.confirmPosition();
+      c.goToPage(1);
+      cut(c, CutOrientation.horizontal, 100, 200);
+      expect(c.layoutPanelOpen, isTrue);
+      expect(c.previewLayout!.mode, PdfLayoutMode.custom);
+      expect(c.layoutForNext, isTrue);
+      c.dispose();
+    },
+  );
 
   testWidgets('cambiare pagina non perde i tagli', (tester) async {
     final c = await fourPages(tester);

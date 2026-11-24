@@ -132,6 +132,15 @@ class EditorController extends ChangeNotifier {
   bool layoutPanelOpen = false;
   PageLayout? previewLayout;
 
+  /// Casella "Usa questo layout anche per le prossime pagine".
+  bool layoutForNext = false;
+
+  /// Layout scelto per le prossime pagine tagliate: vale da quando lo si
+  /// sceglie in poi, le pagine già fatte non cambiano. `null` = si chiede
+  /// ogni volta. Con Personalizza posizione il pannello si riapre comunque,
+  /// perché ogni pagina ha un contenuto diverso.
+  PageLayout? nextPagesLayout;
+
   // Personalizza posizione
   bool positioning = false;
   Offset positionOffset = Offset.zero;
@@ -567,11 +576,23 @@ class EditorController extends ChangeNotifier {
       height: p.doc.height,
     );
     _reappear?.cancel();
-    if (a.firstCutOnPdfPage) {
+    final auto = nextPagesLayout;
+    if (a.firstCutOnPdfPage &&
+        auto != null &&
+        auto.mode != PdfLayoutMode.custom) {
+      // layout già scelto per le prossime pagine: niente pannello
+      p.history.pushLayout(auto);
+    }
+    if (a.firstCutOnPdfPage &&
+        (auto == null || auto.mode == PdfLayoutMode.custom)) {
       // primo taglio della pagina: si sceglie l'impaginazione; la nuova
       // selezione aspetta che il pannello si chiuda
       layoutPanelOpen = true;
-      previewLayout = PageLayout(layoutSuggestion);
+      layoutForNext = auto != null;
+      previewLayout = auto ?? PageLayout(layoutSuggestion);
+      if (previewLayout!.mode == PdfLayoutMode.custom) {
+        previewLayout = PageLayout(PdfLayoutMode.custom, frame.contentOffset);
+      }
     } else {
       // il conteggio parte solo ora, a ricongiungimento completato
       _reappear = Timer(settings.reappearDelay, () {
@@ -614,9 +635,26 @@ class EditorController extends ChangeNotifier {
     if (!isPdf || !canNavigate || !pageReady) return;
     _reappear?.cancel();
     layoutPanelOpen = true;
+    layoutForNext = nextPagesLayout != null;
     previewLayout =
         page.effectiveLayout(layoutSuggestion) ?? PageLayout(layoutSuggestion);
     notifyListeners();
+  }
+
+  void setLayoutForNext(bool v) {
+    if (!layoutPanelOpen) return;
+    layoutForNext = v;
+    notifyListeners();
+  }
+
+  /// Le pagine tagliate senza una scelta esplicita seguono il suggerimento:
+  /// prima di cambiarlo le si fissa, così non cambiano da sole.
+  void _freezeCutPages({EditorPage? except}) {
+    for (final p in pages) {
+      if (p != except && p.history.hasCuts && p.history.layout == null) {
+        p.history.pushLayout(PageLayout(layoutSuggestion));
+      }
+    }
   }
 
   /// Anteprima di una modalità mentre il pannello è aperto.
@@ -628,11 +666,15 @@ class EditorController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Applica e continua (Centrato, In alto, Riduci pagina); con
-  /// Personalizza posizione apre il trascinamento.
+  /// Applica e continua alla pagina corrente (Centrato, In alto, Riduci
+  /// pagina); con Personalizza posizione apre il trascinamento. Se la casella
+  /// è spuntata, lo stesso layout vale per le prossime pagine tagliate.
   void applyLayout() {
     final l = previewLayout;
     if (!layoutPanelOpen || l == null) return;
+    // la pagina corrente riceve la sua scelta qui sotto
+    _freezeCutPages(except: page);
+    nextPagesLayout = layoutForNext ? PageLayout(l.mode) : null;
     if (l.mode == PdfLayoutMode.custom) {
       startPositioning();
       return;
@@ -645,24 +687,9 @@ class EditorController extends ChangeNotifier {
     _closePanel();
   }
 
-  /// Applica la modalità a tutte le pagine già tagliate (dopo conferma).
-  int applyLayoutToAllModified(PdfLayoutMode m) {
-    if (m == PdfLayoutMode.custom) return 0;
-    var n = 0;
-    for (final p in pages) {
-      if (p.history.hasCuts && p.history.layout != PageLayout(m)) {
-        p.history.pushLayout(PageLayout(m));
-        n++;
-      }
-    }
-    layoutSuggestion = m;
-    preferences.setLayoutSuggestion(m);
-    _closePanel();
-    return n;
-  }
-
   void dismissLayoutPanel() {
     if (!layoutPanelOpen) return;
+    _freezeCutPages();
     _closePanel();
   }
 

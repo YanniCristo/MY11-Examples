@@ -15,14 +15,18 @@ class LayoutPanel extends StatelessWidget {
     required this.onSelect,
     required this.onApply,
     required this.onClose,
-    this.onApplyAll,
+    this.forNext = false,
+    this.onForNextChanged,
   });
 
   final PdfLayoutMode selected;
   final ValueChanged<PdfLayoutMode> onSelect;
   final VoidCallback onApply;
   final VoidCallback onClose;
-  final VoidCallback? onApplyAll;
+
+  /// Casella "anche per le prossime pagine" (solo con più pagine).
+  final bool forNext;
+  final ValueChanged<bool>? onForNextChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -100,18 +104,8 @@ class LayoutPanel extends StatelessWidget {
             fontSize: 16,
             onPressed: onApply,
           ),
-          if (onApplyAll != null && selected != PdfLayoutMode.custom)
-            TextButton(
-              onPressed: onApplyAll,
-              child: const Text(
-                S.applyToAll,
-                style: TextStyle(
-                  color: AppColors.text,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+          if (onForNextChanged != null)
+            _ForNextCheckbox(value: forNext, onChanged: onForNextChanged!),
           const Padding(
             padding: EdgeInsets.only(top: 4),
             child: Text(
@@ -121,6 +115,60 @@ class LayoutPanel extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ForNextCheckbox extends StatelessWidget {
+  const _ForNextCheckbox({required this.value, required this.onChanged});
+
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      checked: value,
+      label: S.layoutForNext,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () => onChanged(!value),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 120),
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: value ? AppColors.red : Colors.transparent,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: value ? AppColors.red : AppColors.textMuted,
+                    width: 2,
+                  ),
+                ),
+                child: value
+                    ? const Icon(Icons.check, size: 18, color: Colors.white)
+                    : null,
+              ),
+              const SizedBox(width: 10),
+              const Flexible(
+                child: Text(
+                  S.layoutForNext,
+                  style: TextStyle(
+                    color: AppColors.text,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

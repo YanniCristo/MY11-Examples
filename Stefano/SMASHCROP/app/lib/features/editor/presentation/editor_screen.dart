@@ -15,7 +15,6 @@ import '../../animation/application/smash_frames.dart';
 import '../../export/export_service.dart';
 import '../../export/web_share/web_share.dart' as web_share;
 import '../../image_processing/services/image_loader.dart';
-import '../../pdf_processing/domain/page_layout.dart';
 import '../../pdf_processing/presentation/layout_panel.dart';
 import '../../pdf_processing/services/pdf_loader.dart';
 import '../../pdf_processing/services/pdf_service.dart';
@@ -264,30 +263,6 @@ class _EditorScreenState extends State<EditorScreen>
     }
   }
 
-  Future<void> _applyToAll() async {
-    final mode = c.previewLayout?.mode;
-    if (mode == null || mode == PdfLayoutMode.custom) return;
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: const Text(S.applyToAllTitle),
-        content: Text(S.applyToAllBody(mode.label)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text(S.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(S.apply),
-          ),
-        ],
-      ),
-    );
-    if (ok == true) c.applyLayoutToAllModified(mode);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -450,7 +425,8 @@ class _EditorScreenState extends State<EditorScreen>
           onSelect: c.previewLayoutMode,
           onApply: c.applyLayout,
           onClose: c.dismissLayoutPanel,
-          onApplyAll: c.pageCount > 1 ? _applyToAll : null,
+          forNext: c.layoutForNext,
+          onForNextChanged: c.pageCount > 1 ? c.setLayoutForNext : null,
         ),
       ];
     }
