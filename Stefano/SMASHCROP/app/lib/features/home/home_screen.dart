@@ -14,6 +14,7 @@ import '../image_processing/services/image_loader.dart';
 import '../pdf_processing/services/pdf_loader.dart';
 import '../pdf_processing/services/pdf_service.dart';
 import '../settings/preferences.dart';
+import 'demo_illustration.dart';
 
 /// Schermata iniziale: spiega l'app con il prima/dopo e porta all'editor
 /// con un solo tocco. Niente account, niente procedure introduttive.
@@ -274,20 +275,24 @@ class _DemoCard extends StatelessWidget {
               // se manca spazio si accorcia tagliando il cielo, non i documenti
               Flexible(
                 child: LayoutBuilder(
-                  builder: (context, c) => ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: c.maxWidth * 738 / 732,
-                    ),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Image.asset(
-                        'assets/home/home_illustration.webp',
-                        fit: BoxFit.cover,
-                        alignment: const Alignment(0, .35),
-                        semanticLabel: S.demoDescription,
+                  builder: (context, c) {
+                    final w = c.maxWidth;
+                    final full = w * DemoIllustration.h / DemoIllustration.w;
+                    final hh = c.maxHeight.isFinite
+                        ? (c.maxHeight < full ? c.maxHeight : full)
+                        : full;
+                    return SizedBox(
+                      width: w,
+                      height: hh,
+                      child: const ClipRect(
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          alignment: Alignment(0, .35),
+                          child: DemoIllustration(),
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
               Padding(
