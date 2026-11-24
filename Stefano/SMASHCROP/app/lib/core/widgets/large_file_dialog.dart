@@ -21,7 +21,7 @@ Future<bool> confirmLargePdf(BuildContext context, int bytes) async {
     context: context,
     builder: (context) => AlertDialog(
       backgroundColor: AppColors.surface,
-      title: const Text(S.largeTitle),
+      title: Text(S.largeTitle),
       content: Text(
         S.largeBody((bytes / (1 << 20)).round()),
         style: const TextStyle(color: AppColors.textMuted, fontSize: 15),
@@ -29,11 +29,11 @@ Future<bool> confirmLargePdf(BuildContext context, int bytes) async {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text(S.cancel),
+          child: Text(S.cancel),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text(S.openAnyway),
+          child: Text(S.openAnyway),
         ),
       ],
     ),

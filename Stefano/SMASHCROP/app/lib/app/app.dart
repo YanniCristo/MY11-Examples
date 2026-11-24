@@ -13,13 +13,18 @@ class SmashCropApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
-      child: MaterialApp(
-        title: S.appName,
-        debugShowCheckedModeBanner: false,
-        theme: buildTheme(),
-        home: HomeScreen(preferences: preferences),
+    // cambiando lingua tutta l'app si ridisegna con i nuovi testi
+    return ValueListenableBuilder<AppLang>(
+      valueListenable: S.current,
+      builder: (context, lang, _) => AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: MaterialApp(
+          title: S.appName,
+          debugShowCheckedModeBanner: false,
+          locale: Locale(lang.name),
+          theme: buildTheme(),
+          home: HomeScreen(preferences: preferences),
+        ),
       ),
     );
   }

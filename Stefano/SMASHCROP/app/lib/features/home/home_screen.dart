@@ -148,12 +148,15 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: BrandMark(size: 30),
+              Row(
+                children: [
+                  const BrandMark(size: 30),
+                  const Spacer(),
+                  _LanguageButton(preferences: widget.preferences),
+                ],
               ),
               const SizedBox(height: 10),
-              const Text(
+              Text(
                 S.editor,
                 style: TextStyle(
                   fontFamily: kDisplayFont,
@@ -214,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           )
-                        : const Text(
+                        : Text(
                             S.homeHint,
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -280,13 +283,13 @@ class _DemoCard extends StatelessWidget {
                         'assets/home/home_illustration.webp',
                         fit: BoxFit.cover,
                         alignment: const Alignment(0, .35),
-                        semanticLabel: 'Esempio: una tabella tra due paragrafi viene rimossa e i paragrafi si uniscono',
+                        semanticLabel: S.demoDescription,
                       ),
                     ),
                   ),
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.fromLTRB(16, 12, 16, 16),
                 child: Column(
                   children: [
@@ -355,7 +358,7 @@ class _ResumeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   S.resumeTitle,
                   maxLines: 1,
                   style: TextStyle(
@@ -395,7 +398,7 @@ class _ResumeCard extends StatelessWidget {
                 height: 30,
                 child: TextButton(
                   onPressed: onDiscard,
-                  child: const Text(
+                  child: Text(
                     S.discard,
                     style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                   ),
@@ -404,6 +407,98 @@ class _ResumeCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Globo con la sigla della lingua: apre l'elenco delle lingue.
+class _LanguageButton extends StatelessWidget {
+  const _LanguageButton({required this.preferences});
+
+  final AppPreferences preferences;
+
+  Future<void> _pick(BuildContext context) async {
+    final chosen = preferences.language;
+    final result = await showModalBottomSheet<(AppLang?,)>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      showDragHandle: true,
+      builder: (context) {
+        Widget item(String label, AppLang? value, {String? sub}) => ListTile(
+          title: Text(
+            label,
+            style: const TextStyle(color: AppColors.text, fontSize: 16),
+          ),
+          subtitle: sub == null
+              ? null
+              : Text(sub, style: const TextStyle(color: AppColors.textMuted)),
+          trailing: chosen == value
+              ? const Icon(Icons.check, color: AppColors.red)
+              : null,
+          onTap: () => Navigator.pop(context, (value,)),
+        );
+        return SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(
+                    S.languageTitle,
+                    style: const TextStyle(
+                      color: AppColors.text,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                item(S.languageAuto, null, sub: AppLang.device().nativeName),
+                for (final l in AppLang.values) item(l.nativeName, l),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (result == null) return;
+    await preferences.setLanguage(result.$1);
+    preferences.applyLanguage();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: S.languageTitle,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () => _pick(context),
+        child: Container(
+          height: 36,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: AppColors.button,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.language, size: 18, color: AppColors.text),
+              const SizedBox(width: 6),
+              Text(
+                S.lang.name.toUpperCase(),
+                style: const TextStyle(
+                  color: AppColors.text,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

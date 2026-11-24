@@ -1,3 +1,5 @@
+import '../../../app/strings.dart';
+
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -6,10 +8,10 @@ enum PdfLayoutMode { centered, top, shrink, custom }
 
 extension PdfLayoutModeLabel on PdfLayoutMode {
   String get label => switch (this) {
-    PdfLayoutMode.centered => 'Centrato',
-    PdfLayoutMode.top => 'In alto',
-    PdfLayoutMode.shrink => 'Riduci pagina',
-    PdfLayoutMode.custom => 'Personalizza posizione',
+    PdfLayoutMode.centered => S.layoutCentered,
+    PdfLayoutMode.top => S.layoutTop,
+    PdfLayoutMode.shrink => S.layoutShrink,
+    PdfLayoutMode.custom => S.positionTitle,
   };
 }
 

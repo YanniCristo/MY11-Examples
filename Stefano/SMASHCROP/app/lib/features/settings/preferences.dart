@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../app/strings.dart';
 import '../pdf_processing/domain/page_layout.dart';
 
 /// Preferenze leggere salvate sul dispositivo. Nessun file importato
@@ -11,6 +12,7 @@ class AppPreferences {
   static const _smashKey = 'smash_enabled';
   static const _layoutKey = 'pdf_layout_suggestion';
   static const _workKey = 'saved_work';
+  static const _langKey = 'language';
   final SharedPreferences? _prefs;
 
   static Future<AppPreferences> load() async {
@@ -61,4 +63,21 @@ class AppPreferences {
       await _prefs?.remove(_workKey);
     } catch (_) {}
   }
+
+  /// Lingua scelta dall'utente; `null` = automatica (lingua del dispositivo).
+  AppLang? get language => AppLang.fromCode(_prefs?.getString(_langKey));
+
+  Future<void> setLanguage(AppLang? l) async {
+    try {
+      if (l == null) {
+        await _prefs?.remove(_langKey);
+      } else {
+        await _prefs?.setString(_langKey, l.name);
+      }
+    } catch (_) {}
+  }
+
+  /// Applica la lingua: quella scelta, oppure quella del dispositivo
+  /// (inglese se non è tra le sei dell'app o non si riesce a leggerla).
+  void applyLanguage() => S.current.value = language ?? AppLang.device();
 }

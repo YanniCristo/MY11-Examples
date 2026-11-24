@@ -10,5 +10,6 @@ Future<void> main() async {
   pdfrxFlutterInitialize();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final prefs = await AppPreferences.load();
+  prefs.applyLanguage();
   runApp(SmashCropApp(preferences: prefs));
 }

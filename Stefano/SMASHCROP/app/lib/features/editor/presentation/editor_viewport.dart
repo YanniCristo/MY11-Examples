@@ -1,3 +1,5 @@
+import '../../../app/strings.dart';
+
 import 'dart:ui' as ui;
 
 import 'package:material_ui/material_ui.dart';
@@ -178,7 +180,7 @@ class _Handle extends StatelessWidget {
       DoubleArrow(vertical: horizontalMode, size: 14, color: Colors.white),
     ];
     return Semantics(
-      label: 'Linea $label',
+      label: S.lineLabel(label),
       child: Container(
         decoration: BoxDecoration(
           color: active ? AppColors.redLight : AppColors.red,

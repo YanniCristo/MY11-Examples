@@ -13,7 +13,7 @@ Future<String?> askPdfPassword(BuildContext context, {required bool wrong}) {
       void submit() => Navigator.pop(context, controller.text);
       return AlertDialog(
         backgroundColor: AppColors.surface,
-        title: const Text(S.passwordTitle),
+        title: Text(S.passwordTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,7 +33,7 @@ Future<String?> askPdfPassword(BuildContext context, {required bool wrong}) {
               autocorrect: false,
               enableSuggestions: false,
               style: const TextStyle(fontSize: 16),
-              decoration: const InputDecoration(hintText: S.passwordHint),
+              decoration: InputDecoration(hintText: S.passwordHint),
               onSubmitted: (_) => submit(),
             ),
           ],
@@ -41,9 +41,9 @@ Future<String?> askPdfPassword(BuildContext context, {required bool wrong}) {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(S.cancel),
+            child: Text(S.cancel),
           ),
-          TextButton(onPressed: submit, child: const Text(S.open)),
+          TextButton(onPressed: submit, child: Text(S.open)),
         ],
       );
     },

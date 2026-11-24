@@ -44,7 +44,7 @@ class LayoutPanel extends StatelessWidget {
           Row(
             children: [
               const SizedBox(width: 36),
-              const Expanded(
+              Expanded(
                 child: Text(
                   S.layoutTitle,
                   textAlign: TextAlign.center,
@@ -106,7 +106,7 @@ class LayoutPanel extends StatelessWidget {
           ),
           if (onForNextChanged != null)
             _ForNextCheckbox(value: forNext, onChanged: onForNextChanged!),
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(top: 4),
             child: Text(
               S.rasterNote,
@@ -156,7 +156,7 @@ class _ForNextCheckbox extends StatelessWidget {
                     : null,
               ),
               const SizedBox(width: 10),
-              const Flexible(
+              Flexible(
                 child: Text(
                   S.layoutForNext,
                   style: TextStyle(

@@ -89,8 +89,25 @@ class AppButton extends StatelessWidget {
                 onTap: onPressed,
                 child: LayoutBuilder(
                   builder: (context, c) {
-                    final showIcon =
-                        icon != null && c.maxWidth >= hideIconBelow;
+                    // se con l'icona il testo dovrebbe rimpicciolirsi troppo
+                    // (lingue con parole lunghe), si toglie l'icona
+                    var showIcon = icon != null && c.maxWidth >= hideIconBelow;
+                    if (showIcon && label.isNotEmpty && c.maxWidth.isFinite) {
+                      final tp = TextPainter(
+                        text: TextSpan(
+                          text: label,
+                          style: TextStyle(
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        textDirection: TextDirection.ltr,
+                        maxLines: 1,
+                      )..layout();
+                      final room = c.maxWidth - 16 - (fontSize + 5) - 7;
+                      if (tp.width * .92 > room) showIcon = false;
+                      tp.dispose();
+                    }
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Row(
@@ -107,16 +124,20 @@ class AppButton extends StatelessWidget {
                             ),
                             const SizedBox(width: 7),
                           ],
+                          // testi più lunghi in alcune lingue: si
+                          // rimpiccioliscono quanto serve, mai tagliati
                           Flexible(
-                            child: Text(
-                              label,
-                              maxLines: 1,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                color: AppColors.text,
-                                fontSize: fontSize,
-                                fontWeight: FontWeight.w600,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                label,
+                                maxLines: 1,
+                                softWrap: false,
+                                style: TextStyle(
+                                  color: AppColors.text,
+                                  fontSize: fontSize,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                           ),

@@ -1,3 +1,5 @@
+import 'package:smashcrop/app/strings.dart';
+
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -81,12 +83,21 @@ void main() {
     });
 
     test("esattamente quattro modalità, in quest'ordine", () {
+      S.current.value = AppLang.it;
       expect(PdfLayoutMode.values.map((m) => m.label).toList(), [
         'Centrato',
         'In alto',
         'Riduci pagina',
         'Personalizza posizione',
       ]);
+      S.current.value = AppLang.de;
+      expect(PdfLayoutMode.values.map((m) => m.label).toList(), [
+        'Zentriert',
+        'Oben',
+        'Seite verkleinern',
+        'Eigene Position',
+      ]);
+      S.current.value = AppLang.en;
     });
   });
 

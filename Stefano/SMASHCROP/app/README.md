@@ -82,6 +82,7 @@ test/                       test unitari e del controller
 - **Pagine PDF tagliate.** Diventano immagini: niente testo selezionabile, link o firme valide su quelle pagine. Il pannello Layout lo dice all'utente.
 - **PDF protetti da password.** Si aprono solo se l'utente inserisce la password giusta: l'app la chiede e non prova mai ad aggirarla. Il PDF salvato non ha password.
 - **PDF in cui il proprietario ha vietato la modifica.** Non si aprono, e l'app spiega perché. Nella versione web, dove il motore PDF non riporta i permessi, vengono letti direttamente dal file.
+- **Lingue.** Italiano, inglese, francese, spagnolo, portoghese (Brasile) e tedesco. Di base si usa la lingua del dispositivo; se non è tra queste o non si riesce a leggerla, inglese. Il selettore (globo con la sigla) è in alto a destra nella home e la scelta resta salvata. "Undo" e "Redo" restano uguali in tutte le lingue. I testi lunghi si rimpiccioliscono per stare nei bottoni, mai tagliati.
 - **Memoria e PDF grandi.**
   - Sullo schermo le pagine sono leggere (150 DPI nel browser, 200 nell'app; fogli enormi scendono ancora). Il file salvato è sempre a 300 DPI: ogni pagina tagliata si rende di nuovo al salvataggio, una alla volta.
   - Zoom: la parte visibile si rende ad alta definizione quando la vista si ferma, quindi il testo resta nitido senza tenere in memoria la pagina intera ad alta risoluzione.

@@ -216,7 +216,7 @@ class _EditorScreenState extends State<EditorScreen>
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: const Text(S.fileReady),
+        title: Text(S.fileReady),
         content: Text(
           image ? S.saveToGalleryHint : S.saveToFilesHint,
           style: const TextStyle(color: AppColors.textMuted, fontSize: 15),
@@ -229,7 +229,7 @@ class _EditorScreenState extends State<EditorScreen>
               final ok = await c.exporter.download(bytes, name, mime);
               _toast(ok ? S.downloaded : S.saveFailed);
             },
-            child: const Text(S.download),
+            child: Text(S.download),
           ),
           FilledButton.icon(
             style: FilledButton.styleFrom(backgroundColor: AppColors.red),
@@ -531,7 +531,7 @@ class _EditorScreenState extends State<EditorScreen>
         arrow(
           Icons.chevron_left,
           nav && c.pageIndex > 0 ? () => c.goToPage(c.pageIndex - 1) : null,
-          'Pagina precedente',
+          S.previousPage,
         ),
         const SizedBox(width: 6),
         Container(
@@ -559,7 +559,7 @@ class _EditorScreenState extends State<EditorScreen>
           nav && c.pageIndex < c.pageCount - 1
               ? () => c.goToPage(c.pageIndex + 1)
               : null,
-          'Pagina successiva',
+          S.nextPage,
         ),
         const Spacer(),
         SizedBox(
@@ -590,7 +590,7 @@ class _EditorScreenState extends State<EditorScreen>
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.open_with, color: AppColors.text, size: 22),
               SizedBox(width: 8),
@@ -605,7 +605,7 @@ class _EditorScreenState extends State<EditorScreen>
             ],
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             S.positionHint,
             style: TextStyle(color: AppColors.textMuted, fontSize: 14),
           ),

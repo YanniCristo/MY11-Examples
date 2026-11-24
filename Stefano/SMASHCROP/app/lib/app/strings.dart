@@ -1,36 +1,203 @@
-/// Testi dell'app. Tutti in un solo posto per la futura traduzione
-/// (inglese, spagnolo, francese, tedesco, portoghese).
+import 'dart:ui' show PlatformDispatcher;
+
+import 'package:flutter/foundation.dart' show ValueNotifier;
+
+/// Lingue dell'app, con il nome scritto nella lingua stessa.
+enum AppLang {
+  it('Italiano'),
+  en('English'),
+  fr('Français'),
+  es('Español'),
+  pt('Português'),
+  de('Deutsch');
+
+  const AppLang(this.nativeName);
+  final String nativeName;
+
+  static AppLang? fromCode(String? code) {
+    for (final l in values) {
+      if (l.name == code) return l;
+    }
+    return null;
+  }
+
+  /// Lingua del dispositivo (la prima delle preferite che l'app conosce);
+  /// se non si riesce a leggerla o non è tra queste, inglese.
+  static AppLang device() {
+    try {
+      for (final loc in PlatformDispatcher.instance.locales) {
+        final l = fromCode(loc.languageCode.toLowerCase());
+        if (l != null) return l;
+      }
+    } catch (_) {}
+    return AppLang.en;
+  }
+}
+
+/// Testi dell'app in sei lingue. "Undo" e "Redo" restano uguali ovunque.
 class S {
   const S._();
 
+  /// Lingua in uso: cambiandola, l'app si ridisegna.
+  static final ValueNotifier<AppLang> current = ValueNotifier(AppLang.en);
+  static AppLang get lang => current.value;
+
+  // ordine fisso: italiano, inglese, francese, spagnolo, portoghese, tedesco
+  static String _t(
+    String it,
+    String en,
+    String fr,
+    String es,
+    String pt,
+    String de,
+  ) => switch (lang) {
+    AppLang.it => it,
+    AppLang.en => en,
+    AppLang.fr => fr,
+    AppLang.es => es,
+    AppLang.pt => pt,
+    AppLang.de => de,
+  };
+
   static const appName = 'SmashCrop';
-  static const editor = 'Editor';
-  static const homeTitle = 'Rimuovi ciò che non serve.';
-  static const homeSubtitle =
-      'Seleziona una porzione, eliminala e unisci automaticamente il resto.';
-  static const homeHint = 'Scegli un\'immagine o un documento PDF per iniziare';
-  static const loadImage = 'Load Image';
-  static const loadPdf = 'Load PDF';
-  static const pdfPassword = 'Serve la password per aprire questo PDF.';
-  static const pdfLocked =
-      'Il proprietario di questo PDF non consente di modificarlo, quindi SmashCrop non può aprirlo.';
-  static const passwordTitle = 'PDF protetto';
-  static const passwordBody = 'Inserisci la password del documento.';
-  static const passwordWrong = 'Password non corretta, riprova.';
-  static const passwordHint = 'Password';
-  static const open = 'Apri';
-  static const pdfInvalid =
-      'Non riesco ad aprire questo PDF. Il file potrebbe essere danneggiato.';
-  static const pdfRenderFailed = 'Non riesco a mostrare questa pagina.';
-  static const pdfSaved = 'PDF salvato';
-  static const downloaded = 'File scaricato';
-  static const fileReady = 'File pronto';
-  static const saveToGalleryHint =
-      'Nel menu che si apre scegli «Salva immagine» per metterla in Galleria/Foto.';
-  static const saveToFilesHint = 'Nel menu che si apre scegli «Salva su File».';
-  static const saveToGallery = 'Salva in Galleria';
-  static const saveToFiles = 'Salva in File';
-  static const download = 'Scarica';
+  static String get editor =>
+      _t('Editor', 'Editor', 'Éditeur', 'Editor', 'Editor', 'Editor');
+  static String get homeTitle => _t(
+    'Rimuovi ciò che non serve.',
+    'Remove what you don\'t need.',
+    'Supprimez ce qui ne sert pas.',
+    'Elimina lo que no necesitas.',
+    'Remova o que não serve.',
+    'Entferne, was du nicht brauchst.',
+  );
+  static String get homeSubtitle => _t(
+    'Seleziona una porzione, eliminala e unisci automaticamente il resto.',
+    'Select a section, delete it and the rest joins up automatically.',
+    'Sélectionnez une partie, supprimez-la et le reste se rejoint automatiquement.',
+    'Selecciona una parte, elimínala y el resto se une automáticamente.',
+    'Selecione uma parte, apague-a e o resto se une automaticamente.',
+    'Wähle einen Bereich, lösche ihn und der Rest wird automatisch zusammengefügt.',
+  );
+  static String get homeHint => _t(
+    'Scegli un\'immagine o un documento PDF per iniziare',
+    'Choose an image or a PDF document to start',
+    'Choisissez une image ou un document PDF pour commencer',
+    'Elige una imagen o un documento PDF para empezar',
+    'Escolha uma imagem ou um documento PDF para começar',
+    'Wähle ein Bild oder ein PDF-Dokument, um zu beginnen',
+  );
+  static String get demoDescription => _t(
+    'Esempio: una tabella tra due paragrafi viene rimossa e i paragrafi si uniscono',
+    'Example: a table between two paragraphs is removed and the paragraphs join up',
+    'Exemple : un tableau entre deux paragraphes est supprimé et les paragraphes se rejoignent',
+    'Ejemplo: se elimina una tabla entre dos párrafos y los párrafos se unen',
+    'Exemplo: uma tabela entre dois parágrafos é removida e os parágrafos se unem',
+    'Beispiel: Eine Tabelle zwischen zwei Absätzen wird entfernt und die Absätze werden zusammengefügt',
+  );
+  static String get loadImage => _t(
+    'Carica immagine',
+    'Load Image',
+    'Ouvrir une image',
+    'Cargar imagen',
+    'Carregar imagem',
+    'Bild laden',
+  );
+  static String get loadPdf => _t(
+    'Carica PDF',
+    'Load PDF',
+    'Ouvrir un PDF',
+    'Cargar PDF',
+    'Carregar PDF',
+    'PDF laden',
+  );
+
+  // --- lingua ----------------------------------------------------------------
+  static String get languageTitle =>
+      _t('Lingua', 'Language', 'Langue', 'Idioma', 'Idioma', 'Sprache');
+  static String get languageAuto => _t(
+    'Automatica (lingua del telefono)',
+    'Automatic (device language)',
+    'Automatique (langue de l\'appareil)',
+    'Automático (idioma del dispositivo)',
+    'Automático (idioma do dispositivo)',
+    'Automatisch (Gerätesprache)',
+  );
+
+  // --- PDF: apertura e password -----------------------------------------------
+  static String get pdfPassword => _t(
+    'Serve la password per aprire questo PDF.',
+    'A password is needed to open this PDF.',
+    'Un mot de passe est nécessaire pour ouvrir ce PDF.',
+    'Se necesita la contraseña para abrir este PDF.',
+    'É necessária a senha para abrir este PDF.',
+    'Zum Öffnen dieses PDFs ist ein Passwort nötig.',
+  );
+  static String get pdfLocked => _t(
+    'Il proprietario di questo PDF non consente di modificarlo, quindi SmashCrop non può aprirlo.',
+    'The owner of this PDF does not allow it to be edited, so SmashCrop cannot open it.',
+    'Le propriétaire de ce PDF n\'autorise pas sa modification, SmashCrop ne peut donc pas l\'ouvrir.',
+    'El propietario de este PDF no permite modificarlo, por eso SmashCrop no puede abrirlo.',
+    'O proprietário deste PDF não permite editá-lo, por isso o SmashCrop não pode abri-lo.',
+    'Der Eigentümer dieses PDFs erlaubt keine Bearbeitung, deshalb kann SmashCrop es nicht öffnen.',
+  );
+  static String get passwordTitle => _t(
+    'PDF protetto',
+    'Protected PDF',
+    'PDF protégé',
+    'PDF protegido',
+    'PDF protegido',
+    'Geschütztes PDF',
+  );
+  static String get passwordBody => _t(
+    'Inserisci la password del documento.',
+    'Enter the document\'s password.',
+    'Saisissez le mot de passe du document.',
+    'Introduce la contraseña del documento.',
+    'Digite a senha do documento.',
+    'Gib das Passwort des Dokuments ein.',
+  );
+  static String get passwordWrong => _t(
+    'Password non corretta, riprova.',
+    'Wrong password, try again.',
+    'Mot de passe incorrect, réessayez.',
+    'Contraseña incorrecta, inténtalo de nuevo.',
+    'Senha incorreta, tente novamente.',
+    'Falsches Passwort, versuch es noch einmal.',
+  );
+  static String get passwordHint => _t(
+    'Password',
+    'Password',
+    'Mot de passe',
+    'Contraseña',
+    'Senha',
+    'Passwort',
+  );
+  static String get open =>
+      _t('Apri', 'Open', 'Ouvrir', 'Abrir', 'Abrir', 'Öffnen');
+  static String get pdfInvalid => _t(
+    'Non riesco ad aprire questo PDF. Il file potrebbe essere danneggiato.',
+    'This PDF can\'t be opened. The file may be damaged.',
+    'Impossible d\'ouvrir ce PDF. Le fichier est peut-être endommagé.',
+    'No se puede abrir este PDF. Puede que el archivo esté dañado.',
+    'Não foi possível abrir este PDF. O arquivo pode estar danificado.',
+    'Dieses PDF lässt sich nicht öffnen. Die Datei ist möglicherweise beschädigt.',
+  );
+  static String get pdfRenderFailed => _t(
+    'Non riesco a mostrare questa pagina.',
+    'This page can\'t be displayed.',
+    'Impossible d\'afficher cette page.',
+    'No se puede mostrar esta página.',
+    'Não foi possível mostrar esta página.',
+    'Diese Seite kann nicht angezeigt werden.',
+  );
+  static String get pdfOpening => _t(
+    'Apro il PDF…',
+    'Opening PDF…',
+    'Ouverture du PDF…',
+    'Abriendo el PDF…',
+    'Abrindo o PDF…',
+    'PDF wird geöffnet…',
+  );
 
   /// Messaggio con l'errore tecnico tra parentesi, accorciato.
   static String withDetail(String msg, String? detail) {
@@ -39,61 +206,417 @@ class S {
     return '$msg\n($d)';
   }
 
-  static const largeTitle = 'PDF molto grande';
-  static String largeBody(int mb) =>
-      'Questo PDF pesa $mb MB. Nel browser del telefono potrebbe chiudersi '
-      'per mancanza di memoria: per sicurezza usa l\'app. Se vai avanti, i '
-      'tagli si salvano mentre lavori e puoi riprendere da dove eri.';
-  static const openAnyway = 'Apri comunque';
+  static String get largeTitle => _t(
+    'PDF molto grande',
+    'Very large PDF',
+    'PDF très volumineux',
+    'PDF muy grande',
+    'PDF muito grande',
+    'Sehr großes PDF',
+  );
+  static String largeBody(int mb) => _t(
+    'Questo PDF pesa $mb MB. Nel browser del telefono potrebbe chiudersi '
+        'per mancanza di memoria: per sicurezza usa l\'app. Se vai avanti, i '
+        'tagli si salvano mentre lavori e puoi riprendere da dove eri.',
+    'This PDF is $mb MB. The phone\'s browser may close it for lack of '
+        'memory: to be safe, use the app. If you go ahead, your cuts are saved '
+        'as you work and you can pick up where you left off.',
+    'Ce PDF pèse $mb Mo. Le navigateur du téléphone pourrait se fermer par '
+        'manque de mémoire : par sécurité, utilisez l\'app. Si vous continuez, '
+        'vos découpes sont enregistrées au fur et à mesure et vous pourrez '
+        'reprendre là où vous en étiez.',
+    'Este PDF pesa $mb MB. El navegador del teléfono podría cerrarse por '
+        'falta de memoria: por seguridad, usa la app. Si continúas, los '
+        'recortes se guardan mientras trabajas y podrás retomar donde lo dejaste.',
+    'Este PDF tem $mb MB. O navegador do celular pode fechar por falta de '
+        'memória: por segurança, use o app. Se continuar, os cortes são salvos '
+        'enquanto você trabalha e você pode retomar de onde parou.',
+    'Dieses PDF ist $mb MB groß. Der Browser des Handys könnte sich wegen '
+        'Speichermangel schließen: Nutze sicherheitshalber die App. Wenn du '
+        'weitermachst, werden deine Schnitte laufend gespeichert und du kannst '
+        'dort weitermachen, wo du warst.',
+  );
+  static String get openAnyway => _t(
+    'Apri comunque',
+    'Open anyway',
+    'Ouvrir quand même',
+    'Abrir de todos modos',
+    'Abrir mesmo assim',
+    'Trotzdem öffnen',
+  );
 
-  static const resumeTitle = 'Lavoro in sospeso';
-  static String resumeBody(String name, int cuts) =>
-      '$name · ${cuts == 1 ? '1 taglio' : '$cuts tagli'}';
-  static const resumeHint = 'Per riprendere, scegli di nuovo lo stesso file.';
-  static const resume = 'Riprendi';
-  static const discard = 'Elimina';
-  static String resumeWrongFile(String name) =>
-      'Non è lo stesso file: per riprendere scegli «$name».';
+  // --- lavoro in sospeso --------------------------------------------------------
+  static String get resumeTitle => _t(
+    'Lavoro in sospeso',
+    'Unfinished work',
+    'Travail en cours',
+    'Trabajo pendiente',
+    'Trabalho pendente',
+    'Unfertige Arbeit',
+  );
+  static String resumeBody(String name, int cuts) {
+    final one = cuts == 1;
+    final word = _t(
+      one ? 'taglio' : 'tagli',
+      one ? 'cut' : 'cuts',
+      one ? 'découpe' : 'découpes',
+      one ? 'recorte' : 'recortes',
+      one ? 'corte' : 'cortes',
+      one ? 'Schnitt' : 'Schnitte',
+    );
+    return '$name · $cuts $word';
+  }
 
-  static const pdfOpening = 'Apro il PDF…';
-  static const layoutPdf = 'Layout PDF';
-  static const layoutTitle = 'Scegli layout del PDF';
-  static const applyAndContinue = 'Applica e continua';
-  static const placeContent = 'Posiziona il contenuto';
-  static const layoutForNext = 'Usa questo layout anche per le prossime pagine';
-  static const cancel = 'Annulla';
-  static const apply = 'Applica';
-  static const rasterNote =
-      'Le pagine tagliate diventano immagini: il testo non sarà più selezionabile e '
-      'le firme digitali non resteranno valide. Le pagine non tagliate restano intatte.';
-  static const positionTitle = 'Personalizza posizione';
-  static const positionHint =
-      'Trascina il contenuto per scegliere dove metterlo nel foglio. La dimensione non cambia.';
-  static const confirmPosition = 'Conferma posizione';
-  static String pageOf(int page, int total) => 'Pag. $page di $total';
+  static String get resumeHint => _t(
+    'Per riprendere, scegli di nuovo lo stesso file.',
+    'To resume, choose the same file again.',
+    'Pour reprendre, choisissez à nouveau le même fichier.',
+    'Para retomar, vuelve a elegir el mismo archivo.',
+    'Para retomar, escolha o mesmo arquivo novamente.',
+    'Zum Fortsetzen wähle dieselbe Datei erneut.',
+  );
+  static String get resume =>
+      _t('Riprendi', 'Resume', 'Reprendre', 'Retomar', 'Retomar', 'Fortsetzen');
+  static String get discard => _t(
+    'Elimina',
+    'Discard',
+    'Supprimer',
+    'Descartar',
+    'Descartar',
+    'Verwerfen',
+  );
+  static String resumeWrongFile(String name) => _t(
+    'Non è lo stesso file: per riprendere scegli «$name».',
+    'That\'s not the same file: to resume, choose “$name”.',
+    'Ce n\'est pas le même fichier : pour reprendre, choisissez « $name ».',
+    'No es el mismo archivo: para retomar, elige «$name».',
+    'Não é o mesmo arquivo: para retomar, escolha “$name”.',
+    'Das ist nicht dieselbe Datei: Wähle zum Fortsetzen „$name“.',
+  );
 
-  static const share = 'Condividi';
-  static const save = 'Salva';
+  // --- impaginazione PDF ----------------------------------------------------------
+  static String get layoutPdf => _t(
+    'Layout PDF',
+    'PDF layout',
+    'Mise en page',
+    'Diseño PDF',
+    'Layout PDF',
+    'PDF-Layout',
+  );
+  static String get layoutTitle => _t(
+    'Scegli layout del PDF',
+    'Choose PDF layout',
+    'Choisir la mise en page',
+    'Elige el diseño del PDF',
+    'Escolha o layout do PDF',
+    'PDF-Layout wählen',
+  );
+  static String get layoutCentered => _t(
+    'Centrato',
+    'Centered',
+    'Centré',
+    'Centrado',
+    'Centralizado',
+    'Zentriert',
+  );
+  static String get layoutTop =>
+      _t('In alto', 'Top', 'En haut', 'Arriba', 'No topo', 'Oben');
+  static String get layoutShrink => _t(
+    'Riduci pagina',
+    'Shrink page',
+    'Réduire la page',
+    'Reducir página',
+    'Reduzir página',
+    'Seite verkleinern',
+  );
+  static String get applyAndContinue => _t(
+    'Applica e continua',
+    'Apply and continue',
+    'Appliquer et continuer',
+    'Aplicar y continuar',
+    'Aplicar e continuar',
+    'Anwenden und weiter',
+  );
+  static String get placeContent => _t(
+    'Posiziona il contenuto',
+    'Position the content',
+    'Placer le contenu',
+    'Colocar el contenido',
+    'Posicionar o conteúdo',
+    'Inhalt platzieren',
+  );
+  static String get layoutForNext => _t(
+    'Usa questo layout anche per le prossime pagine',
+    'Also use this layout for the next pages',
+    'Utiliser aussi cette mise en page pour les pages suivantes',
+    'Usar este diseño también en las próximas páginas',
+    'Usar este layout também nas próximas páginas',
+    'Dieses Layout auch für die nächsten Seiten verwenden',
+  );
+  static String get cancel =>
+      _t('Annulla', 'Cancel', 'Annuler', 'Cancelar', 'Cancelar', 'Abbrechen');
+  static String get apply =>
+      _t('Applica', 'Apply', 'Appliquer', 'Aplicar', 'Aplicar', 'Anwenden');
+  static String get rasterNote => _t(
+    'Le pagine tagliate diventano immagini: il testo non sarà più selezionabile e '
+        'le firme digitali non resteranno valide. Le pagine non tagliate restano intatte.',
+    'Cut pages become images: text will no longer be selectable and digital '
+        'signatures will no longer be valid. Uncut pages stay intact.',
+    'Les pages découpées deviennent des images : le texte ne sera plus '
+        'sélectionnable et les signatures numériques ne seront plus valides. '
+        'Les pages non découpées restent intactes.',
+    'Las páginas recortadas se convierten en imágenes: el texto ya no se podrá '
+        'seleccionar y las firmas digitales dejarán de ser válidas. Las páginas '
+        'sin recortar quedan intactas.',
+    'As páginas cortadas viram imagens: o texto não poderá mais ser '
+        'selecionado e as assinaturas digitais deixarão de ser válidas. As '
+        'páginas não cortadas ficam intactas.',
+    'Geschnittene Seiten werden zu Bildern: Der Text ist nicht mehr auswählbar '
+        'und digitale Signaturen sind nicht mehr gültig. Nicht geschnittene '
+        'Seiten bleiben unverändert.',
+  );
+  static String get positionTitle => _t(
+    'Personalizza posizione',
+    'Custom position',
+    'Position personnalisée',
+    'Posición personalizada',
+    'Posição personalizada',
+    'Eigene Position',
+  );
+  static String get positionHint => _t(
+    'Trascina il contenuto per scegliere dove metterlo nel foglio. La dimensione non cambia.',
+    'Drag the content to choose where it goes on the page. Its size doesn\'t change.',
+    'Faites glisser le contenu pour choisir où le placer sur la page. Sa taille ne change pas.',
+    'Arrastra el contenido para elegir dónde colocarlo en la página. El tamaño no cambia.',
+    'Arraste o conteúdo para escolher onde colocá-lo na página. O tamanho não muda.',
+    'Zieh den Inhalt dorthin, wo er auf der Seite stehen soll. Die Größe ändert sich nicht.',
+  );
+  static String get confirmPosition => _t(
+    'Conferma posizione',
+    'Confirm position',
+    'Confirmer la position',
+    'Confirmar posición',
+    'Confirmar posição',
+    'Position bestätigen',
+  );
+  static String pageOf(int page, int total) => _t(
+    'Pag. $page di $total',
+    'Page $page of $total',
+    'Page $page sur $total',
+    'Pág. $page de $total',
+    'Pág. $page de $total',
+    'Seite $page von $total',
+  );
+  static String get previousPage => _t(
+    'Pagina precedente',
+    'Previous page',
+    'Page précédente',
+    'Página anterior',
+    'Página anterior',
+    'Vorherige Seite',
+  );
+  static String get nextPage => _t(
+    'Pagina successiva',
+    'Next page',
+    'Page suivante',
+    'Página siguiente',
+    'Próxima página',
+    'Nächste Seite',
+  );
+
+  // --- editor --------------------------------------------------------------------
+  static String get share => _t(
+    'Condividi',
+    'Share',
+    'Partager',
+    'Compartir',
+    'Compartilhar',
+    'Teilen',
+  );
+  static String get save =>
+      _t('Salva', 'Save', 'Enregistrer', 'Guardar', 'Salvar', 'Speichern');
   static const undo = 'Undo';
   static const redo = 'Redo';
-  static const removePortion = 'Rimuovi porzione';
-  static const horizontal = 'Orizzontale';
-  static const vertical = 'Verticale';
+  static String get removePortion => _t(
+    'Rimuovi porzione',
+    'Remove section',
+    'Supprimer la partie',
+    'Eliminar sección',
+    'Remover parte',
+    'Bereich entfernen',
+  );
+  static String get horizontal => _t(
+    'Orizzontale',
+    'Horizontal',
+    'Horizontal',
+    'Horizontal',
+    'Horizontal',
+    'Horizontal',
+  );
+  static String get vertical => _t(
+    'Verticale',
+    'Vertical',
+    'Vertical',
+    'Vertical',
+    'Vertical',
+    'Vertikal',
+  );
+  static String lineLabel(String l) =>
+      _t('Linea $l', 'Line $l', 'Ligne $l', 'Línea $l', 'Linha $l', 'Linie $l');
   static const smash = 'SMASH';
-  static const smashOn = 'SMASH attivo';
-  static const smashOff = 'SMASH disattivato';
+  static String get smashOn => _t(
+    'SMASH attivo',
+    'SMASH on',
+    'SMASH activé',
+    'SMASH activado',
+    'SMASH ativado',
+    'SMASH an',
+  );
+  static String get smashOff => _t(
+    'SMASH disattivato',
+    'SMASH off',
+    'SMASH désactivé',
+    'SMASH desactivado',
+    'SMASH desativado',
+    'SMASH aus',
+  );
 
-  static const saved = 'Immagine salvata nelle Foto';
-  static const saveDenied =
-      'Per salvare serve il permesso di accedere alle Foto. Puoi darlo dalle Impostazioni.';
-  static const saveFailed = 'Salvataggio non riuscito. Riprova.';
-  static const saveUnavailable =
-      'Su questo dispositivo il salvataggio nelle Foto non è disponibile: usa Condividi.';
-  static const shareFailed = 'Condivisione non riuscita. Riprova.';
-  static const loadFailed =
-      'Non riesco ad aprire questa immagine. Prova con un altro file.';
-  static const tooLarge =
-      'Immagine troppo grande: il lato massimo è di 16.000 pixel.';
-  static const preparing = 'Preparo il file…';
-  static const opening = 'Apro l\'immagine…';
+  // --- salvataggio e condivisione -------------------------------------------------
+  static String get pdfSaved => _t(
+    'PDF salvato',
+    'PDF saved',
+    'PDF enregistré',
+    'PDF guardado',
+    'PDF salvo',
+    'PDF gespeichert',
+  );
+  static String get downloaded => _t(
+    'File scaricato',
+    'File downloaded',
+    'Fichier téléchargé',
+    'Archivo descargado',
+    'Arquivo baixado',
+    'Datei heruntergeladen',
+  );
+  static String get fileReady => _t(
+    'File pronto',
+    'File ready',
+    'Fichier prêt',
+    'Archivo listo',
+    'Arquivo pronto',
+    'Datei bereit',
+  );
+  static String get saveToGalleryHint => _t(
+    'Nel menu che si apre scegli «Salva immagine» per metterla in Galleria/Foto.',
+    'In the menu that opens, choose “Save Image” to add it to Photos/Gallery.',
+    'Dans le menu qui s\'ouvre, choisissez « Enregistrer l\'image » pour '
+        'l\'ajouter à Photos/Galerie.',
+    'En el menú que se abre, elige «Guardar imagen» para añadirla a Fotos/Galería.',
+    'No menu que se abre, escolha “Salvar Imagem” para adicioná-la a Fotos/Galeria.',
+    'Wähle im Menü, das sich öffnet, „Bild sichern“, um es in Fotos/Galerie abzulegen.',
+  );
+  static String get saveToFilesHint => _t(
+    'Nel menu che si apre scegli «Salva su File».',
+    'In the menu that opens, choose “Save to Files”.',
+    'Dans le menu qui s\'ouvre, choisissez « Enregistrer dans Fichiers ».',
+    'En el menú que se abre, elige «Guardar en Archivos».',
+    'No menu que se abre, escolha “Salvar em Arquivos”.',
+    'Wähle im Menü, das sich öffnet, „In Dateien sichern“.',
+  );
+  static String get saveToGallery => _t(
+    'Salva in Galleria',
+    'Save to Photos',
+    'Enregistrer dans Photos',
+    'Guardar en Fotos',
+    'Salvar em Fotos',
+    'In Fotos sichern',
+  );
+  static String get saveToFiles => _t(
+    'Salva in File',
+    'Save to Files',
+    'Enregistrer dans Fichiers',
+    'Guardar en Archivos',
+    'Salvar em Arquivos',
+    'In Dateien sichern',
+  );
+  static String get download => _t(
+    'Scarica',
+    'Download',
+    'Télécharger',
+    'Descargar',
+    'Baixar',
+    'Herunterladen',
+  );
+  static String get saved => _t(
+    'Immagine salvata nelle Foto',
+    'Image saved to Photos',
+    'Image enregistrée dans Photos',
+    'Imagen guardada en Fotos',
+    'Imagem salva em Fotos',
+    'Bild in Fotos gespeichert',
+  );
+  static String get saveDenied => _t(
+    'Per salvare serve il permesso di accedere alle Foto. Puoi darlo dalle Impostazioni.',
+    'Saving needs permission to access Photos. You can grant it in Settings.',
+    'L\'enregistrement nécessite l\'accès à Photos. Vous pouvez l\'autoriser dans Réglages.',
+    'Para guardar se necesita permiso para acceder a Fotos. Puedes darlo en Ajustes.',
+    'Para salvar é preciso permissão para acessar Fotos. Você pode concedê-la em Ajustes.',
+    'Zum Speichern ist Zugriff auf Fotos nötig. Du kannst ihn in den Einstellungen erlauben.',
+  );
+  static String get saveFailed => _t(
+    'Salvataggio non riuscito. Riprova.',
+    'Saving failed. Try again.',
+    'L\'enregistrement a échoué. Réessayez.',
+    'No se pudo guardar. Inténtalo de nuevo.',
+    'Não foi possível salvar. Tente novamente.',
+    'Speichern fehlgeschlagen. Versuch es noch einmal.',
+  );
+  static String get saveUnavailable => _t(
+    'Su questo dispositivo il salvataggio nelle Foto non è disponibile: usa Condividi.',
+    'Saving to Photos isn\'t available on this device: use Share.',
+    'L\'enregistrement dans Photos n\'est pas disponible sur cet appareil : utilisez Partager.',
+    'En este dispositivo no se puede guardar en Fotos: usa Compartir.',
+    'Neste dispositivo não é possível salvar em Fotos: use Compartilhar.',
+    'Auf diesem Gerät ist Speichern in Fotos nicht möglich: Nutze Teilen.',
+  );
+  static String get shareFailed => _t(
+    'Condivisione non riuscita. Riprova.',
+    'Sharing failed. Try again.',
+    'Le partage a échoué. Réessayez.',
+    'No se pudo compartir. Inténtalo de nuevo.',
+    'Não foi possível compartilhar. Tente novamente.',
+    'Teilen fehlgeschlagen. Versuch es noch einmal.',
+  );
+  static String get loadFailed => _t(
+    'Non riesco ad aprire questa immagine. Prova con un altro file.',
+    'This image can\'t be opened. Try another file.',
+    'Impossible d\'ouvrir cette image. Essayez un autre fichier.',
+    'No se puede abrir esta imagen. Prueba con otro archivo.',
+    'Não foi possível abrir esta imagem. Tente outro arquivo.',
+    'Dieses Bild lässt sich nicht öffnen. Versuch es mit einer anderen Datei.',
+  );
+  static String get tooLarge => _t(
+    'Immagine troppo grande: il lato massimo è di 16.000 pixel.',
+    'Image too large: the longest side can be at most 16,000 pixels.',
+    'Image trop grande : le plus grand côté peut faire au maximum 16 000 pixels.',
+    'Imagen demasiado grande: el lado mayor puede tener como máximo 16.000 píxeles.',
+    'Imagem grande demais: o lado maior pode ter no máximo 16.000 pixels.',
+    'Bild zu groß: Die längste Seite darf höchstens 16.000 Pixel haben.',
+  );
+  static String get preparing => _t(
+    'Preparo il file…',
+    'Preparing the file…',
+    'Préparation du fichier…',
+    'Preparando el archivo…',
+    'Preparando o arquivo…',
+    'Datei wird vorbereitet…',
+  );
+  static String get opening => _t(
+    'Apro l\'immagine…',
+    'Opening the image…',
+    'Ouverture de l\'image…',
+    'Abriendo la imagen…',
+    'Abrindo a imagem…',
+    'Bild wird geöffnet…',
+  );
 }
