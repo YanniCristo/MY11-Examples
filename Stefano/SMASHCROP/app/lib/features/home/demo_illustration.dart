@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../app/strings.dart';
+import '../../app/theme.dart';
 
 /// Illustrazione della home: città, fogli e SMASH sono un'immagine; i testi
 /// dei fogli li scrive l'app, così cambiano con la lingua.
@@ -43,6 +44,7 @@ class DemoIllustration extends StatelessWidget {
                 Text(
                   '✂  ${t.band}',
                   style: const TextStyle(
+                    fontFamily: kDisplayFont,
                     color: Color(0xFFD0141A),
                     fontSize: 12.5,
                     fontWeight: FontWeight.w800,
@@ -93,7 +95,8 @@ class DemoIllustration extends StatelessWidget {
     maxLines: 1,
     softWrap: false,
     style: const TextStyle(
-      color: Color(0xFF151824),
+      fontFamily: kDisplayFont,
+      color: Color(0xFF0E1019),
       fontSize: 22,
       fontWeight: FontWeight.w800,
       letterSpacing: -.3,
@@ -103,9 +106,11 @@ class DemoIllustration extends StatelessWidget {
   static Widget _body(String s) => Text(
     s,
     style: const TextStyle(
-      color: Color(0xFF262A36),
-      fontSize: 13.5,
-      height: 1.32,
+      fontFamily: kDisplayFont,
+      color: Color(0xFF14161F),
+      fontSize: 14,
+      fontWeight: FontWeight.w700,
+      height: 1.28,
     ),
   );
 }
@@ -143,8 +148,10 @@ class _StatsTable extends StatelessWidget {
                         child: Text(
                           rows[i].$1,
                           style: const TextStyle(
-                            color: Color(0xFF262A36),
-                            fontSize: 11.5,
+                            fontFamily: kDisplayFont,
+                            color: Color(0xFF14161F),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -160,6 +167,7 @@ class _StatsTable extends StatelessWidget {
                     child: Text(
                       rows[i].$2,
                       style: const TextStyle(
+                        fontFamily: kDisplayFont,
                         color: Color(0xFFD0141A),
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
@@ -215,6 +223,7 @@ class _StressChart extends StatelessWidget {
             child: Text(
               label,
               style: const TextStyle(
+                fontFamily: kDisplayFont,
                 color: Color(0xFFD0141A),
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
@@ -252,9 +261,10 @@ class _Stamp extends StatelessWidget {
           child: Text(
             text,
             style: const TextStyle(
+              fontFamily: kDisplayFont,
               color: Color(0xFFD0141A),
               fontSize: 15,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w800,
               letterSpacing: .6,
             ),
           ),

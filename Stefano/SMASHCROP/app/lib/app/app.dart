@@ -18,10 +18,12 @@ class SmashCropApp extends StatelessWidget {
       valueListenable: S.current,
       builder: (context, lang, _) => AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
+        // la chiave legata alla lingua ricostruisce tutta l'app (anche la
+        // schermata già aperta) con i testi nuovi
         child: MaterialApp(
+          key: ValueKey(lang),
           title: S.appName,
           debugShowCheckedModeBanner: false,
-          locale: Locale(lang.name),
           theme: buildTheme(),
           home: HomeScreen(preferences: preferences),
         ),

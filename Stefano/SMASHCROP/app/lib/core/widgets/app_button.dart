@@ -105,7 +105,7 @@ class AppButton extends StatelessWidget {
                         maxLines: 1,
                       )..layout();
                       final room = c.maxWidth - 16 - (fontSize + 5) - 7;
-                      if (tp.width * .92 > room) showIcon = false;
+                      if (tp.width * .82 > room) showIcon = false;
                       tp.dispose();
                     }
                     return Padding(

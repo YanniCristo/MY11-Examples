@@ -442,7 +442,7 @@ class S {
     'Teilen',
   );
   static String get save =>
-      _t('Salva', 'Save', 'Enregistrer', 'Guardar', 'Salvar', 'Speichern');
+      _t('Salva', 'Save', 'Enregistrer', 'Guardar', 'Salvar', 'Sichern');
   static const undo = 'Undo';
   static const redo = 'Redo';
   static String get removePortion => _t(
