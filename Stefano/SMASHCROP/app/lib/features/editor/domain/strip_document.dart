@@ -92,6 +92,22 @@ class IndexRuns {
     return out;
   }
 
+  /// Le stesse righe (o colonne) su un originale ricampionato a [newLength]:
+  /// ogni confine si sposta in proporzione. Serve per esportare a una
+  /// risoluzione più alta di quella usata sullo schermo.
+  IndexRuns rescaled(int originalLength, int newLength) {
+    if (newLength == originalLength) return this;
+    int at(int i) => (i * newLength / originalLength).round();
+    final out = <IndexRun>[];
+    for (final r in runs) {
+      final a = at(r.start), b = at(r.end);
+      if (b > a) out.add(IndexRun(a, b));
+    }
+    final merged = _merge(out);
+    final len = merged.fold<int>(0, (n, r) => n + r.length);
+    return IndexRuns._(merged, len);
+  }
+
   /// Indice originale del pixel attuale [i].
   int originalIndex(int i) {
     final s = slice(i, i + 1);
@@ -132,6 +148,14 @@ class StripDocument {
   final int originalHeight;
   final IndexRuns rows;
   final IndexRuns cols;
+
+  /// Lo stesso documento su un originale di [w]×[h] pixel.
+  StripDocument rescaled(int w, int h) => StripDocument(
+    originalWidth: w,
+    originalHeight: h,
+    rows: rows.rescaled(originalHeight, h),
+    cols: cols.rescaled(originalWidth, w),
+  );
 
   int get width => cols.length;
   int get height => rows.length;

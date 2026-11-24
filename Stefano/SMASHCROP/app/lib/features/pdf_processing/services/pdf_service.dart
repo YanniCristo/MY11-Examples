@@ -43,10 +43,20 @@ class PdfSession {
   final PdfDocument document;
   final String name;
 
-  /// Risoluzione di lavoro: 300 DPI, la qualità di stampa; il lato lungo
-  /// resta entro 5000 px per non esaurire la memoria con fogli enormi.
-  static const double maxDpi = 300;
-  static const double maxSidePx = 5000;
+  /// Risoluzione sullo schermo: basta per leggere bene anche ingrandendo, e
+  /// resta leggera. Nel browser (iPhone in particolare) la memoria è poca:
+  /// pagine troppo grandi fanno ricaricare la pagina web.
+  static const double displayDpi = kIsWeb ? 150 : 200;
+  static const double displayMaxSidePx = kIsWeb ? 2000 : 2600;
+
+  /// Risoluzione del file salvato: 300 DPI, qualità di stampa. Ogni pagina
+  /// tagliata si rende di nuovo a questa risoluzione solo al salvataggio,
+  /// una alla volta, e la memoria si libera subito dopo.
+  static const double exportDpi = 300;
+  static const double exportMaxSidePx = kIsWeb ? 4000 : 5000;
+
+  static double _scale(ui.Size pt, double dpi, double maxSide) =>
+      math.min(dpi / 72, maxSide / math.max(pt.width, pt.height));
 
   /// Apre il PDF. Se è protetto, la password la inserisce l'utente con
   /// [askPassword]: l'app non prova mai ad aggirare la protezione.
@@ -132,9 +142,10 @@ class PdfSession {
     return [
       for (final p in document.pages)
         () {
-          final scale = math.min(
-            maxDpi / 72,
-            maxSidePx / math.max(p.width, p.height),
+          final scale = _scale(
+            ui.Size(p.width, p.height),
+            displayDpi,
+            displayMaxSidePx,
           );
           return EditorPage(
             index: p.pageNumber - 1,
@@ -179,20 +190,46 @@ class PdfSession {
           list.add(document.pages[page.index]);
           continue;
         }
-        final rendered = page.isReady ? null : await render(page);
-        final source = rendered ?? page.image!;
+        // la pagina si rende di nuovo a 300 DPI; i tagli fatti sullo
+        // schermo si riportano in proporzione
+        final pt = page.originalPointSize!;
+        final k = _scale(pt, exportDpi, exportMaxSidePx);
+        final ew = math.max(1, (pt.width * k).round());
+        final eh = math.max(1, (pt.height * k).round());
+        final source = await document.pages[page.index].renderForDisplay(
+          width: ew,
+          height: eh,
+          fullWidth: ew.toDouble(),
+          fullHeight: eh.toDouble(),
+          backgroundColor: 0xFFFFFFFF,
+        );
+        if (source == null) {
+          throw StateError('Pagina ${page.index + 1} non resa');
+        }
         try {
           final data = await source.toByteData(
             format: ui.ImageByteFormat.rawStraightRgba,
           );
-          final frame = page.frame(suggestion);
+          final doc = page.doc.rescaled(ew, eh);
+          final layout = page.effectiveLayout(suggestion);
+          final sx = ew / page.widthPx, sy = eh / page.heightPx;
+          final frame = PageFrame.compute(
+            original: ui.Size(ew.toDouble(), eh.toDouble()),
+            content: ui.Size(doc.width.toDouble(), doc.height.toDouble()),
+            layout: layout?.mode == PdfLayoutMode.custom
+                ? PageLayout(
+                    PdfLayoutMode.custom,
+                    ui.Offset(layout!.offset.dx * sx, layout.offset.dy * sy),
+                  )
+                : layout,
+          );
           final job = _PageJob(
             rgba: data!.buffer.asUint8List(),
             srcW: source.width,
             srcH: source.height,
-            contentW: page.doc.width,
-            contentH: page.doc.height,
-            tiles: page.doc.tiles(),
+            contentW: doc.width,
+            contentH: doc.height,
+            tiles: doc.tiles(),
             frameW: frame.size.width.round(),
             frameH: frame.size.height.round(),
             offsetX: frame.contentOffset.dx.round(),
@@ -201,18 +238,17 @@ class PdfSession {
           final jpeg = await compute(_encodePage, job);
           // da pixel a punti con il rapporto esatto della pagina originale:
           // un foglio che non cambia misura resta identico al millimetro
-          final pt = page.originalPointSize!;
           final d = await PdfDocument.createFromJpegData(
             jpeg,
-            width: frame.size.width * pt.width / page.widthPx,
-            height: frame.size.height * pt.height / page.heightPx,
+            width: frame.size.width * pt.width / ew,
+            height: frame.size.height * pt.height / eh,
             sourceName:
                 'smashcrop-page-${page.index}-${DateTime.now().microsecondsSinceEpoch}',
           );
           temps.add(d);
           list.add(d.pages.first);
         } finally {
-          rendered?.dispose();
+          source.dispose();
         }
       }
       out.pages = list;
