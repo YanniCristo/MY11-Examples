@@ -115,12 +115,20 @@ class S {
   static String get languageTitle =>
       _t('Lingua', 'Language', 'Langue', 'Idioma', 'Idioma', 'Sprache');
   static String get languageAuto => _t(
-    'Automatica (lingua del telefono)',
-    'Automatic (device language)',
-    'Automatique (langue de l\'appareil)',
-    'Automático (idioma del dispositivo)',
-    'Automático (idioma do dispositivo)',
-    'Automatisch (Gerätesprache)',
+    'Automatica',
+    'Automatic',
+    'Automatique',
+    'Automático',
+    'Automático',
+    'Automatisch',
+  );
+  static String get languageDevice => _t(
+    'Lingua del telefono',
+    'Device language',
+    'Langue de l\'appareil',
+    'Idioma del dispositivo',
+    'Idioma do dispositivo',
+    'Gerätesprache',
   );
 
   // --- PDF: apertura e password -----------------------------------------------
