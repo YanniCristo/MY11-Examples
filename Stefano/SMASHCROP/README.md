@@ -18,6 +18,7 @@ App mobile (iOS e Android, Flutter) per **rimuovere sezioni interne** di immagin
 ## Contenuto
 
 ```
+app/                                 progetto Flutter dell'app (vedi app/README.md)
 docs/
   01_presentazione_progetto.md       concetto, funzioni ed esperienza utente
   02_master_development_prompt.md    specifica tecnica completa (priorità massima)
@@ -65,12 +66,22 @@ Nell'app i frame vanno comunque ritagliati attorno al robot, e il movimento (ent
 | Punto d'impatto nel frame | il pugno del frame 006 (in `frames_hd/`: x≈555, y≈975 sulla tela 901×1744) va sull'epicentro della fascia |
 | Inizio del ricongiungimento | 2 fotogrammi dopo l'impatto |
 
-**Maniglie A/B fuori dall'immagine.** In modalità orizzontale stanno a sinistra (A) e a destra (B) del documento; in verticale sopra (A) e sotto (B). Il viewport riserva un margine di 34 pt solo sull'asse dove si trovano le maniglie.
+**Maniglie A/B fuori dall'immagine (confermato).** In modalità orizzontale stanno a sinistra (A) e a destra (B) del documento; in verticale sopra (A) e sotto (B). Il viewport riserva un margine di 34 pt solo sull'asse dove si trovano le maniglie.
+
+**Pressione prolungata sulle maniglie: rimandata.** Serviva a far scorrere la maniglia lungo la linea quando copriva qualcosa; con le maniglie fuori dall'immagine non serve. Resta un'opzione da aggiungere se ci convinciamo che è utile.
+
+**Controllo SMASH.** Testa del robot + interruttore. La scritta "SMASH" compare solo se c'è spazio, così sui telefoni normali non viene tagliata.
 
 ## Stato
 
 - [x] Specifiche, mockup e asset raccolti
 - [x] Nome, sottotitolo e icona decisi
-- [ ] Milestone 1: progetto Flutter, tema, home, importazione file
-- [ ] Milestone 2: motore di taglio e test
-- [ ] Milestone 3–8: vedi `docs/02_master_development_prompt.md`, sezione 45
+- [x] Milestone 1: progetto Flutter, tema, home, importazione immagini (`app/`)
+- [x] Milestone 2: motore di taglio e test
+- [x] Milestone 3: editor interattivo, linee A/B, zoom, spostamento, orientamento
+- [x] Milestone 4: tagli continui, interruttori di visibilità, Undo/Redo, Salva e Condividi
+- [x] Milestone 7: SMASH (frame HD, pugno sull'epicentro, entrata e uscita, toggle)
+- [ ] Milestone 5–6: PDF (importazione, pagine, layout, esportazione)
+- [ ] Milestone 8: rifiniture e prove su iPhone e Android veri
+
+Dettagli tecnici e comandi in `app/README.md`.
