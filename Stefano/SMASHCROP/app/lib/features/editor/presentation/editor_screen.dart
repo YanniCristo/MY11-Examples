@@ -682,6 +682,98 @@ class _EditorScreenState extends State<EditorScreen>
   }
 
   /// Navigatore compatto delle pagine e pulsante Layout PDF, in una riga.
+  /// "Pag. 2 di 5 ▾": toccandola si apre il menu della pagina corrente
+  /// (spostarla prima o dopo, toglierla).
+  Widget _pageMenu() {
+    final enabled = c.canNavigate && c.pageCount > 1;
+    PopupMenuItem<int> item(int v, IconData icon, String label, bool on) =>
+        PopupMenuItem<int>(
+          value: v,
+          enabled: on,
+          height: 46,
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 20,
+                color: on ? AppColors.text : AppColors.textMuted,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                label,
+                style: TextStyle(
+                  color: on ? AppColors.text : AppColors.textMuted,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+        );
+    final label = Container(
+      height: 36,
+      padding: const EdgeInsets.only(left: 12, right: 6),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColors.button,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              S.pageOf(c.pageIndex + 1, c.pageCount),
+              maxLines: 1,
+              style: const TextStyle(
+                color: AppColors.text,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                fontFeatures: [FontFeature.tabularFigures()],
+              ),
+            ),
+            if (c.pageCount > 1) ...[
+              const SizedBox(width: 2),
+              Icon(
+                Icons.expand_more,
+                size: 18,
+                color: enabled ? AppColors.text : AppColors.textMuted,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+    if (c.pageCount < 2) return label;
+    return PopupMenuButton<int>(
+      enabled: enabled,
+      tooltip: S.pageOptions,
+      position: PopupMenuPosition.over,
+      color: AppColors.surface,
+      elevation: 12,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: AppColors.border),
+      ),
+      onSelected: (v) {
+        switch (v) {
+          case -1:
+          case 1:
+            c.movePage(v);
+          case 0:
+            _removePage();
+        }
+      },
+      itemBuilder: (context) => [
+        item(-1, Icons.arrow_back, S.movePageBack, c.canMovePage(-1)),
+        item(1, Icons.arrow_forward, S.movePageForward, c.canMovePage(1)),
+        item(0, Icons.delete_outline, S.removePage, c.canRemovePage),
+      ],
+      child: label,
+    );
+  }
+
   Widget _pdfBar() {
     final nav = c.canNavigate;
     Widget arrow(IconData icon, VoidCallback? onTap, String label) => SizedBox(
@@ -702,32 +794,7 @@ class _EditorScreenState extends State<EditorScreen>
           S.previousPage,
         ),
         const SizedBox(width: 6),
-        Flexible(
-          flex: 20,
-          child: Container(
-            height: 36,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: AppColors.button,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                S.pageOf(c.pageIndex + 1, c.pageCount),
-                maxLines: 1,
-                style: const TextStyle(
-                  color: AppColors.text,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  fontFeatures: [FontFeature.tabularFigures()],
-                ),
-              ),
-            ),
-          ),
-        ),
+        Flexible(flex: 20, child: _pageMenu()),
         const SizedBox(width: 6),
         arrow(
           Icons.chevron_right,

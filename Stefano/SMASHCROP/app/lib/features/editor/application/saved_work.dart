@@ -20,6 +20,7 @@ class SavedWork {
     required this.pages,
     this.nextPagesLayout,
     this.removed = const [],
+    this.order = const [],
   });
 
   final bool isPdf;
@@ -32,7 +33,11 @@ class SavedWork {
   /// Pagine del PDF tolte dal documento (numeri delle pagine originali).
   final List<int> removed;
 
-  bool get hasWork => pages.isNotEmpty || removed.isNotEmpty;
+  /// Nuovo ordine delle pagine del PDF (numeri originali), se cambiato.
+  final List<int> order;
+
+  bool get hasWork =>
+      pages.isNotEmpty || removed.isNotEmpty || order.isNotEmpty;
 
   int get cutCount =>
       pages.values.fold(0, (n, p) => n + p.steps.whereType<CutStep>().length);
@@ -51,6 +56,7 @@ class SavedWork {
     required List<EditorPage> pages,
     PdfLayoutMode? nextPagesLayout,
     List<int> removed = const [],
+    List<int> order = const [],
   }) {
     final saved = <int, SavedPage>{};
     for (final p in pages) {
@@ -59,7 +65,7 @@ class SavedWork {
         saved[p.index] = SavedPage(p.widthPx, p.heightPx, steps);
       }
     }
-    if (saved.isEmpty && removed.isEmpty) return null;
+    if (saved.isEmpty && removed.isEmpty && order.isEmpty) return null;
     return SavedWork(
       isPdf: isPdf,
       name: name,
@@ -68,6 +74,7 @@ class SavedWork {
       pages: saved,
       nextPagesLayout: nextPagesLayout,
       removed: removed,
+      order: order,
     );
   }
 
@@ -120,6 +127,7 @@ class SavedWork {
     'page': pageIndex,
     if (nextPagesLayout != null) 'next': nextPagesLayout!.name,
     if (removed.isNotEmpty) 'removed': removed,
+    if (order.isNotEmpty) 'order': order,
     'pages': {
       for (final e in pages.entries)
         '${e.key}': {
@@ -155,6 +163,7 @@ class SavedWork {
         removed: [
           for (final r in (m['removed'] as List? ?? const [])) r as int,
         ],
+        order: [for (final r in (m['order'] as List? ?? const [])) r as int],
       );
     } catch (_) {
       return null;

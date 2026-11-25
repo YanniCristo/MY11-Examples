@@ -388,6 +388,48 @@ class EditorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool canMovePage(int delta) {
+    final j = pageIndex + delta;
+    return _canEditPages && j >= 0 && j < pages.length;
+  }
+
+  /// Sposta la pagina corrente di [delta] posti (-1 indietro, +1 avanti):
+  /// cambia l'ordine nel documento salvato. Si resta sulla pagina spostata.
+  void movePage(int delta) {
+    if (!canMovePage(delta)) return;
+    _cancelAnimation();
+    final i = pageIndex, j = i + delta;
+    final moved = pages.removeAt(i);
+    pages.insert(j, moved);
+    if (!isPdf) {
+      final f = images[i];
+      images = [...images]
+        ..removeAt(i)
+        ..insert(j, f);
+      for (var k = 0; k < pages.length; k++) {
+        pages[k].index = k;
+      }
+    }
+    _recentPages.clear();
+    _rendering.clear();
+    for (var k = 0; k < pages.length; k++) {
+      if (pages[k].isReady) _recentPages.add(k);
+    }
+    pageIndex = j;
+    if (!page.isReady) _ensureRendered(j);
+    notifyListeners();
+  }
+
+  /// Ordine delle pagine del PDF (numeri originali), se è cambiato.
+  List<int> get pdfPageOrder {
+    if (!isPdf) return const [];
+    final order = [for (final p in pages) p.index];
+    for (var k = 1; k < order.length; k++) {
+      if (order[k] < order[k - 1]) return order;
+    }
+    return const [];
+  }
+
   void _showPage(int i) {
     pageIndex = i;
     zoom = 1;
@@ -539,6 +581,7 @@ class EditorController extends ChangeNotifier {
       pageIndex,
       nextPagesLayout,
       pages.length,
+      for (final p in pages) p.index,
       for (final p in pages) Object.hash(p.history.cursor, p.history.length),
     ]);
     if (key == _saveKey) return;
@@ -558,6 +601,7 @@ class EditorController extends ChangeNotifier {
       pages: pages,
       nextPagesLayout: nextPagesLayout?.mode,
       removed: removedPdfPages,
+      order: pdfPageOrder,
     );
     if (w != null) {
       preferences.setSavedWork(w.encode());
@@ -590,6 +634,16 @@ class EditorController extends ChangeNotifier {
         }
         pageIndex = 0;
         if (!page.isReady) _ensureRendered(0);
+      }
+    }
+    if (isPdf && w.order.isNotEmpty) {
+      final pos = {for (var k = 0; k < w.order.length; k++) w.order[k]: k};
+      pages.sort(
+        (a, b) => (pos[a.index] ?? 1 << 20).compareTo(pos[b.index] ?? 1 << 20),
+      );
+      _recentPages.clear();
+      for (var k = 0; k < pages.length; k++) {
+        if (pages[k].isReady) _recentPages.add(k);
       }
     }
     for (final p in pages) {

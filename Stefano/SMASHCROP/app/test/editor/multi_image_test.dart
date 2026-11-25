@@ -196,4 +196,28 @@ void main() {
     expect(c.pageCount, 1);
     c.dispose();
   });
+
+  testWidgets('spostare una pagina cambia l\'ordine del salvataggio', (
+    tester,
+  ) async {
+    final c = await three(tester);
+    await cut(tester, c, 50, 100);
+    expect(c.canMovePage(-1), isFalse);
+    c.movePage(1);
+    expect(c.pageIndex, 1, reason: 'si resta sulla pagina spostata');
+    expect(c.images.map((f) => f.name), [
+      'foto_1.png',
+      'foto_0.png',
+      'foto_2.png',
+    ]);
+    expect(c.doc.height, 150, reason: 'i tagli viaggiano con la pagina');
+    expect([for (final p in c.pages) p.index], [0, 1, 2]);
+    final files = (await tester.runAsync(c.buildImageExports))!;
+    expect(img.decodePng(files[0].bytes)!.width, 200);
+    expect(img.decodePng(files[1].bytes)!.height, 150);
+    c.movePage(1);
+    expect(c.pageIndex, 2);
+    expect(c.canMovePage(1), isFalse);
+    c.dispose();
+  });
 }

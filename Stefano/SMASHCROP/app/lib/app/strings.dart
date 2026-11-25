@@ -783,4 +783,28 @@ class S {
     'Die Seite und ihre Schnitte werden aus dem Dokument entfernt, das du '
         'speicherst. Das Original-PDF bleibt unverändert.',
   );
+  static String get movePageBack => _t(
+    'Sposta indietro',
+    'Move back',
+    'Déplacer avant',
+    'Mover atrás',
+    'Mover para trás',
+    'Nach vorne verschieben',
+  );
+  static String get movePageForward => _t(
+    'Sposta avanti',
+    'Move forward',
+    'Déplacer après',
+    'Mover adelante',
+    'Mover para frente',
+    'Nach hinten verschieben',
+  );
+  static String get pageOptions => _t(
+    'Opzioni pagina',
+    'Page options',
+    'Options de la page',
+    'Opciones de página',
+    'Opções da página',
+    'Seitenoptionen',
+  );
 }

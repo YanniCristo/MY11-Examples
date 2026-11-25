@@ -280,4 +280,27 @@ void main() {
     expect(fresh.pageCount, 3);
     expect([for (final p in fresh.pages) p.index], [0, 1, 3]);
   });
+
+  testWidgets('il nuovo ordine del PDF si salva e si ripristina', (
+    tester,
+  ) async {
+    final c = await fourPages(tester);
+    c.goToPage(3);
+    c.movePage(-1);
+    c.movePage(-1);
+    expect([for (final p in c.pages) p.index], [0, 3, 1, 2]);
+    expect(c.pdfPageOrder, [0, 3, 1, 2]);
+    final w = SavedWork.capture(
+      isPdf: true,
+      name: 'a.pdf',
+      size: 10,
+      pageIndex: c.pageIndex,
+      pages: c.pages,
+      order: c.pdfPageOrder,
+    )!;
+    final back = SavedWork.decode(w.encode())!;
+    final fresh = await fourPages(tester);
+    fresh.restoreWork(back);
+    expect([for (final p in fresh.pages) p.index], [0, 3, 1, 2]);
+  });
 }
