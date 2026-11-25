@@ -144,7 +144,13 @@ sulla porzione, eventuale suono).
 | Salto a ritmo | rimbalza a tempo e sparisce |
 | Disintegrazione a soffio | si polverizza e la polvere viene spazzata via dall'onda d'urto |
 
-Aggiungere una skin in futuro = 18 immagini + una scheda, senza riscrivere l'app.
+**Tre livelli quando SMASH colpisce:** sotto il documento; in mezzo l'**effetto su tutta la
+fascia** (disegnato dall'app alla misura esatta della fascia, sotto SMASH); sopra SMASH con i
+suoi effetti delle 18 immagini. Niente rettangoli disegnati a misura fissa (si deformerebbero):
+per ogni skin **6 piccoli elementi 128×128** (sassi, bollicine, popcorn, pipistrelli, pomodoro,
+nuvolette) che l'app sparge, fa volare e svanire lungo tutta la fascia.
+
+Aggiungere una skin in futuro = 18 immagini + 6 elementi + una scheda, senza riscrivere l'app.
 Le sceneggiature delle 18 immagini di ogni skin sono in [sceneggiature-skin.md](sceneggiature-skin.md)
 (da far realizzare con ChatGPT). Ogni skin: **stesso robot e stesse proporzioni** di SMASH; cambiano
 colori, accessori ed espressioni.
@@ -348,3 +354,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** squadra completa confermata: SMASH, Burp, Popcorn, Muahaha, Mamma Mia, Tycoon.
 - **25 nov 2026:** scritte le sceneggiature delle 18 immagini per Burp, Popcorn, Muahaha, Mamma Mia e Tycoon (stesso robot, stesse proporzioni).
 - **25 nov 2026:** posizione del contatore nell'editor: in alto a sinistra al posto di logo e scritta SMASHCROP.
+- **25 nov 2026:** SMASH Burp (18 immagini) approvato. Aggiunti i 6 elementi per skin da spargere su tutta la fascia (livello sotto SMASH). Pacchetto completo dei prompt per ChatGPT preparato.
