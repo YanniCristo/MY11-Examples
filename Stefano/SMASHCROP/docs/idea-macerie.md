@@ -39,9 +39,14 @@ bisogna lavorare di più: l'utente deve **affezionarsi**, usare l'app più a lun
 |---|---|---|
 | 10 L | tappa: "Hai riempito un secchio!" (nessuna evoluzione) | ~20 |
 | 100 L | **1ª evoluzione** – una carriola | ~200 |
-| 1 m³ | **2ª evoluzione** – un cassone | ~2.000 |
-| 10 m³ | **3ª evoluzione** – un camion | ~20.000 |
-| 100 m³ | **4ª evoluzione** – una palazzina demolita | ~200.000 |
+| 300 L | **2ª evoluzione** – una betoniera | ~600 |
+| 1 m³ | **3ª evoluzione** – un cassone | ~2.000 |
+| 3 m³ | **4ª evoluzione** – un camioncino pieno | ~6.000 |
+
+Crescita più dolce (circa ×3 tra un livello e l'altro, non ×10): la prima evoluzione costa
+lavoro, l'ultima è raggiungibile da chi usa l'app spesso.
+Ritmo indicativo: con ~50 tagli a settimana la 1ª evoluzione arriva in circa 1 mese e l'ultima
+in circa 2 anni; con ~10 a settimana la 1ª in circa 5 mesi.
 
 Le tappe intermedie senza evoluzione (secchio, poi eventualmente altre) servono a dare piccole
 soddisfazioni mentre si aspetta la prima evoluzione, senza regalarla.
@@ -138,7 +143,7 @@ Si può partire con B e sostituire poi con i disegni veri.
 
 ## Domande aperte
 
-1. Confermare blocco 5 cm e soglie (1ª evoluzione a 100 L ≈ 200 tagli) o renderle ancora più alte.
+1. Confermare blocco 5 cm e soglie (1ª evoluzione a 100 L ≈ 200 tagli, ultima a 3 m³ ≈ 6.000 tagli).
 2. Nomi e aspetto delle forme di SMASH per livello.
 3. Grafica: disegni nuovi o forme modificate dall'app per partire.
 
@@ -150,3 +155,5 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** soglie giudicate troppo basse → proposta blocco 5 cm con prima evoluzione a 100 L
   (~200 tagli) e tappe intermedie senza evoluzione. Definito il contatore compatto: totale con max
   3 cifre, barra 0–100% tra testa attuale e testa dell'evoluzione.
+- **25 nov 2026:** la scala ×10 portava l'ultimo livello a ~200.000 tagli (troppo). Nuova scala più
+  dolce: 100 L, 300 L, 1 m³, 3 m³ (ultima evoluzione ≈ 6.000 tagli).
