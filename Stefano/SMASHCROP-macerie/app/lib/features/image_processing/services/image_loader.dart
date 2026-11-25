@@ -1,11 +1,10 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_picker/image_picker.dart';
 
-import '../../pdf_processing/services/picker_options/picker_options.dart';
+import 'web_pick/web_pick.dart';
 
 /// Formato in cui salvare il risultato, deciso dal file di partenza.
 /// Formato del file salvato: lo stesso del file caricato.
@@ -93,7 +92,9 @@ class ImageLoadException implements Exception {
 
 /// Importa un'immagine dalla libreria del dispositivo.
 class ImageLoader {
-  ImageLoader({ImagePicker? picker}) : _picker = picker ?? ImagePicker();
+  ImageLoader({ImagePicker? picker}) : _picker = picker ?? ImagePicker() {
+    if (kIsWeb) watchPointerWeb();
+  }
 
   static const int maxSide = 16000;
 
@@ -115,16 +116,9 @@ class ImageLoader {
     int max = maxImages,
   }) async {
     var files = kIsWeb
-        // nel browser si usa lo stesso selettore dei PDF: quello di
-        // image_picker lascia nella pagina un campo file visibile, e
-        // Safari su iPhone lo mostrava come un grosso cerchio bianco
-        ? [
-            for (final f in await FilePicker.pickFiles(
-              type: FileType.image,
-              webOptions: pickerWebOptions,
-            ))
-              f.xFile,
-          ]
+        // nel browser un campo file nostro, sotto il dito: niente cerchio
+        // bianco di Safari su iPhone (vedi web_pick_web.dart)
+        ? await pickImagesWeb()
         // con limit 1 alcuni sistemi rifiutano la scelta multipla
         : await _picker.pickMultiImage(
             requestFullMetadata: false,
