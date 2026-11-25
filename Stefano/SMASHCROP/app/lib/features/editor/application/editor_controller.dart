@@ -113,6 +113,7 @@ class EditorController extends ChangeNotifier {
     this.exporter = const ExportService(),
   }) {
     kind = DocumentKind.pdf;
+    _pdfPageTotal = pages.length;
     _resetView();
     _initPrefs();
   }
@@ -269,6 +270,7 @@ class EditorController extends ChangeNotifier {
     images = [];
     pdf = session;
     pages = session.createPages();
+    _pdfPageTotal = pages.length;
     _resetView();
     _ensureRendered(0);
   }
@@ -312,10 +314,25 @@ class EditorController extends ChangeNotifier {
 
   // --- pagine di immagini: aggiungere e togliere -----------------------------
 
-  bool get canEditImagePages => !isPdf && canNavigate && !isAnimating;
+  bool get _canEditPages => canNavigate && !isAnimating;
   int get imagesRoom => ImageLoader.maxImages - images.length;
-  bool get canAddImages => canEditImagePages && imagesRoom > 0;
-  bool get canRemoveImagePage => canEditImagePages && images.length > 1;
+  bool get canAddImages => !isPdf && _canEditPages && imagesRoom > 0;
+
+  /// Si può togliere la pagina corrente (ne resta sempre almeno una).
+  bool get canRemovePage => _canEditPages && pages.length > 1;
+
+  /// Pagine del PDF originale (anche quelle tolte).
+  int _pdfPageTotal = 0;
+
+  /// Numeri delle pagine del PDF originale tolte dal documento.
+  List<int> get removedPdfPages {
+    if (!isPdf) return const [];
+    final present = {for (final p in pages) p.index};
+    return [
+      for (var i = 0; i < _pdfPageTotal; i++)
+        if (!present.contains(i)) i,
+    ];
+  }
 
   /// Aggiunge immagini in fondo, senza toccare quelle già aperte e i loro
   /// tagli, e porta alla prima aggiunta.
@@ -347,15 +364,19 @@ class EditorController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Toglie la pagina corrente (solo immagini, ne resta almeno una).
-  void removeCurrentImagePage() {
-    if (!canRemoveImagePage) return;
+  /// Toglie la pagina corrente dal documento (ne resta almeno una). Le
+  /// pagine dei PDF tengono il loro numero originale, che serve per
+  /// renderle ed esportarle; le immagini si rinumerano.
+  void removeCurrentPage() {
+    if (!canRemovePage) return;
     _cancelAnimation();
     final i = pageIndex;
     pages.removeAt(i).evict();
-    images = [...images]..removeAt(i);
-    for (var k = 0; k < pages.length; k++) {
-      pages[k].index = k;
+    if (!isPdf) {
+      images = [...images]..removeAt(i);
+      for (var k = 0; k < pages.length; k++) {
+        pages[k].index = k;
+      }
     }
     // la memoria delle pagine recenti si ricostruisce con i nuovi numeri
     _recentPages.clear();
@@ -427,7 +448,7 @@ class EditorController extends ChangeNotifier {
       ..add(i);
     while (_recentPages.length > keptPages) {
       final victim = _recentPages.removeAt(0);
-      if (victim != pageIndex && animation?.page.index != victim) {
+      if (victim != pageIndex && !identical(animation?.page, pages[victim])) {
         pages[victim].evict();
       }
     }
@@ -517,6 +538,7 @@ class EditorController extends ChangeNotifier {
     final key = Object.hashAll([
       pageIndex,
       nextPagesLayout,
+      pages.length,
       for (final p in pages) Object.hash(p.history.cursor, p.history.length),
     ]);
     if (key == _saveKey) return;
@@ -535,6 +557,7 @@ class EditorController extends ChangeNotifier {
       pageIndex: pageIndex,
       pages: pages,
       nextPagesLayout: nextPagesLayout?.mode,
+      removed: removedPdfPages,
     );
     if (w != null) {
       preferences.setSavedWork(w.encode());
@@ -550,6 +573,25 @@ class EditorController extends ChangeNotifier {
   /// Riprende un lavoro salvato sul file appena riaperto.
   void restoreWork(SavedWork w) {
     w.replayOn(pages);
+    if (isPdf && w.removed.isNotEmpty) {
+      final gone = w.removed.toSet();
+      final keep = [
+        for (final p in pages)
+          if (!gone.contains(p.index)) p,
+      ];
+      if (keep.isNotEmpty) {
+        for (final p in pages) {
+          if (gone.contains(p.index)) p.evict();
+        }
+        pages = keep;
+        _recentPages.clear();
+        for (var k = 0; k < pages.length; k++) {
+          if (pages[k].isReady) _recentPages.add(k);
+        }
+        pageIndex = 0;
+        if (!page.isReady) _ensureRendered(0);
+      }
+    }
     for (final p in pages) {
       p.selection = SelectionState.initial(
         width: p.doc.width,

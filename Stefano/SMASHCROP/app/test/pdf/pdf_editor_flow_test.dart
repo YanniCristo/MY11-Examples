@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smashcrop/features/editor/application/editor_controller.dart';
 import 'package:smashcrop/features/editor/application/editor_page.dart';
+import 'package:smashcrop/features/editor/application/saved_work.dart';
 import 'package:smashcrop/features/editor/domain/cut_operation.dart';
 import 'package:smashcrop/features/editor/domain/selection_state.dart';
 import 'package:smashcrop/features/pdf_processing/domain/page_layout.dart';
@@ -237,5 +238,46 @@ void main() {
     expect(c.doc.height, 842 - 200);
     expect(c.pages[2].history.hasCuts, isFalse);
     c.dispose();
+  });
+
+  testWidgets('togliere una pagina del PDF tiene il numero originale', (
+    tester,
+  ) async {
+    final c = await fourPages(tester);
+    c.goToPage(1);
+    expect(c.canRemovePage, isTrue);
+    c.removeCurrentPage();
+    expect(c.pageCount, 3);
+    expect([for (final p in c.pages) p.index], [0, 2, 3]);
+    expect(c.removedPdfPages, [1]);
+    expect(c.pageIndex, 1);
+    expect(c.page.index, 2, reason: 'ora si vede la pagina 3 originale');
+    c.removeCurrentPage();
+    c.removeCurrentPage();
+    expect(c.pageCount, 1);
+    expect(c.canRemovePage, isFalse, reason: 'ne resta sempre una');
+    expect(c.removedPdfPages, [1, 2, 3]);
+  });
+
+  testWidgets('le pagine tolte si salvano e si ripristinano', (tester) async {
+    final c = await fourPages(tester);
+    c.goToPage(2);
+    c.removeCurrentPage();
+    final w = SavedWork.capture(
+      isPdf: true,
+      name: 'a.pdf',
+      size: 10,
+      pageIndex: c.pageIndex,
+      pages: c.pages,
+      removed: c.removedPdfPages,
+    )!;
+    final back = SavedWork.decode(w.encode())!;
+    expect(back.removed, [2]);
+    expect(back.cutCount, 0);
+
+    final fresh = await fourPages(tester);
+    fresh.restoreWork(back);
+    expect(fresh.pageCount, 3);
+    expect([for (final p in fresh.pages) p.index], [0, 1, 3]);
   });
 }

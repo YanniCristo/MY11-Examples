@@ -262,7 +262,19 @@ class S {
     'Trabalho pendente',
     'Unfertige Arbeit',
   );
-  static String resumeBody(String name, int cuts) {
+  static String resumeBody(String name, int cuts, [int removed = 0]) {
+    if (removed > 0) {
+      final pages = _t(
+        removed == 1 ? 'pagina tolta' : 'pagine tolte',
+        removed == 1 ? 'page removed' : 'pages removed',
+        removed == 1 ? 'page retirée' : 'pages retirées',
+        removed == 1 ? 'página quitada' : 'páginas quitadas',
+        removed == 1 ? 'página removida' : 'páginas removidas',
+        removed == 1 ? 'Seite entfernt' : 'Seiten entfernt',
+      );
+      final base = cuts > 0 ? resumeBody(name, cuts) : name;
+      return '$base · $removed $pages';
+    }
     final one = cuts == 1;
     final word = _t(
       one ? 'taglio' : 'tagli',
@@ -756,5 +768,19 @@ class S {
     'Ya tienes $n imágenes: es el máximo.',
     'Você já tem $n imagens: é o máximo.',
     'Du hast bereits $n Bilder: das ist das Maximum.',
+  );
+  static String get removePdfPageBody => _t(
+    'La pagina e i suoi tagli escono dal documento che salverai. Il PDF '
+        'originale non viene toccato.',
+    'The page and its cuts leave the document you will save. The original '
+        'PDF is not touched.',
+    'La page et ses découpes sortent du document que vous enregistrerez. Le '
+        'PDF d\'origine n\'est pas modifié.',
+    'La página y sus cortes salen del documento que guardarás. El PDF '
+        'original no se modifica.',
+    'A página e seus cortes saem do documento que você vai salvar. O PDF '
+        'original não é alterado.',
+    'Die Seite und ihre Schnitte werden aus dem Dokument entfernt, das du '
+        'speicherst. Das Original-PDF bleibt unverändert.',
   );
 }

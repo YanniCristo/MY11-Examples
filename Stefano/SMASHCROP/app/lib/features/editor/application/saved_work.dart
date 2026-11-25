@@ -19,6 +19,7 @@ class SavedWork {
     required this.pageIndex,
     required this.pages,
     this.nextPagesLayout,
+    this.removed = const [],
   });
 
   final bool isPdf;
@@ -27,6 +28,11 @@ class SavedWork {
   final int pageIndex;
   final Map<int, SavedPage> pages;
   final PdfLayoutMode? nextPagesLayout;
+
+  /// Pagine del PDF tolte dal documento (numeri delle pagine originali).
+  final List<int> removed;
+
+  bool get hasWork => pages.isNotEmpty || removed.isNotEmpty;
 
   int get cutCount =>
       pages.values.fold(0, (n, p) => n + p.steps.whereType<CutStep>().length);
@@ -44,6 +50,7 @@ class SavedWork {
     required int pageIndex,
     required List<EditorPage> pages,
     PdfLayoutMode? nextPagesLayout,
+    List<int> removed = const [],
   }) {
     final saved = <int, SavedPage>{};
     for (final p in pages) {
@@ -52,7 +59,7 @@ class SavedWork {
         saved[p.index] = SavedPage(p.widthPx, p.heightPx, steps);
       }
     }
-    if (saved.isEmpty) return null;
+    if (saved.isEmpty && removed.isEmpty) return null;
     return SavedWork(
       isPdf: isPdf,
       name: name,
@@ -60,6 +67,7 @@ class SavedWork {
       pageIndex: pageIndex,
       pages: saved,
       nextPagesLayout: nextPagesLayout,
+      removed: removed,
     );
   }
 
@@ -111,6 +119,7 @@ class SavedWork {
     'size': size,
     'page': pageIndex,
     if (nextPagesLayout != null) 'next': nextPagesLayout!.name,
+    if (removed.isNotEmpty) 'removed': removed,
     'pages': {
       for (final e in pages.entries)
         '${e.key}': {
@@ -143,6 +152,9 @@ class SavedWork {
         nextPagesLayout: next == null
             ? null
             : PdfLayoutMode.values.firstWhere((x) => x.name == next),
+        removed: [
+          for (final r in (m['removed'] as List? ?? const [])) r as int,
+        ],
       );
     } catch (_) {
       return null;

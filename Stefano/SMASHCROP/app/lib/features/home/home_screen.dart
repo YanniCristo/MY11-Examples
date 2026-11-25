@@ -382,7 +382,7 @@ class _ResumeCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  S.resumeBody(work.name, work.cutCount),
+                  S.resumeBody(work.name, work.cutCount, work.removed.length),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(

@@ -155,14 +155,14 @@ class _EditorScreenState extends State<EditorScreen>
   }
 
   Future<void> _removePage() async {
-    if (!c.canRemoveImagePage) return;
+    if (!c.canRemovePage) return;
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: Text(S.removePageTitle),
         content: Text(
-          S.removePageBody,
+          c.isPdf ? S.removePdfPageBody : S.removePageBody,
           style: const TextStyle(color: AppColors.textMuted, fontSize: 15),
         ),
         actions: [
@@ -177,7 +177,7 @@ class _EditorScreenState extends State<EditorScreen>
         ],
       ),
     );
-    if (ok == true) c.removeCurrentImagePage();
+    if (ok == true) c.removeCurrentPage();
   }
 
   Future<void> _loadPdf() => _withLoading(S.pdfOpening, () async {
@@ -750,12 +750,6 @@ class _EditorScreenState extends State<EditorScreen>
               onPressed: c.canAddImages ? _addImages : null,
             ),
           ),
-          const SizedBox(width: 6),
-          arrow(
-            Icons.delete_outline,
-            c.canRemoveImagePage ? _removePage : null,
-            S.removePage,
-          ),
         ],
         if (c.isPdf)
           SizedBox(
@@ -770,6 +764,12 @@ class _EditorScreenState extends State<EditorScreen>
                   : null,
             ),
           ),
+        const SizedBox(width: 6),
+        arrow(
+          Icons.delete_outline,
+          c.canRemovePage ? _removePage : null,
+          S.removePage,
+        ),
       ],
     );
   }

@@ -179,7 +179,7 @@ void main() {
     final c = await three(tester);
     await cut(tester, c, 50, 100);
     c.goToPage(1);
-    c.removeCurrentImagePage();
+    c.removeCurrentPage();
     expect(c.pageCount, 2);
     expect(c.images.map((f) => f.name), ['foto_0.png', 'foto_2.png']);
     expect([for (final p in c.pages) p.index], [0, 1]);
@@ -189,10 +189,10 @@ void main() {
     );
     expect(c.doc.width, 90, reason: 'ora la pagina 2 è la terza foto');
     expect(c.pages[0].doc.height, 150);
-    c.removeCurrentImagePage();
+    c.removeCurrentPage();
     expect(c.pageCount, 1);
-    expect(c.canRemoveImagePage, isFalse, reason: 'ne resta almeno una');
-    c.removeCurrentImagePage();
+    expect(c.canRemovePage, isFalse, reason: 'ne resta almeno una');
+    c.removeCurrentPage();
     expect(c.pageCount, 1);
     c.dispose();
   });
