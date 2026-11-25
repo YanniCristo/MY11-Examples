@@ -78,8 +78,11 @@ festa dell'evoluzione). Chi preferisce la precedente la riprende dalla collezion
   manca (es. "Riempi una carriola · mancano 30 kg"), così fanno venire voglia;
 - **gli oggetti da cantiere non sono i nomi delle skin**: sono l'obiettivo per sbloccarle
   ("Riempi una carriola"). Le skin hanno nomi propri di SMASH (da decidere);
-- **skin extra** dell'acquisto a vita: con un'etichetta dedicata (es. "Founder"); per chi non ha
-  comprato restano chiuse con il prezzo;
+- **skin extra** dell'acquisto a vita: **"SMASH Trump", arancione** (scelta di Stefano, 25 nov);
+  per chi non ha comprato resta chiusa con il prezzo.
+  ⚠️ Da verificare prima della pubblicazione: il nome di una persona reale in una funzione a
+  pagamento può essere respinto da App Store / Google Play e "Trump" è un marchio registrato.
+  Alternativa pronta con lo stesso ammiccamento senza nome: "SMASH Tycoon" (arancione);
 - anteprima: toccando una skin si vede SMASH che dà il pugno con quella skin.
 
 **Dove si apre:**
@@ -214,6 +217,8 @@ Si può partire con B e sostituire poi con i disegni veri.
 - Blocco **5 cm** e soglie confermate: tappa 15 kg; evoluzioni a 150 kg, 450 kg, 1.500 kg, 4.500 kg.
 - Unità: **peso in kg**, sempre la stessa (densità 1,5 t/m³).
 - Gli oggetti da cantiere sono **obiettivi** ("Riempi una carriola"), **non** i nomi delle skin.
+- Nomi skin proposti (internazionali, corti): SMASH, SMASH Crunch, SMASH Turbo, SMASH Kaboom, SMASH XXL (da confermare).
+- Skin a vita: **SMASH Trump, arancione** (rischio store da verificare; riserva: SMASH Tycoon).
 - **Collezione skin:** la nuova skin si indossa da sola all'evoluzione; in "Collezione" si vedono tutte (le bloccate con lucchetto e quanto manca) e si sceglie quella da usare.
 - Contatore protetto **senza login**: locale + iCloud + backup Google/Block Store + valore più alto + codice di recupero.
 - Testa dell'evoluzione mostrata **a colori** (il suo colore vero) a destra della barra.
@@ -246,3 +251,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** confermato il piano salvataggi; il codice di recupero viene proposto con discrezione dopo le evoluzioni.
 - **25 nov 2026:** definita la collezione delle skin (cambio automatico all'evoluzione, scelta libera tra le sbloccate).
 - **25 nov 2026:** vista la simulazione della Collezione: ok; gli oggetti da cantiere diventano l'obiettivo ("Riempi una carriola"), non il nome della skin.
+- **25 nov 2026:** proposti nomi skin internazionali; la skin dell'acquisto a vita sarà "SMASH Trump" arancione (rischio store da verificare, riserva "SMASH Tycoon").
