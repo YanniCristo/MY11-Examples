@@ -74,8 +74,10 @@ festa dell'evoluzione). Chi preferisce la precedente la riprende dalla collezion
 **Sezione "Collezione"** (le skin di SMASH):
 - griglia con **tutte** le skin, nell'ordine delle evoluzioni (+ eventuali skin extra);
 - **sbloccate:** si toccano per indossarle; quella in uso ha la spunta;
-- **ancora da sbloccare:** visibili nel loro colore ma con un **lucchetto** e quanto manca
-  (es. "mancano 23 kg"), così fanno venire voglia;
+- **ancora da sbloccare:** visibili nel loro colore ma con un **lucchetto**, l'obiettivo e quanto
+  manca (es. "Riempi una carriola · mancano 30 kg"), così fanno venire voglia;
+- **gli oggetti da cantiere non sono i nomi delle skin**: sono l'obiettivo per sbloccarle
+  ("Riempi una carriola"). Le skin hanno nomi propri di SMASH (da decidere);
 - **skin extra** dell'acquisto a vita: con un'etichetta dedicata (es. "Founder"); per chi non ha
   comprato restano chiuse con il prezzo;
 - anteprima: toccando una skin si vede SMASH che dà il pugno con quella skin.
@@ -211,6 +213,7 @@ Si può partire con B e sostituire poi con i disegni veri.
 - La prima evoluzione deve **costare lavoro** (soglie più alte del blocco 10 cm).
 - Blocco **5 cm** e soglie confermate: tappa 15 kg; evoluzioni a 150 kg, 450 kg, 1.500 kg, 4.500 kg.
 - Unità: **peso in kg**, sempre la stessa (densità 1,5 t/m³).
+- Gli oggetti da cantiere sono **obiettivi** ("Riempi una carriola"), **non** i nomi delle skin.
 - **Collezione skin:** la nuova skin si indossa da sola all'evoluzione; in "Collezione" si vedono tutte (le bloccate con lucchetto e quanto manca) e si sceglie quella da usare.
 - Contatore protetto **senza login**: locale + iCloud + backup Google/Block Store + valore più alto + codice di recupero.
 - Testa dell'evoluzione mostrata **a colori** (il suo colore vero) a destra della barra.
@@ -219,7 +222,7 @@ Si può partire con B e sostituire poi con i disegni veri.
 
 ## Domande aperte
 
-1. Nomi e aspetto delle forme di SMASH per livello.
+1. Nomi e aspetto delle forme di SMASH per livello (nomi propri del personaggio, non gli oggetti da cantiere).
 2. Grafica: disegni nuovi o forme modificate dall'app per partire.
 
 ## Registro
@@ -242,3 +245,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** deciso di restare senza login (niente Firebase): si attivano tutti i salvataggi senza account.
 - **25 nov 2026:** confermato il piano salvataggi; il codice di recupero viene proposto con discrezione dopo le evoluzioni.
 - **25 nov 2026:** definita la collezione delle skin (cambio automatico all'evoluzione, scelta libera tra le sbloccate).
+- **25 nov 2026:** vista la simulazione della Collezione: ok; gli oggetti da cantiere diventano l'obiettivo ("Riempi una carriola"), non il nome della skin.
