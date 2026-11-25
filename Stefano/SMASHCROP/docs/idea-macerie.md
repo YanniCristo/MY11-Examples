@@ -137,8 +137,8 @@ sulla porzione, eventuale suono).
 |---|---|
 | Frantumazione | schegge che volano (quello di oggi) |
 | Sbriciolamento a onde | si sgretola dal centro verso fuori |
-| Catapulta | viene sparata via fuori dallo schermo |
-| Combustione | si annerisce e diventa cenere che sale |
+| Scoppio in popcorn | scoppietta trasformandosi in popcorn che volano verso SMASH |
+| Mangiata a morsi | sparisce a morsi, pezzo dopo pezzo |
 | Schiacciamento | appiattita con crepe e tremore |
 | Affettatura + schizzi | tagliata a fette dalla pizza, schizzi di pomodoro che colano e svaniscono |
 | Salto a ritmo | rimbalza a tempo e sparisce |
@@ -154,8 +154,8 @@ confermati (da far realizzare con ChatGPT).
 |---|---|---|---|---|
 | inizio | **SMASH** | pugno | frantumazione | esistente |
 | Riempi una carriola | **SMASH Burp** | rutto dall'eco distruttivo | sbriciolamento a onde | confermata |
-| Riempi una betoniera | SMASH Boing | molle ai piedi: salta sulla porzione e la catapulta via | catapulta | proposta |
-| Riempi un cassone | SMASH Inferno *(o Phantom / Zombot)* | horror: visore laser rosso, luci che calano | combustione | proposta |
+| Riempi una betoniera | **SMASH Popcorn** | allunga le mani e spara un **raggio di calore**: la porzione scoppietta in una pioggia di popcorn, lui apre la bocca e se li mangia al volo | scoppio in popcorn | confermata |
+| Riempi un cassone | **SMASH Muahaha** | horror: cala la notte e sorge una **luna rossa**; il **visore laser** spara un raggio che apre un portale; ne esce uno **sciame di pipistrelli** che divora la porzione a morsi, mentre lui fa la risata malvagia | mangiata a morsi | confermata |
 | Riempi un camioncino | **SMASH Mamma Mia** | lancia una **pizza rotante** come un frisbee: squarcia la porzione e riempie tutto di pomodoro | affettatura + schizzi di pomodoro | confermata |
 | a vita | **SMASH Tycoon** (arancione) | entra col **balletto** (stile comizio: pugni chiusi, avambracci che pompano alternati all'altezza del petto, leggero dondolio dei fianchi, passetti laterali); poi **si gira, si piega e scorreggia**: l'onda d'urto parte verso l'epicentro e disintegra tutto | disintegrazione a soffio (polvere spazzata via dall'onda) | confermata |
 
@@ -167,7 +167,7 @@ Regola pomodoro (Mamma Mia): schizzi **chiaramente di pomodoro da cartone** (ros
 semini, foglia di basilico, pezzetti di mozzarella), mai rosso scuro né colature che sembrino
 sangue; svaniscono in pochi istanti.
 
-Regole horror (Inferno): niente sangue, ferite, corpi o mostri realistici, niente jump scare né
+Regole horror (Muahaha): niente sangue, ferite, corpi o mostri realistici, niente jump scare né
 urla; stile "Halloween per tutti" (buio, occhi che brillano, laser, braci, glitch), così l'app
 resta per tutte le età.
 
@@ -291,8 +291,9 @@ Si può partire con B e sostituire poi con i disegni veri.
   - **Confermata: SMASH Burp** (obiettivo: riempi una carriola). Non dà il pugno: **distrugge con un
     rutto dall'eco distruttivo** (onde d'urto ad anelli che si allargano e frantumano la porzione,
     scritta da fumetto "BURP" con eco; eventuale suono originale, sempre breve e saltabile).
-  - Proposte ancora da confermare: SMASH Disco (betoniera), SMASH Pew Pew con **vista laser e visore
-    orizzontale** (cassone), SMASH Mamma Mia (camioncino). Altre idee: Yummy, Boing, Bonk, Banana.
+  - Squadra completa confermata: SMASH (pugno), **Burp** (rutto), **Popcorn** (raggio di calore),
+    **Muahaha** (horror: visore laser, luna rossa, pipistrelli), **Mamma Mia** (pizza rotante),
+    **Tycoon** (a vita: balletto + scorreggia).
   - Il visore è uno stile generico da robot: il film resta solo un ammiccamento, mai nominato.
 - Skin a vita: **SMASH Tycoon, arancione, con il balletto** (nome neutro, parodia nel movimento, niente musica).
 - **Collezione skin:** la nuova skin si indossa da sola all'evoluzione; in "Collezione" si vedono tutte (le bloccate con lucchetto e quanto manca) e si sceglie quella da usare.
@@ -336,3 +337,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** definito il metodo skin (18 PNG del personaggio + effetto porzione fatto dall'app) e proposta la rosa dei personaggi (Boing, Inferno, Mamma Mia).
 - **25 nov 2026:** confermata SMASH Mamma Mia: pizza rotante che squarcia e schizza pomodoro (stile cartone, mai simile al sangue).
 - **25 nov 2026:** SMASH Tycoon: entra col balletto, si gira, si piega e scorreggia con onda d'urto verso l'epicentro che disintegra la porzione.
+- **25 nov 2026:** squadra completa confermata: SMASH, Burp, Popcorn, Muahaha, Mamma Mia, Tycoon.
