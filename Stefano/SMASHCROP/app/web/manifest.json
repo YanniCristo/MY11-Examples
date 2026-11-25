@@ -3,7 +3,7 @@
     "short_name": "SmashCrop",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0A0B10",
+    "background_color": "#000000",
     "theme_color": "#0A0B10",
     "description": "Rimuovi sezioni di foto e PDF e ricongiungi il resto.",
     "orientation": "portrait-primary",

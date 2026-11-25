@@ -1,9 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../app/theme.dart';
-
-/// Marchio dell'app: icona di SMASH + scritta SMASHCROP
-/// ("SMASH" rosso, "CROP" bianco).
+/// Marchio dell'app: icona di SMASH + scritta SMASHCROP (immagine presa dal logo).
 class BrandMark extends StatelessWidget {
   const BrandMark({super.key, this.size = 24});
 
@@ -26,26 +23,10 @@ class BrandMark extends StatelessWidget {
               ),
             ),
             SizedBox(width: size * .35),
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'SMASH',
-                    style: TextStyle(color: AppColors.red),
-                  ),
-                  TextSpan(
-                    text: 'CROP',
-                    style: TextStyle(color: AppColors.text),
-                  ),
-                ],
-              ),
-              style: TextStyle(
-                fontFamily: kDisplayFont,
-                fontWeight: FontWeight.w800,
-                fontSize: size,
-                height: 1,
-                letterSpacing: -.3,
-              ),
+            Image.asset(
+              'assets/branding/wordmark.webp',
+              height: size * .95,
+              filterQuality: FilterQuality.medium,
             ),
           ],
         ),
