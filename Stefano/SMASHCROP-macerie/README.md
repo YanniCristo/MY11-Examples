@@ -17,10 +17,20 @@ Specifica completa: [`../SMASHCROP/docs/idea-macerie.md`](../SMASHCROP/docs/idea
 - **Suoni** (4 varianti a caso per personaggio, seguono il silenzioso dell'iPhone) e **vibrazione**.
 - **Menu ☰**: Collezione, suoni, vibrazione, Premium (in arrivo), codice di recupero, aiuto.
 - **Codice di recupero** (12 caratteri con firma) per cambio telefono / webapp.
+- **Salvataggio automatico senza login**: iCloud (chiave-valore) su iPhone e Google Block Store su
+  Android. Unione delle copie: chili più alti e tutto ciò che è sbloccato da entrambe.
+
+## ⚠️ Da fare quando si apre il progetto in Xcode
+
+1. Runner → **Signing & Capabilities** → **+ Capability** → **iCloud**.
+2. Spuntare **Key-value storage** (non servono CloudKit né Documents).
+3. Senza questo passo l'app funziona lo stesso, ma il contatore resta solo sul telefono.
+4. Prova: fai qualche taglio con SMASH, aspetta qualche secondo, cancella l'app, reinstallala
+   (TestFlight) con lo stesso ID Apple: i kg devono tornare.
+   Su Android: stessa prova con un telefono con backup Google attivo.
 
 ## Ancora da fare
 
-- iCloud (archivio chiave-valore) e Google Block Store per il contatore senza codice.
 - Acquisto a vita (Tycoon + niente pubblicità) e "Ripristina acquisti".
 - Effetti diversi sulla porzione per ogni skin (oggi tutti usano la frantumazione + gli elementi).
 

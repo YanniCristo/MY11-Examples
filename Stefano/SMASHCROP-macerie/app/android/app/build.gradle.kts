@@ -47,3 +47,8 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // salvataggio automatico del contatore delle macerie (senza login)
+    implementation("com.google.android.gms:play-services-auth-blockstore:16.4.0")
+}

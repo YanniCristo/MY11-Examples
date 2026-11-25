@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:material_ui/material_ui.dart';
@@ -5,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/rubble_math.dart';
 import '../domain/skins.dart';
+import 'cloud_save.dart';
 
 /// Cosa è successo aggiungendo macerie.
 class RubbleGain {
@@ -56,8 +58,21 @@ class RubbleStore extends ChangeNotifier {
     } catch (_) {}
     final s = RubbleStore._(p);
     s._read(p?.getString(_key));
+    s._cloud = CloudSave.supported;
+    // la copia nell'account si legge in sottofondo: l'avvio non aspetta
+    if (s._cloud) {
+      CloudSave.onChanged(s.mergeFrom);
+      unawaited(
+        CloudSave.read().then((raw) {
+          if (raw != null) s.mergeFrom(raw);
+          CloudSave.write(s.encode());
+        }),
+      );
+    }
     return s;
   }
+
+  bool _cloud = false;
 
   @visibleForTesting
   factory RubbleStore.memory() => RubbleStore._(null);
@@ -157,9 +172,45 @@ class RubbleStore extends ChangeNotifier {
   });
 
   void _save() {
+    final raw = encode();
     try {
-      _prefs?.setString(_key, encode());
+      _prefs?.setString(_key, raw);
     } catch (_) {}
+    if (_cloud) CloudSave.write(raw);
+  }
+
+  /// Unisce una copia arrivata dall'account (telefono nuovo, reinstallazione,
+  /// altro dispositivo). Non si perde mai niente: si tengono i chili più alti
+  /// e tutto ciò che è stato sbloccato o già fatto da una delle due parti.
+  /// `true` se è cambiato qualcosa.
+  bool mergeFrom(String raw) {
+    final o = RubbleStore._(null).._read(raw);
+    if (o.grams == 0 && o.unlocked.length <= 1 && !o.lifetime) return false;
+    final before = encode();
+    final wasEmpty = grams == 0 && unlocked.length <= 1;
+    if (o.grams > grams) grams = o.grams;
+    unlocked.addAll(o.unlocked);
+    seen.addAll(o.seen);
+    milestonesDone.addAll(o.milestonesDone);
+    lifetime = lifetime || o.lifetime;
+    firstEvolutionDone = firstEvolutionDone || o.firstEvolutionDone;
+    collectionHintShown = collectionHintShown || o.collectionHintShown;
+    sleepToastShown = sleepToastShown || o.sleepToastShown;
+    recoveryOffered = recoveryOffered || o.recoveryOffered;
+    // su un'app appena installata si riprendono anche skin e impostazioni
+    if (wasEmpty) {
+      skinId = o.skinId;
+      sound = o.sound;
+      haptics = o.haptics;
+    }
+    for (final e in kEvolutions) {
+      if (kg >= e.thresholdKg) unlocked.add(e.id);
+    }
+    if (!isUnlocked(skin)) skinId = 'smash';
+    if (encode() == before) return false;
+    _save();
+    notifyListeners();
+    return true;
   }
 
   // --- codice di recupero ----------------------------------------------------

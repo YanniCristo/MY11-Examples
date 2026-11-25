@@ -426,3 +426,11 @@ La card da condividere e le sagome nere della Collezione le genera l'app. **Graf
 - **25 nov 2026:** completati teste, pose da eroe e suoni (4 varianti per personaggio da ElevenLabs, scelte a caso a ogni taglio). Tutto il materiale per la copia con le macerie è pronto.
 - **25 nov 2026:** decisi suoni (seguono il silenzioso), vibrazione e menu ☰ (home a destra, editor a sinistra); "Condividi l'app" voce a sé; nessun abbonamento, solo acquisto a vita non consumabile con Ripristina acquisti.
 - **25 nov 2026:** menu ☰ aggiunto anche all'app principale (lingua, Condividi l'app, privacy, versione). Creata la copia `Stefano/SMASHCROP-macerie/app` con contatore in kg, barra con teste, effetti a ogni colpo (caduta + calamita + "gnam"), 6 skin, suoni casuali, vibrazione, evoluzione a tutto schermo, Collezione animata con card da condividere, menu completo e codice di recupero. Restano: iCloud/Block Store, acquisto a vita, effetti diversi sulla porzione per skin.
+- **25 nov 2026 (sera):** fatto nella copia il salvataggio automatico senza login.
+  iPhone: `NSUbiquitousKeyValueStore` (in `ios/Runner/AppDelegate.swift`), con avviso quando un
+  altro dispositivo aggiorna. Android: Google Block Store 16.4.0 (in `MainActivity.kt`), copia nel
+  backup Google solo se cifrata. Dart: `lib/features/rubble/application/cloud_save.dart` e
+  `RubbleStore.mergeFrom` (chili più alti, skin e traguardi di entrambe, acquisto a vita resta;
+  su app appena installata riprende anche skin, suoni e vibrazione). Scrittura raggruppata ogni 2 s.
+  **Da fare in Xcode:** capability iCloud → Key-value storage (vedi README della copia).
+

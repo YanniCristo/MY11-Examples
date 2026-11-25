@@ -117,4 +117,51 @@ void main() {
       expect(raw, contains('"snd":false'));
     });
   });
+
+  group('copia nell\'account (iCloud / Block Store)', () {
+    test('app reinstallata: riprende chili, skin e impostazioni', () {
+      final old = RubbleStore.memory()..add(200);
+      old.setSound(false);
+      final fresh = RubbleStore.memory();
+      expect(fresh.mergeFrom(old.encode()), isTrue);
+      expect(fresh.grams, old.grams);
+      expect(fresh.unlocked, containsAll(['smash', 'burp']));
+      expect(fresh.skinId, 'burp');
+      expect(fresh.sound, isFalse);
+    });
+
+    test('due copie diverse: chili più alti e skin di entrambe', () {
+      final a = RubbleStore.memory()..add(500);
+      a.choose(skinById('smash'));
+      final b = RubbleStore.memory()..add(20);
+      expect(b.mergeFrom(a.encode()), isTrue);
+      expect(b.grams, a.grams);
+      expect(b.unlocked, containsAll(['burp', 'popcorn']));
+      // chi aveva già usato l'app tiene la sua skin
+      expect(b.skinId, 'smash');
+    });
+
+    test('il contatore non scende mai', () {
+      final small = RubbleStore.memory()..add(10);
+      final big = RubbleStore.memory()..add(100);
+      final g = big.grams;
+      expect(big.mergeFrom(small.encode()), isFalse);
+      expect(big.grams, g);
+    });
+
+    test('copia vuota o rovinata: non cambia niente', () {
+      final s = RubbleStore.memory()..add(50);
+      final before = s.encode();
+      expect(s.mergeFrom(RubbleStore.memory().encode()), isFalse);
+      expect(s.mergeFrom('non è json'), isFalse);
+      expect(s.encode(), before);
+    });
+
+    test('acquisto a vita: resta vero', () {
+      final a = RubbleStore.memory()..flag((s) => s.lifetime = true);
+      final b = RubbleStore.memory()..add(30);
+      b.mergeFrom(a.encode());
+      expect(b.lifetime, isTrue);
+    });
+  });
 }
