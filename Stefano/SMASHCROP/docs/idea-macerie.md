@@ -441,4 +441,8 @@ La card da condividere e le sagome nere della Collezione le genera l'app. **Graf
   pomodoro da cartone (picciolo, riflesso, semini) che salta e si schiaccia, basilico e spaghetti,
   niente schizzi; Tycoon monete d'oro generiche e coriandoli dorati. Intensità in base ai kg del
   taglio; con "riduci movimento" resta solo la base; anteprima anche nella Collezione.
+- **25 nov 2026 (sera):** suoni sistemati: tolto il silenzio iniziale (fino a 0,12 s) da tutti i
+  suoni, lettori caricati in anticipo all'apertura dell'editor (prima il suono veniva scaricato al
+  colpo e arrivava in ritardo). Il "gnam" della barra sembrava una scorreggia dopo il pugno: sostituito
+  da un "pling" breve (due note che salgono). Effetti delle skin ritagliati sopra i pulsanti in basso.
 

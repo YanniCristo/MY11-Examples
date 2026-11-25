@@ -102,6 +102,22 @@ def gnam():
     return voice + 0.5 * chomp
 
 
+# 3b. PLING: i pezzi arrivano alla barra (sostituisce "gnam", che sembrava
+# una scorreggia): due note chiare che salgono, come una moneta raccolta
+def pling():
+    d = 0.32
+    tt = t(d)
+    out = np.zeros(len(tt))
+    for start, f in ((0.0, 1318.5), (0.07, 1975.5)):  # Mi6 e Si6
+        k = int(SR * start)
+        n = len(tt) - k
+        x = np.arange(n) / SR
+        tone = (np.sin(2 * np.pi * f * x) + 0.35 * np.sin(2 * np.pi * 2 * f * x)
+                + 0.12 * np.sin(2 * np.pi * 3.01 * f * x))
+        out[k:] += tone * env(n, 0.002, 0.09)
+    return out
+
+
 # 4. RUTTO da cartone: tono basso che vibra e scende, con "eco"
 def rutto():
     d = 0.9
@@ -128,4 +144,5 @@ if __name__ == '__main__':
     save(f'{d}/1_colpo.wav', colpo())
     save(f'{d}/2_pop_popcorn.wav', pop())
     save(f'{d}/3_gnam.wav', gnam())
+    save(f'{d}/3b_pling.wav', pling())
     save(f'{d}/4_rutto.wav', rutto())

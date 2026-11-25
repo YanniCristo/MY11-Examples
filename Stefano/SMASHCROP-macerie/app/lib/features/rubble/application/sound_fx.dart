@@ -16,10 +16,15 @@ class SoundFx {
   static final SoundFx instance = SoundFx._();
 
   final _rnd = math.Random();
-  final List<AudioPlayer> _pool = [];
-  int _next = 0;
   bool _ready = false;
   final Map<String, int> _last = {};
+
+  /// Un lettore già caricato per ogni suono: al colpo si fa solo "play",
+  /// senza scaricare né decodificare niente (altrimenti il suono arriva in
+  /// ritardo, soprattutto nel browser).
+  final Map<String, AudioPlayer> _players = {};
+
+  static const _pling = 'sounds/pling_barra.mp3';
 
   Future<void> _init() async {
     if (_ready) return;
@@ -32,22 +37,40 @@ class SoundFx {
         ).build(),
       );
     } catch (_) {}
-    for (var i = 0; i < 4; i++) {
+  }
+
+  Future<AudioPlayer?> _player(String asset) async {
+    final have = _players[asset];
+    if (have != null) return have;
+    try {
+      await _init();
       final p = AudioPlayer();
-      try {
-        await p.setReleaseMode(ReleaseMode.stop);
-      } catch (_) {}
-      _pool.add(p);
+      _players[asset] = p;
+      await p.setReleaseMode(ReleaseMode.stop);
+      await p.setSource(AssetSource(asset));
+      return p;
+    } catch (e) {
+      if (kDebugMode) debugPrint('suono non caricato: $e');
+      return null;
+    }
+  }
+
+  /// Carica in anticipo i suoni del personaggio in uso (all'apertura
+  /// dell'editor e quando si cambia skin).
+  Future<void> prepare(SkinDef skin) async {
+    for (final a in [...skin.sounds, _pling]) {
+      await _player(a);
     }
   }
 
   Future<void> _play(String asset, {double volume = 1}) async {
     try {
-      await _init();
-      final p = _pool[_next];
-      _next = (_next + 1) % _pool.length;
+      final p = await _player(asset);
+      if (p == null) return;
+      await p.setVolume(volume);
+      // stop riporta all'inizio tenendo il suono caricato
       await p.stop();
-      await p.play(AssetSource(asset), volume: volume);
+      await p.resume();
     } catch (e) {
       if (kDebugMode) debugPrint('suono non riprodotto: $e');
     }
@@ -63,7 +86,8 @@ class SoundFx {
     _play(skin.sounds[i]);
   }
 
-  void gnam() => _play('sounds/gnam_barra.mp3', volume: .8);
+  /// I pezzi arrivano alla barra: un "pling" chiaro e breve.
+  void pling() => _play(_pling, volume: .55);
 
   static void punch() => HapticFeedback.mediumImpact();
   static void tick() => HapticFeedback.lightImpact();

@@ -104,6 +104,7 @@ class _EditorScreenState extends State<EditorScreen>
     final skin = _rubble.skin;
     if (_loadedSkin == skin.id) return;
     _loadedSkin = skin.id;
+    if (_rubble.sound) SoundFx.instance.prepare(skin);
     SkinImages.load(skin)
         .then((imgs) {
           if (!mounted || _rubble.skinId != skin.id) return;
@@ -131,7 +132,7 @@ class _EditorScreenState extends State<EditorScreen>
 
   void _onArrive(CutAnimation a) {
     final gain = _rubble.add(a.rubbleKg);
-    if (_rubble.sound) SoundFx.instance.gnam();
+    if (_rubble.sound) SoundFx.instance.pling();
     if (_rubble.haptics) SoundFx.tick();
     _pendingEvolutions.addAll(gain.evolutions);
     _pendingMilestones.addAll(gain.milestones);
