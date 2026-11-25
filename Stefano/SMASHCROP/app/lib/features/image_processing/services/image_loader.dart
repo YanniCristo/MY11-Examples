@@ -39,6 +39,47 @@ class LoadedImage {
 
   int get width => image.width;
   int get height => image.height;
+
+  ImageFile get file => ImageFile(
+    bytes: bytes,
+    name: name,
+    format: format,
+    width: width,
+    height: height,
+  );
+}
+
+/// Un'immagine di un gruppo: si tiene solo il file (leggero); i pixel si
+/// decodificano quando la sua pagina serve e si liberano quando non serve
+/// più, come per le pagine dei PDF.
+class ImageFile {
+  const ImageFile({
+    required this.bytes,
+    required this.name,
+    required this.format,
+    required this.width,
+    required this.height,
+  });
+
+  final Uint8List? bytes;
+  final String name;
+  final OutputFormat format;
+  final int width;
+  final int height;
+}
+
+/// Le immagini scelte, nell'ordine di scelta. [decoded] ha le prime già
+/// pronte (le altre sono `null` e si decodificano al bisogno).
+class PickedImages {
+  PickedImages(this.files, this.decoded);
+  final List<ImageFile> files;
+  final List<ui.Image?> decoded;
+
+  int get length => files.length;
+  int get totalBytes => files.fold(0, (s, f) => s + (f.bytes?.length ?? 0));
+
+  factory PickedImages.single(LoadedImage img) =>
+      PickedImages([img.file], [img.image]);
 }
 
 class ImageLoadException implements Exception {
@@ -51,7 +92,60 @@ class ImageLoader {
   ImageLoader({ImagePicker? picker}) : _picker = picker ?? ImagePicker();
 
   static const int maxSide = 16000;
+
+  /// Massimo di immagini in un documento.
+  static const int maxImages = 50;
+
+  /// Immagini decodificate subito: la prima e la successiva.
+  static const int decodedAhead = 2;
   final ImagePicker _picker;
+
+  /// Sceglie una o più immagini. `null` se l'utente annulla.
+  /// [confirmSize] riceve il peso totale prima di leggerle: se risponde
+  /// `false` l'apertura si annulla. [onTruncated] avvisa se ne sono state
+  /// scelte più del massimo.
+  Future<PickedImages?> pickMany({
+    Future<bool> Function(int bytes)? confirmSize,
+    void Function(int max)? onTruncated,
+  }) async {
+    var files = await _picker.pickMultiImage(
+      requestFullMetadata: false,
+      limit: maxImages,
+    );
+    if (files.isEmpty) return null;
+    if (files.length > maxImages) {
+      files = files.sublist(0, maxImages);
+      onTruncated?.call(maxImages);
+    }
+    if (confirmSize != null) {
+      var total = 0;
+      for (final f in files) {
+        total += await f.length();
+      }
+      if (!await confirmSize(total)) return null;
+    }
+    final out = <ImageFile>[];
+    final decoded = <ui.Image?>[];
+    try {
+      for (final f in files) {
+        final loaded = await decode(await f.readAsBytes(), f.name);
+        out.add(loaded.file);
+        if (decoded.length < decodedAhead) {
+          decoded.add(loaded.image);
+        } else {
+          // servivano solo le misure: i pixel si rifanno quando servono
+          loaded.image.dispose();
+          decoded.add(null);
+        }
+      }
+    } catch (_) {
+      for (final d in decoded) {
+        d?.dispose();
+      }
+      rethrow;
+    }
+    return PickedImages(out, decoded);
+  }
 
   /// `null` se l'utente annulla la scelta.
   Future<LoadedImage?> pick() async {

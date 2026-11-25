@@ -16,6 +16,7 @@ class ImageEncodeJob {
     required this.tiles,
     this.original,
     this.rgba,
+    this.flattenOnWhite = false,
   });
 
   /// Formato di uscita: lo stesso del file caricato.
@@ -29,6 +30,9 @@ class ImageEncodeJob {
   /// Pixel già decodificati dal sistema, usati solo se il file originale non
   /// si può leggere qui (per esempio HEIC).
   final Uint8List? rgba;
+
+  /// Le parti trasparenti diventano bianche (per il JPEG dentro un PDF).
+  final bool flattenOnWhite;
 }
 
 /// Qualità JPEG massima e colore pieno (4:4:4, nessun sottocampionamento):
@@ -78,6 +82,17 @@ Uint8List? encodeImageJob(ImageEncodeJob j) {
   }
 
   final out = RasterImage.composeTiles(source, j.outW, j.outH, j.tiles);
+  if (j.flattenOnWhite) {
+    final px = out.rgba;
+    for (var p = 0; p < px.length; p += 4) {
+      final a = px[p + 3];
+      if (a == 255) continue;
+      for (var k = 0; k < 3; k++) {
+        px[p + k] = (px[p + k] * a + 255 * (255 - a)) ~/ 255;
+      }
+      px[p + 3] = 255;
+    }
+  }
   final image = img.Image.fromBytes(
     width: out.width,
     height: out.height,

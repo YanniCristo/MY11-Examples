@@ -9,6 +9,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../animation/domain/cut_timeline.dart';
 import '../../animation/domain/smash_config.dart';
 import '../../export/export_service.dart';
+import '../../export/images_pdf.dart';
 import '../../image_processing/services/image_loader.dart';
 import '../../pdf_processing/domain/page_layout.dart';
 import '../../pdf_processing/services/pdf_service.dart';
@@ -78,7 +79,18 @@ class EditorController extends ChangeNotifier {
     this.settings = const CutAnimationSettings(),
     this.exporter = const ExportService(),
   }) {
-    _openImage(image);
+    _openImages(PickedImages.single(image));
+    _initPrefs();
+  }
+
+  /// Una o più immagini: con più di una si lavora a pagine, come un PDF.
+  EditorController.images({
+    required PickedImages images,
+    required this.preferences,
+    this.settings = const CutAnimationSettings(),
+    this.exporter = const ExportService(),
+  }) {
+    _openImages(images);
     _initPrefs();
   }
 
@@ -113,7 +125,9 @@ class EditorController extends ChangeNotifier {
   final ValueNotifier<int> frameTick = ValueNotifier(0);
 
   late DocumentKind kind;
-  LoadedImage? imageSource;
+
+  /// Le immagini aperte, una per pagina (vuota per i PDF).
+  List<ImageFile> images = [];
   PdfSession? pdf;
   List<EditorPage> pages = [];
   int pageIndex = 0;
@@ -176,6 +190,10 @@ class EditorController extends ChangeNotifier {
   // --- lettura dello stato -------------------------------------------------
 
   bool get isPdf => kind == DocumentKind.pdf;
+
+  /// Più pagine da scorrere: un PDF o un gruppo di immagini.
+  bool get hasPages => pages.length > 1;
+  bool get multiImage => !isPdf && images.length > 1;
   EditorPage get page => pages[pageIndex];
   bool get pageReady => page.isReady;
   int get pageCount => pages.length;
@@ -227,24 +245,28 @@ class EditorController extends ChangeNotifier {
 
   // --- documento -----------------------------------------------------------
 
-  void _openImage(LoadedImage image) {
+  void _openImages(PickedImages picked) {
     kind = DocumentKind.image;
-    imageSource = image;
+    images = List.of(picked.files);
     pdf = null;
     pages = [
-      EditorPage(
-        index: 0,
-        widthPx: image.width,
-        heightPx: image.height,
-        image: image.image,
-      ),
+      for (var i = 0; i < images.length; i++)
+        EditorPage(
+          index: i,
+          widthPx: images[i].width,
+          heightPx: images[i].height,
+          image: i < picked.decoded.length ? picked.decoded[i] : null,
+        ),
     ];
     _resetView();
+    for (var i = 0; i < pages.length; i++) {
+      if (pages[i].isReady) _touch(i);
+    }
   }
 
   void _openPdf(PdfSession session) {
     kind = DocumentKind.pdf;
-    imageSource = null;
+    images = [];
     pdf = session;
     pages = session.createPages();
     _resetView();
@@ -271,9 +293,12 @@ class EditorController extends ChangeNotifier {
     if (old != null) old.dispose();
   }
 
-  void replaceWithImage(LoadedImage image) {
+  void replaceWithImage(LoadedImage image) =>
+      replaceWithImages(PickedImages.single(image));
+
+  void replaceWithImages(PickedImages picked) {
     _closeCurrent();
-    _openImage(image);
+    _openImages(picked);
     notifyListeners();
   }
 
@@ -287,15 +312,26 @@ class EditorController extends ChangeNotifier {
 
   // --- pagine PDF ------------------------------------------------------------
 
+  /// Prepara i pixel di una pagina: resa del PDF oppure decodifica
+  /// dell'immagine dal suo file.
   Future<void> _ensureRendered(int i) async {
     final session = pdf;
-    if (session == null || pages[i].isReady || _rendering.contains(i)) return;
+    final files = images;
+    if (session == null && files.isEmpty) return;
+    if (pages[i].isReady || _rendering.contains(i)) return;
     _rendering.add(i);
     final target = pages[i];
     try {
-      final img = await session.render(target);
+      final ui.Image img;
+      if (session != null) {
+        img = await session.render(target);
+      } else {
+        final f = files[i];
+        img = (await ImageLoader.decode(f.bytes!, f.name)).image;
+      }
       if (_disposed ||
           !identical(pdf, session) ||
+          !identical(images, files) ||
           pages.length <= i ||
           !identical(pages[i], target)) {
         img.dispose();
@@ -329,7 +365,7 @@ class EditorController extends ChangeNotifier {
   }
 
   void goToPage(int i) {
-    if (!isPdf ||
+    if (!hasPages ||
         !canNavigate ||
         i < 0 ||
         i >= pages.length ||
@@ -407,8 +443,12 @@ class EditorController extends ChangeNotifier {
 
   // --- salvataggio automatico del lavoro -------------------------------------
 
-  String? get _workName => isPdf ? pdf?.name : imageSource?.name;
-  int? get _workSize => isPdf ? pdf?.fileSize : imageSource?.bytes?.length;
+  // il lavoro si riprende per un PDF o per un'immagine singola
+  String? get _workName =>
+      isPdf ? pdf?.name : (images.length == 1 ? images.first.name : null);
+  int? get _workSize => isPdf
+      ? pdf?.fileSize
+      : (images.length == 1 ? images.first.bytes?.length : null);
 
   void _watchAutosave() {
     if (_disposed || _workName == null || _workSize == null) return;
@@ -946,8 +986,47 @@ class EditorController extends ChangeNotifier {
 
   // --- esportazione ---------------------------------------------------------
 
+  /// Pixel di sistema di una pagina immagine (decodificata se serve).
+  Future<ui.Image> _pixelsOf(int i) async {
+    if (!pages[i].isReady) await _ensureRendered(i);
+    final img = pages[i].image;
+    if (img == null) throw StateError('Pagina ${i + 1} non leggibile');
+    return img;
+  }
+
+  Future<ExportedFile> _exportPage(int i, {String? baseName}) =>
+      exporter.buildFile(
+        images[i],
+        pages[i].doc,
+        pixels: () => _pixelsOf(i),
+        baseName: baseName,
+      );
+
+  /// L'immagine della pagina corrente, nel formato in cui è stata caricata.
   Future<ExportedFile?> buildImageExport() =>
-      _busy(() => exporter.build(imageSource!, doc));
+      _busy(() => _exportPage(pageIndex));
+
+  /// Tutte le immagini, ognuna nel suo formato, numerate in ordine.
+  Future<List<ExportedFile>?> buildImageExports() => _busy(() async {
+    if (images.length == 1) return [await _exportPage(0)];
+    final base = ExportService.baseFileName();
+    final digits = images.length.toString().length.clamp(2, 3);
+    return [
+      for (var i = 0; i < images.length; i++)
+        await _exportPage(
+          i,
+          baseName: '${base}_${(i + 1).toString().padLeft(digits, '0')}',
+        ),
+    ];
+  });
+
+  /// Le immagini come un unico PDF, una per pagina.
+  Future<Uint8List?> buildImagesPdfExport() => _busy(
+    () => buildImagesPdf([
+      for (var i = 0; i < images.length; i++)
+        ImagePdfPage(images[i], pages[i].doc, () => _pixelsOf(i)),
+    ], exporter: exporter),
+  );
 
   Future<Uint8List?> buildPdfExport() =>
       _busy(() => pdf!.export(pages, layoutSuggestion));

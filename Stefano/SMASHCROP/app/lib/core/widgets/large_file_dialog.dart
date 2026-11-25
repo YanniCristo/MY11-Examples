@@ -40,3 +40,30 @@ Future<bool> confirmLargePdf(BuildContext context, int bytes) async {
   );
   return ok ?? false;
 }
+
+/// Come [confirmLargePdf], per un gruppo di immagini.
+Future<bool> confirmLargeImages(BuildContext context, int bytes) async {
+  if (!kIsWeb || bytes < largePdfThreshold) return true;
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: AppColors.surface,
+      title: Text(S.largeImagesTitle),
+      content: Text(
+        S.largeImagesBody((bytes / (1 << 20)).round()),
+        style: const TextStyle(color: AppColors.textMuted, fontSize: 15),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text(S.cancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(S.openAnyway),
+        ),
+      ],
+    ),
+  );
+  return ok ?? false;
+}

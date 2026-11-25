@@ -65,14 +65,21 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_loading) return;
     setState(() => _loading = true);
     try {
-      final img = await _loader.pick();
-      if (img == null || !mounted) return;
+      final picked = await _loader.pickMany(
+        confirmSize: (bytes) => confirmLargeImages(context, bytes),
+        onTruncated: (max) => _toast(S.onlyFirstImages(max)),
+      );
+      if (picked == null || !mounted) return;
       if (resume != null &&
-          !resume.matches(
-            isPdf: false,
-            name: img.name,
-            size: img.bytes?.length ?? -1,
-          )) {
+          (picked.length != 1 ||
+              !resume.matches(
+                isPdf: false,
+                name: picked.files.first.name,
+                size: picked.files.first.bytes?.length ?? -1,
+              ))) {
+        for (final d in picked.decoded) {
+          d?.dispose();
+        }
         _toast(S.resumeWrongFile(resume.name));
         return;
       }
@@ -80,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
       await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => EditorScreen(
-            image: img,
+            images: picked,
             preferences: widget.preferences,
             restore: resume,
           ),

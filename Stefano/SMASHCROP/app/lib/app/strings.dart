@@ -627,4 +627,83 @@ class S {
     'Abrindo a imagem…',
     'Bild wird geöffnet…',
   );
+
+  // --- più immagini ---------------------------------------------------------
+
+  static String get saveAsTitle => _t(
+    'Come vuoi salvarlo?',
+    'How do you want to save it?',
+    'Comment l\'enregistrer ?',
+    '¿Cómo quieres guardarlo?',
+    'Como você quer salvar?',
+    'Wie möchtest du speichern?',
+  );
+  static String saveAsImage(String fmt) => _t(
+    'Immagine ($fmt)',
+    'Image ($fmt)',
+    'Image ($fmt)',
+    'Imagen ($fmt)',
+    'Imagem ($fmt)',
+    'Bild ($fmt)',
+  );
+  static String saveAsImages(int n) => _t(
+    '$n immagini separate',
+    '$n separate images',
+    '$n images séparées',
+    '$n imágenes separadas',
+    '$n imagens separadas',
+    '$n einzelne Bilder',
+  );
+  static String get saveAsPdf => 'PDF';
+  static String saveAsPdfPages(int n) => _t(
+    'PDF unico ($n pagine)',
+    'Single PDF ($n pages)',
+    'PDF unique ($n pages)',
+    'PDF único ($n páginas)',
+    'PDF único ($n páginas)',
+    'Ein PDF ($n Seiten)',
+  );
+  static String savedMany(int n) => _t(
+    '$n immagini salvate nelle Foto',
+    '$n images saved to Photos',
+    '$n images enregistrées dans Photos',
+    '$n imágenes guardadas en Fotos',
+    '$n imagens salvas em Fotos',
+    '$n Bilder in Fotos gespeichert',
+  );
+  static String onlyFirstImages(int n) => _t(
+    'Puoi aprire fino a $n immagini: ho preso le prime $n.',
+    'You can open up to $n images: the first $n were taken.',
+    'Vous pouvez ouvrir jusqu\'à $n images : les $n premières ont été prises.',
+    'Puedes abrir hasta $n imágenes: se han tomado las $n primeras.',
+    'Você pode abrir até $n imagens: foram usadas as $n primeiras.',
+    'Du kannst bis zu $n Bilder öffnen: die ersten $n wurden übernommen.',
+  );
+  static String get largeImagesTitle => _t(
+    'Immagini molto pesanti',
+    'Very large images',
+    'Images très lourdes',
+    'Imágenes muy pesadas',
+    'Imagens muito pesadas',
+    'Sehr große Bilder',
+  );
+  static String largeImagesBody(int mb) => _t(
+    'Queste immagini pesano $mb MB in tutto. Nel browser del telefono la '
+        'pagina potrebbe chiudersi per mancanza di memoria: per sicurezza usa '
+        'l\'app oppure scegline meno.',
+    'These images are $mb MB in total. The phone\'s browser may close the '
+        'page for lack of memory: to be safe, use the app or pick fewer.',
+    'Ces images pèsent $mb Mo au total. Le navigateur du téléphone pourrait '
+        'fermer la page par manque de mémoire : par sécurité, utilisez l\'app '
+        'ou choisissez-en moins.',
+    'Estas imágenes pesan $mb MB en total. El navegador del teléfono podría '
+        'cerrar la página por falta de memoria: por seguridad, usa la app o '
+        'elige menos.',
+    'Estas imagens pesam $mb MB no total. O navegador do celular pode fechar '
+        'a página por falta de memória: por segurança, use o app ou escolha '
+        'menos.',
+    'Diese Bilder sind insgesamt $mb MB groß. Der Browser des Handys könnte '
+        'die Seite wegen Speichermangel schließen: nutze sicherheitshalber die '
+        'App oder wähle weniger aus.',
+  );
 }

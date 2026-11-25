@@ -25,9 +25,23 @@ class ExportedFile {
 class ExportService {
   const ExportService();
 
-  Future<ExportedFile> build(LoadedImage source, StripDocument doc) async {
+  Future<ExportedFile> build(LoadedImage source, StripDocument doc) =>
+      buildFile(source.file, doc, pixels: () async => source.image);
+
+  /// Il file finale di un'immagine. [pixels] dà i pixel decodificati dal
+  /// sistema: si usano solo se il file non si legge qui (HEIC).
+  /// [format] cambia il formato d'uscita (JPEG per il PDF).
+  Future<ExportedFile> buildFile(
+    ImageFile source,
+    StripDocument doc, {
+    required Future<ui.Image> Function() pixels,
+    OutputFormat? format,
+    bool flattenOnWhite = false,
+    String? baseName,
+  }) async {
+    final out = format ?? source.format;
     ImageEncodeJob job({Uint8List? rgba}) => ImageEncodeJob(
-      format: source.format,
+      format: out,
       srcW: source.width,
       srcH: source.height,
       outW: doc.width,
@@ -35,6 +49,7 @@ class ExportService {
       tiles: doc.tiles(),
       original: rgba == null ? source.bytes : null,
       rgba: rgba,
+      flattenOnWhite: flattenOnWhite,
     );
     // prima dal file originale (pixel e colori esatti), poi, se il formato
     // non si legge qui (HEIC), dai pixel decodificati dal sistema
@@ -42,7 +57,8 @@ class ExportService {
         ? null
         : await compute(encodeImageJob, job());
     if (bytes == null) {
-      final data = await source.image.toByteData(
+      final image = await pixels();
+      final data = await image.toByteData(
         format: ui.ImageByteFormat.rawStraightRgba,
       );
       if (data == null) throw StateError('Pixel non disponibili');
@@ -52,12 +68,8 @@ class ExportService {
       );
     }
     if (bytes == null) throw StateError('Esportazione non riuscita');
-    final name = baseFileName();
-    return ExportedFile(
-      bytes,
-      source.format,
-      '$name.${source.format.extension}',
-    );
+    final name = baseName ?? baseFileName();
+    return ExportedFile(bytes, out, '$name.${out.extension}');
   }
 
   /// Nome file con data e ora, es. SmashCrop_20261124_212300.
@@ -103,9 +115,39 @@ class ExportService {
     }
   }
 
+  /// Salva più immagini nelle Foto: restituisce quante sono andate.
+  Future<(int, SaveOutcome)> saveAllToPhotos(List<ExportedFile> files) async {
+    var n = 0;
+    var last = SaveOutcome.saved;
+    for (final f in files) {
+      last = await saveToPhotos(f);
+      if (last != SaveOutcome.saved) break;
+      n++;
+    }
+    return (n, last);
+  }
+
   /// `true` se il foglio di condivisione si è aperto correttamente.
   Future<bool> share(ExportedFile file, {ui.Rect? origin}) =>
       shareBytes(file.bytes, file.mimeType, file.fileName, origin: origin);
+
+  Future<bool> shareAll(List<ExportedFile> files, {ui.Rect? origin}) async {
+    try {
+      final result = await SharePlus.instance.share(
+        ShareParams(
+          files: [
+            for (final f in files)
+              XFile.fromData(f.bytes, mimeType: f.mimeType, name: f.fileName),
+          ],
+          fileNameOverrides: [for (final f in files) f.fileName],
+          sharePositionOrigin: origin,
+        ),
+      );
+      return result.status != ShareResultStatus.unavailable;
+    } catch (_) {
+      return false;
+    }
+  }
 
   Future<bool> shareBytes(
     Uint8List bytes,

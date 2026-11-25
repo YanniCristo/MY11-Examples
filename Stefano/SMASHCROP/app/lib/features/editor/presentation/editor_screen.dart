@@ -31,13 +31,13 @@ class EditorScreen extends StatefulWidget {
   const EditorScreen({
     super.key,
     required this.preferences,
-    this.image,
+    this.images,
     this.pdf,
     this.restore,
-  }) : assert((image == null) != (pdf == null));
+  }) : assert((images == null) != (pdf == null));
 
   final AppPreferences preferences;
-  final LoadedImage? image;
+  final PickedImages? images;
   final PdfSession? pdf;
 
   /// Lavoro salvato da riprendere sul file appena aperto.
@@ -61,9 +61,9 @@ class _EditorScreenState extends State<EditorScreen>
   @override
   void initState() {
     super.initState();
-    c = widget.image != null
-        ? EditorController.image(
-            image: widget.image!,
+    c = widget.images != null
+        ? EditorController.images(
+            images: widget.images!,
             preferences: widget.preferences,
           )
         : EditorController.pdf(
@@ -121,8 +121,11 @@ class _EditorScreenState extends State<EditorScreen>
 
   Future<void> _loadImage() => _withLoading(S.opening, () async {
     try {
-      final img = await _imageLoader.pick();
-      if (img != null) c.replaceWithImage(img);
+      final picked = await _imageLoader.pickMany(
+        confirmSize: (bytes) => confirmLargeImages(context, bytes),
+        onTruncated: (max) => _toast(S.onlyFirstImages(max)),
+      );
+      if (picked != null) c.replaceWithImages(picked);
     } on ImageLoadException catch (e) {
       _toast(e.tooLarge ? S.tooLarge : S.loadFailed);
     } catch (_) {
@@ -158,11 +161,70 @@ class _EditorScreenState extends State<EditorScreen>
     return box == null ? null : box.localToGlobal(Offset.zero) & box.size;
   }
 
+  /// Per le immagini si chiede ogni volta come salvare: con una sola parte
+  /// già scelto "Immagine", con più di una "PDF". `null` = annullato.
+  Future<_Output?> _askOutput() async {
+    if (c.isPdf) return _Output.pdf;
+    final many = c.images.length;
+    final def = many > 1 ? _Output.pdf : _Output.images;
+    Widget option(_Output o) {
+      final label = o == _Output.pdf
+          ? (many > 1 ? S.saveAsPdfPages(many) : S.saveAsPdf)
+          : (many > 1
+                ? S.saveAsImages(many)
+                : S.saveAsImage(c.images.first.format.extension.toUpperCase()));
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: AppButton(
+          label: label,
+          icon: Icon(
+            o == _Output.pdf
+                ? Icons.picture_as_pdf_outlined
+                : (many > 1
+                      ? Icons.collections_outlined
+                      : Icons.image_outlined),
+          ),
+          style: o == def ? AppButtonStyle.primary : AppButtonStyle.secondary,
+          height: 50,
+          fontSize: 16,
+          onPressed: () => Navigator.pop(context, o),
+        ),
+      );
+    }
+
+    return showDialog<_Output>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text(S.saveAsTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            option(def),
+            option(def == _Output.pdf ? _Output.images : _Output.pdf),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(S.cancel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<Uint8List?> _pdfBytes() =>
+      c.isPdf ? c.buildPdfExport() : c.buildImagesPdfExport();
+
   Future<void> _save() async {
     if (c.isCutting) return;
+    final out = await _askOutput();
+    if (out == null) return;
     try {
-      if (c.isPdf) {
-        final bytes = await c.buildPdfExport();
+      if (out == _Output.pdf) {
+        final bytes = await _pdfBytes();
         if (bytes == null) return;
         final name = '${ExportService.baseFileName()}.pdf';
         if (kIsWeb) {
@@ -178,15 +240,20 @@ class _EditorScreenState extends State<EditorScreen>
         if (uri != null || kIsWeb) _toast(kIsWeb ? S.downloaded : S.pdfSaved);
         return;
       }
-      final file = await c.buildImageExport();
-      if (file == null) return;
+      final files = await c.buildImageExports();
+      if (files == null || files.isEmpty) return;
       if (kIsWeb) {
-        await _webSave(file.bytes, file.fileName, file.mimeType, image: true);
+        if (files.length == 1) {
+          final f = files.first;
+          await _webSave(f.bytes, f.fileName, f.mimeType, image: true);
+        } else {
+          await _webSaveMany(files);
+        }
         return;
       }
-      final outcome = await c.exporter.saveToPhotos(file);
+      final (n, outcome) = await c.exporter.saveAllToPhotos(files);
       _toast(switch (outcome) {
-        SaveOutcome.saved => S.saved,
+        SaveOutcome.saved => files.length > 1 ? S.savedMany(n) : S.saved,
         SaveOutcome.denied => S.saveDenied,
         SaveOutcome.unavailable => S.saveUnavailable,
         SaveOutcome.failed => S.saveFailed,
@@ -194,6 +261,56 @@ class _EditorScreenState extends State<EditorScreen>
     } catch (_) {
       _toast(S.saveFailed);
     }
+  }
+
+  /// Più immagini nel browser: se il telefono le accetta tutte insieme, un
+  /// tocco apre il menu di condivisione ("Salva N immagini"); altrimenti si
+  /// scaricano una dopo l'altra.
+  Future<void> _webSaveMany(List<ExportedFile> files) async {
+    Future<void> downloadAll() async {
+      var ok = true;
+      for (final f in files) {
+        ok = await c.exporter.download(f.bytes, f.fileName, f.mimeType) && ok;
+      }
+      _toast(ok ? S.downloaded : S.saveFailed);
+    }
+
+    final list = [for (final f in files) (f.bytes, f.fileName, f.mimeType)];
+    if (!web_share.canShareFiles(list)) {
+      await downloadAll();
+      return;
+    }
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text(S.fileReady),
+        content: Text(
+          S.saveToGalleryHint,
+          style: const TextStyle(color: AppColors.textMuted, fontSize: 15),
+        ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              downloadAll();
+            },
+            child: Text(S.download),
+          ),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.red),
+            onPressed: () {
+              Navigator.pop(context);
+              web_share.shareFiles(list);
+            },
+            icon: const Icon(Icons.photo_library_outlined),
+            label: Text(S.saveToGallery),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Nel browser del telefono si passa dal menu di condivisione: da lì
@@ -249,10 +366,12 @@ class _EditorScreenState extends State<EditorScreen>
 
   Future<void> _share() async {
     if (c.isCutting) return;
+    final out = await _askOutput();
+    if (out == null) return;
     try {
       bool ok;
-      if (c.isPdf) {
-        final bytes = await c.buildPdfExport();
+      if (out == _Output.pdf) {
+        final bytes = await _pdfBytes();
         if (bytes == null) return;
         ok = await c.exporter.shareBytes(
           bytes,
@@ -261,9 +380,11 @@ class _EditorScreenState extends State<EditorScreen>
           origin: _shareOrigin(),
         );
       } else {
-        final file = await c.buildImageExport();
-        if (file == null) return;
-        ok = await c.exporter.share(file, origin: _shareOrigin());
+        final files = await c.buildImageExports();
+        if (files == null || files.isEmpty) return;
+        ok = files.length == 1
+            ? await c.exporter.share(files.first, origin: _shareOrigin())
+            : await c.exporter.shareAll(files, origin: _shareOrigin());
       }
       if (!ok) _toast(S.shareFailed);
     } catch (_) {
@@ -441,7 +562,7 @@ class _EditorScreenState extends State<EditorScreen>
     final mode = c.selection.mode;
     final selVisible = c.selectionVisible;
     return [
-      if (c.isPdf) ...[_pdfBar(), const SizedBox(height: 8)],
+      if (c.hasPages) ...[_pdfBar(), const SizedBox(height: 8)],
       AppButton(
         label: S.removePortion,
         icon: const Icon(Icons.content_cut),
@@ -562,18 +683,19 @@ class _EditorScreenState extends State<EditorScreen>
           S.nextPage,
         ),
         const Spacer(),
-        SizedBox(
-          width: 124,
-          child: AppButton(
-            label: S.layoutPdf,
-            icon: const Icon(Icons.dashboard_customize_outlined),
-            height: 36,
-            fontSize: 14,
-            onPressed: nav && c.pageReady && c.page.history.hasCuts
-                ? c.openLayoutPanel
-                : null,
+        if (c.isPdf)
+          SizedBox(
+            width: 124,
+            child: AppButton(
+              label: S.layoutPdf,
+              icon: const Icon(Icons.dashboard_customize_outlined),
+              height: 36,
+              fontSize: 14,
+              onPressed: nav && c.pageReady && c.page.history.hasCuts
+                  ? c.openLayoutPanel
+                  : null,
+            ),
           ),
-        ),
       ],
     );
   }
@@ -640,3 +762,5 @@ class _EditorScreenState extends State<EditorScreen>
     );
   }
 }
+
+enum _Output { images, pdf }
