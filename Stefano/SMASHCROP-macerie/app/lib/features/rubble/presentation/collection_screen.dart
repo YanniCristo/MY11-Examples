@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../app/strings.dart';
 import '../../../app/theme.dart';
 import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/close_square_button.dart';
 import '../application/rubble_store.dart';
 import '../domain/rubble_math.dart';
 import '../domain/skins.dart';
@@ -122,30 +123,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  // X ben visibile: quadrato stondato rosso
-                  Semantics(
-                    button: true,
-                    label: S.close,
-                    child: Tooltip(
-                      message: S.close,
-                      child: Material(
-                        color: AppColors.red,
-                        borderRadius: BorderRadius.circular(12),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () => Navigator.pop(context),
-                          child: const SizedBox.square(
-                            dimension: 40,
-                            child: Icon(
-                              Icons.close,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  CloseSquareButton(onTap: () => Navigator.pop(context)),
                 ],
               ),
               const SizedBox(height: 4),

@@ -5,6 +5,7 @@ import '../../app/links.dart';
 import '../../app/strings.dart';
 import '../../app/theme.dart';
 import '../../features/settings/preferences.dart';
+import 'close_square_button.dart';
 import 'flag.dart';
 
 /// Una voce del menu ☰. Con [toggle] diversa da `null` è un interruttore.
@@ -113,6 +114,8 @@ class _MenuSheet extends StatefulWidget {
 }
 
 class _MenuSheetState extends State<_MenuSheet> {
+  double _pull = 0;
+
   Future<void> _language() async {
     final picked = await showModalBottomSheet<(AppLang?,)>(
       context: context,
@@ -188,66 +191,124 @@ class _MenuSheetState extends State<_MenuSheet> {
         constraints: BoxConstraints(
           maxHeight: MediaQuery.sizeOf(context).height * .85,
         ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: AppColors.border,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              for (final s in sections) ...[
-                if (s.title != null)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(6, 6, 6, 6),
-                    child: Text(
-                      s.title!.toUpperCase(),
-                      style: const TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: .8,
-                      ),
-                    ),
-                  ),
-                _Group(entries: s.entries, onChanged: () => setState(() {})),
-                const SizedBox(height: 12),
-              ],
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // testata fissa: trascinandola giù il menu si chiude, e c'è la X
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+              child: Column(
                 children: [
-                  TextButton(
-                    onPressed: _privacy,
-                    child: Text(
-                      S.privacy,
-                      style: const TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 13,
-                      ),
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.border,
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  const Text('·', style: TextStyle(color: AppColors.textMuted)),
-                  const SizedBox(width: 12),
-                  Text(
-                    '${S.version} $kAppVersion',
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 13,
-                    ),
+                  Row(
+                    children: [
+                      const SizedBox(width: 6),
+                      Text(
+                        S.menu,
+                        style: TextStyle(
+                          fontFamily: kDisplayFont,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.text,
+                        ),
+                      ),
+                      const Spacer(),
+                      CloseSquareButton(
+                        onTap: () => Navigator.of(context).pop(),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+            Flexible(
+              // in cima alla lista, trascinare ancora giù chiude il menu
+              child: NotificationListener<OverscrollNotification>(
+                onNotification: (n) {
+                  if (n.overscroll < 0 && n.dragDetails != null) {
+                    _pull -= n.overscroll;
+                    if (_pull > 70) {
+                      _pull = 0;
+                      Navigator.of(context).maybePop();
+                    }
+                  }
+                  return false;
+                },
+                child: NotificationListener<ScrollEndNotification>(
+                  onNotification: (_) {
+                    _pull = 0;
+                    return false;
+                  },
+                  child: SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (final s in sections) ...[
+                          if (s.title != null)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(6, 6, 6, 6),
+                              child: Text(
+                                s.title!.toUpperCase(),
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: .8,
+                                ),
+                              ),
+                            ),
+                          _Group(
+                            entries: s.entries,
+                            onChanged: () => setState(() {}),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton(
+                              onPressed: _privacy,
+                              child: Text(
+                                S.privacy,
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            const Text(
+                              '·',
+                              style: TextStyle(color: AppColors.textMuted),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              '${S.version} $kAppVersion',
+                              style: const TextStyle(
+                                color: AppColors.textMuted,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
