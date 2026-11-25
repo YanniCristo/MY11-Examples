@@ -185,6 +185,30 @@ resta per tutte le età.
 - **Mai** bloccare il lavoro o il salvataggio: chi taglia 50 pagine non deve aspettare.
 - Animazione lunga solo per le **evoluzioni**.
 
+### A ogni colpo (deciso)
+
+Sequenza, sempre con gli elementi della **skin in uso** (es. Popcorn → popcorn, Mamma Mia → pomodori):
+1. **Botta (0–0,3 s):** gli elementi esplodono dal punto d'impatto lungo **tutta la fascia**, sotto il robot.
+2. **Caduta:** la maggior parte cade per gravità (girando, con un po' di deriva a destra/sinistra),
+   esce dal documento nello spazio vuoto intorno e sparisce **sotto** la barra dei pulsanti in basso
+   (mai sopra Annulla/Ripristina/Salva, mai blocca un tocco). Circa 1 s.
+3. **Calamita (dopo ~0,2 s):** 3–5 pezzi si fermano a mezz'aria, si illuminano con una scia e partono
+   **a curva** verso la barra del contatore, accelerando.
+4. **Boccone:** la barra fa un piccolo sobbalzo ("gnam") e appare per un attimo "+0,3 kg".
+
+- Niente effetti a tutto schermo a ogni colpo; niente mucchietto che si accumula in fondo.
+- Massimo ~30 elementi a schermo, immagini caricate prima; con "riduci movimento" effetti al minimo.
+
+### Proposte da confermare
+
+- **Evoluzione (barra a 100):** schermo che si scurisce un attimo, pioggia degli elementi del **nuovo**
+  personaggio su tutto lo schermo (~2 s), testa nella barra che cambia con un lampo, poi si apre la
+  Collezione sul nuovo personaggio che fa subito la sua animazione.
+- **Collezione:** bloccati = sagoma nera (dalla skin_15) con lucchetto e kg mancanti; sbloccati a
+  riposo = skin_15 con piccolo dondolio (15↔16); quando lo selezioni fa **tutta la sua animazione**
+  (18 immagini) in grande con i suoi elementi dietro. Nessuna grafica nuova necessaria; pose da eroe
+  facoltative (intestazione/condivisione).
+
 ## 5. SMASH spento: solo linguaggio visivo (niente testo fisso)
 
 - Contatore **in grigio** con piccola icona di pausa ⏸, oppure **SMASH addormentato 💤** al posto dell'icona attiva: si capisce senza parole.
@@ -355,3 +379,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** scritte le sceneggiature delle 18 immagini per Burp, Popcorn, Muahaha, Mamma Mia e Tycoon (stesso robot, stesse proporzioni).
 - **25 nov 2026:** posizione del contatore nell'editor: in alto a sinistra al posto di logo e scritta SMASHCROP.
 - **25 nov 2026:** SMASH Burp (18 immagini) approvato. Aggiunti i 6 elementi per skin da spargere su tutta la fascia (livello sotto SMASH). Pacchetto completo dei prompt per ChatGPT preparato.
+- **25 nov 2026:** completate le 6 skin (18 immagini allineate, anteprima, scheda), i 36 elementi della fascia e le 5 icone degli obiettivi; Tycoon con elmo dorato e cresta rossa. Deciso l'effetto a ogni colpo: esplosione sulla fascia, la maggior parte cade sotto i pulsanti, 3–5 pezzi a calamita verso la barra con "gnam". Evoluzione a tutto schermo e Collezione animata: proposte da confermare.
