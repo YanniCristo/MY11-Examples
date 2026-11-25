@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../domain/skins.dart';
+import 'web_audio/web_audio.dart';
 
 /// Suoni e vibrazione dei colpi.
 ///
@@ -59,11 +60,13 @@ class SoundFx {
   /// dell'editor e quando si cambia skin).
   Future<void> prepare(SkinDef skin) async {
     for (final a in [...skin.sounds, _pling]) {
-      await _player(a);
+      kIsWeb ? await WebAudio.instance.load(a) : await _player(a);
     }
   }
 
   Future<void> _play(String asset, {double volume = 1}) async {
+    // nel browser Web Audio: parte subito, senza il ritardo del lettore
+    if (kIsWeb && WebAudio.instance.play(asset, volume: volume)) return;
     try {
       final p = await _player(asset);
       if (p == null) return;

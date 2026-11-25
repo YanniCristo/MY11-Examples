@@ -158,6 +158,7 @@ class EditorController extends ChangeNotifier {
   PdfLayoutMode layoutSuggestion = PdfLayoutMode.top;
 
   bool _selectionSuppressed = false;
+  bool _reappearAfterRobot = false;
   CutAnimation? animation;
   Timer? _reappear;
   bool busyExporting = false;
@@ -1020,6 +1021,10 @@ class EditorController extends ChangeNotifier {
     if (a.elapsedMs >= a.timeline.endMs) {
       animation = null;
       a.before.dispose();
+      if (_reappearAfterRobot) {
+        _reappearAfterRobot = false;
+        _selectionSuppressed = false;
+      }
       notifyListeners();
     }
     frameTick.value++;
@@ -1058,6 +1063,12 @@ class EditorController extends ChangeNotifier {
     } else {
       // il conteggio parte solo ora, a ricongiungimento completato
       _reappear = Timer(settings.reappearDelay, () {
+        // se SMASH è ancora in scena si aspetta che esca: una nuova
+        // selezione (e un nuovo pugno) sopra di lui sembrava un difetto
+        if (animation != null) {
+          _reappearAfterRobot = true;
+          return;
+        }
         _selectionSuppressed = false;
         if (!_disposed) notifyListeners();
       });
@@ -1069,6 +1080,7 @@ class EditorController extends ChangeNotifier {
     final a = animation;
     animation = null;
     _reappear?.cancel();
+    _reappearAfterRobot = false;
     _selectionSuppressed = false;
     if (a != null) {
       if (!a.committed) a.after.dispose();

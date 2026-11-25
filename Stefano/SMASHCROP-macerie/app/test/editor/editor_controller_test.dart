@@ -83,6 +83,11 @@ void main() {
       );
       expect(c.selectionVisible, isFalse);
       await tester.pump(const Duration(milliseconds: 40));
+      if (smash) {
+        // SMASH è ancora in scena: la selezione aspetta che esca
+        expect(c.selectionVisible, isFalse);
+        c.tick(Duration(milliseconds: tl.endMs.ceil() + 1));
+      }
       expect(c.selectionVisible, isTrue);
       expect(c.selection.mode, CutOrientation.horizontal);
       expect(c.selection.active!.high, lessThanOrEqualTo(450));
