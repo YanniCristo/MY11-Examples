@@ -128,10 +128,16 @@ Note:
 - **Webapp:** Safari cancella i dati dei siti non usati per 7 giorni (salvo app aggiunta alla
   schermata Home). Nella webapp il contatore è fragile: serve il codice di recupero.
 
+**Cosa è automatico:** memoria locale, iCloud (se l'utente ha iCloud attivo, quasi sempre),
+backup Google + Block Store con ripristino alla reinstallazione (se il backup Google è attivo, di
+base lo è) e la regola del valore più alto. **Unico passaggio manuale:** il codice di recupero.
+
 **Codice di recupero** (per cambio piattaforma e webapp):
 - dalla schermata di SMASH: "Salva i miei progressi" → un codice corto (o QR) da conservare;
 - sull'altro dispositivo: "Ho un codice" → si inserisce e il contatore riparte da lì (si tiene il
   valore più alto);
+- per non farlo dimenticare l'app lo **propone con discrezione** al momento giusto, per esempio
+  "Salva i tuoi progressi" **dopo un'evoluzione** (una proposta, senza insistere);
 - il codice contiene il totale e una firma dell'app, per scoraggiare codici inventati.
   Barare non fa guadagnare nulla di a pagamento (le evoluzioni sono gratis), quindi basta questo.
 
@@ -203,3 +209,4 @@ Si può partire con B e sostituire poi con i disegni veri.
   spento con tooltip e avviso una tantum). Decisi: unità **peso in kg** fissa (niente cambi di unità),
   soglie 15 / 150 / 450 / 1.500 / 4.500 kg, testa dell'evoluzione a colori invece del "?".
 - **25 nov 2026:** deciso di restare senza login (niente Firebase): si attivano tutti i salvataggi senza account.
+- **25 nov 2026:** confermato il piano salvataggi; il codice di recupero viene proposto con discrezione dopo le evoluzioni.
