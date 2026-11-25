@@ -1,4 +1,5 @@
 import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 
 import 'package:flutter/services.dart';
 import 'package:web/web.dart' as web;
@@ -22,7 +23,19 @@ class WebAudio {
   final Map<String, web.AudioBuffer> _buffers = {};
   final Map<String, Future<void>> _loading = {};
 
-  web.AudioContext get _context => _ctx ??= web.AudioContext();
+  web.AudioContext get _context => _ctx ??= _create();
+
+  web.AudioContext _create() {
+    // Safari (iOS 17+): con "playback" i suoni si sentono anche col tasto
+    // silenzioso, al volume impostato. Dove non esiste non succede niente.
+    try {
+      final session = (web.window.navigator as JSObject)['audioSession'];
+      if (session != null && session.isA<JSObject>()) {
+        (session as JSObject)['type'] = 'playback'.toJS;
+      }
+    } catch (_) {}
+    return web.AudioContext();
+  }
 
   void _unlock() {
     try {

@@ -9,8 +9,9 @@ import 'web_audio/web_audio.dart';
 
 /// Suoni e vibrazione dei colpi.
 ///
-/// Sull'iPhone i suoni seguono il tasto silenzioso (categoria "ambient") e
-/// si mescolano alla musica dell'utente senza fermarla. Nel browser partono
+/// I suoni partono anche col tasto silenzioso attivo, al volume impostato
+/// (scelta di Stefano), e si mescolano alla musica dell'utente senza
+/// fermarla. Nel browser partono
 /// solo dopo un tocco (regola dei browser): il primo taglio è già un tocco.
 class SoundFx {
   SoundFx._();
@@ -33,7 +34,8 @@ class SoundFx {
     try {
       await AudioPlayer.global.setAudioContext(
         AudioContextConfig(
-          respectSilence: true,
+          // suona anche col tasto silenzioso, al volume impostato
+          respectSilence: false,
           focus: AudioContextConfigFocus.mixWithOthers,
         ).build(),
       );
