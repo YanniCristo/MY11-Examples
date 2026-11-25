@@ -4,6 +4,13 @@ Nella copia con le macerie gli SDK sono già montati con **valori segnaposto**.
 Finché un codice è segnaposto, quella piattaforma resta spenta e l'app funziona normalmente.
 Quando hai i codici veri, sostituiscili nei punti indicati qui sotto (o mandali a Claude).
 
+## Stato
+
+- **Meta: fatto** (26 nov 2026). App "SmashCrop PDF & Image" su Meta for Developers, ID app `4528815827358406`, token client già inseriti nei tre file. Non collegata a un portfolio business (si può fare da Impostazioni).
+- Google (Firebase): da creare (Fulvio) e mandare i codici.
+- TikTok: dopo la pubblicazione sugli store.
+- Apple Ads: niente da fare.
+
 ## Dove vanno i codici
 
 | Piattaforma | File | Cosa sostituire |

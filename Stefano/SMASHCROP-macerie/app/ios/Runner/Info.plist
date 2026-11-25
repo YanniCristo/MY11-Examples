@@ -73,13 +73,13 @@
 	<!-- Richiesta di tracciamento (ATT) -->
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Your data is used only to measure which ads brought you to SmashCrop. Nothing you edit ever leaves your phone.</string>
-	<!-- Meta (Facebook): SEGNAPOSTO, sostituire con i valori veri (vedi PUBBLICITA.md) -->
+	<!-- Meta (Facebook): app "SmashCrop PDF & Image" su Meta for Developers -->
 	<key>FacebookAppID</key>
-	<string>000000000000000</string>
+	<string>4528815827358406</string>
 	<key>FacebookClientToken</key>
-	<string>METTI_CLIENT_TOKEN_META</string>
+	<string>56600b3daa9736eed5cd9b55cd4e2c9f</string>
 	<key>FacebookDisplayName</key>
-	<string>SmashCrop</string>
+	<string>SmashCrop PDF &amp; Image</string>
 	<key>FacebookAutoInitEnabled</key>
 	<false/>
 	<key>FacebookAutoLogAppEventsEnabled</key>

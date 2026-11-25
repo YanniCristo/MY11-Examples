@@ -7,7 +7,7 @@
 /// iPhone).
 abstract final class AdsConfig {
   // --- Meta (Instagram / Facebook) ------------------------------------------
-  static const metaAppId = '000000000000000';
+  static const metaAppId = '4528815827358406';
 
   // --- TikTok ----------------------------------------------------------------
   /// App ID dell'app sul Play Store (es. com.stefanofancello.smashcrop).
