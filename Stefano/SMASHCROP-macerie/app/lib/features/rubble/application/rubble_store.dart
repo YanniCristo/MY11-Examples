@@ -226,11 +226,15 @@ class RubbleStore extends ChangeNotifier {
     final r = RecoveryCode.decode(code);
     if (r == null) return false;
     if (r.grams > grams) grams = r.grams;
-    unlocked.addAll(r.unlocked);
+    // dal codice arrivano solo i personaggi delle macerie: Tycoon è
+    // dell'acquisto a vita e torna solo con "Ripristina acquisti"
+    unlocked.addAll(
+      r.unlocked.where((id) => skinById(id).unlock != Unlock.lifetime),
+    );
     for (final e in kEvolutions) {
       if (kg >= e.thresholdKg) unlocked.add(e.id);
     }
-    if (unlocked.contains(r.skinId)) skinId = r.skinId;
+    if (isUnlocked(skinById(r.skinId))) skinId = r.skinId;
     _save();
     notifyListeners();
     return true;
@@ -266,6 +270,8 @@ class RecoveryCode {
   }) {
     var bits = 0;
     for (var i = 0; i < kSkins.length; i++) {
+      // Tycoon (acquisto a vita) non entra nel codice
+      if (kSkins[i].unlock == Unlock.lifetime) continue;
       if (unlocked.contains(kSkins[i].id)) bits |= 1 << i;
     }
     final si = kSkins.indexWhere((s) => s.id == skinId).clamp(0, 7);

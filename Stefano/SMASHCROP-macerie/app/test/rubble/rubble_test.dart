@@ -175,4 +175,21 @@ void main() {
     final d = RecoveryCode.decode('004H-G80G-PQGR')!;
     expect(d.grams, 149000);
   });
+
+  test('il codice di recupero non sblocca Tycoon', () {
+    final owner = RubbleStore.memory()
+      ..add(4600)
+      ..flag((s) => s.lifetime = true);
+    owner.choose(skinById('tycoon'));
+    final code = owner.recoveryCode();
+    final other = RubbleStore.memory();
+    expect(other.applyRecoveryCode(code), isTrue);
+    expect(other.kg, owner.kg);
+    expect(other.isUnlocked(skinById('mammamia')), isTrue);
+    expect(other.isUnlocked(skinById('tycoon')), isFalse);
+    expect(other.skinId, isNot('tycoon'));
+    // anche un codice vecchio con Tycoon dentro non lo sblocca
+    final old = RubbleStore.memory()..applyRecoveryCode('04CC-60ZT-KMQW');
+    expect(old.isUnlocked(skinById('tycoon')), isFalse);
+  });
 }
