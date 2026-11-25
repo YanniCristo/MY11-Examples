@@ -133,6 +133,53 @@ class _EditorScreenState extends State<EditorScreen>
     }
   });
 
+  Future<void> _addImages() async {
+    if (!c.canAddImages) {
+      if (c.imagesRoom <= 0) _toast(S.imagesLimit(ImageLoader.maxImages));
+      return;
+    }
+    await _withLoading(S.opening, () async {
+      try {
+        final picked = await _imageLoader.pickMany(
+          max: c.imagesRoom,
+          confirmSize: (bytes) => confirmLargeImages(context, bytes),
+          onTruncated: (max) => _toast(S.imagesLimit(max)),
+        );
+        if (picked != null) c.addImages(picked);
+      } on ImageLoadException catch (e) {
+        _toast(e.tooLarge ? S.tooLarge : S.loadFailed);
+      } catch (_) {
+        _toast(S.loadFailed);
+      }
+    });
+  }
+
+  Future<void> _removePage() async {
+    if (!c.canRemoveImagePage) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text(S.removePageTitle),
+        content: Text(
+          S.removePageBody,
+          style: const TextStyle(color: AppColors.textMuted, fontSize: 15),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(S.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(S.remove),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) c.removeCurrentImagePage();
+  }
+
   Future<void> _loadPdf() => _withLoading(S.pdfOpening, () async {
     try {
       final pdf = await _pdfLoader.pick(
@@ -562,7 +609,7 @@ class _EditorScreenState extends State<EditorScreen>
     final mode = c.selection.mode;
     final selVisible = c.selectionVisible;
     return [
-      if (c.hasPages) ...[_pdfBar(), const SizedBox(height: 8)],
+      if (c.hasPages || !c.isPdf) ...[_pdfBar(), const SizedBox(height: 8)],
       AppButton(
         label: S.removePortion,
         icon: const Icon(Icons.content_cut),
@@ -655,22 +702,29 @@ class _EditorScreenState extends State<EditorScreen>
           S.previousPage,
         ),
         const SizedBox(width: 6),
-        Container(
-          height: 36,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.button,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Text(
-            S.pageOf(c.pageIndex + 1, c.pageCount),
-            style: const TextStyle(
-              color: AppColors.text,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              fontFeatures: [FontFeature.tabularFigures()],
+        Flexible(
+          flex: 20,
+          child: Container(
+            height: 36,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.button,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                S.pageOf(c.pageIndex + 1, c.pageCount),
+                maxLines: 1,
+                style: const TextStyle(
+                  color: AppColors.text,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  fontFeatures: [FontFeature.tabularFigures()],
+                ),
+              ),
             ),
           ),
         ),
@@ -683,6 +737,26 @@ class _EditorScreenState extends State<EditorScreen>
           S.nextPage,
         ),
         const Spacer(),
+        if (!c.isPdf) ...[
+          SizedBox(
+            width: 112,
+            child: AppButton(
+              label: S.addImages,
+              semanticLabel: S.addImagesLabel,
+              icon: const Icon(Icons.add_photo_alternate_outlined),
+              height: 36,
+              fontSize: 14,
+              hideIconBelow: 104,
+              onPressed: c.canAddImages ? _addImages : null,
+            ),
+          ),
+          const SizedBox(width: 6),
+          arrow(
+            Icons.delete_outline,
+            c.canRemoveImagePage ? _removePage : null,
+            S.removePage,
+          ),
+        ],
         if (c.isPdf)
           SizedBox(
             width: 124,

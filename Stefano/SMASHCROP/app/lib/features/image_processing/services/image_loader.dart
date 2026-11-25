@@ -104,17 +104,20 @@ class ImageLoader {
   /// [confirmSize] riceve il peso totale prima di leggerle: se risponde
   /// `false` l'apertura si annulla. [onTruncated] avvisa se ne sono state
   /// scelte più del massimo.
+  /// [max] limita quante se ne possono scegliere (per le aggiunte).
   Future<PickedImages?> pickMany({
     Future<bool> Function(int bytes)? confirmSize,
     void Function(int max)? onTruncated,
+    int max = maxImages,
   }) async {
+    // con limit 1 alcuni sistemi rifiutano la scelta multipla
     var files = await _picker.pickMultiImage(
       requestFullMetadata: false,
-      limit: maxImages,
+      limit: max >= 2 ? max : null,
     );
     if (files.isEmpty) return null;
-    if (files.length > maxImages) {
-      files = files.sublist(0, maxImages);
+    if (files.length > max) {
+      files = files.sublist(0, max);
       onTruncated?.call(maxImages);
     }
     if (confirmSize != null) {

@@ -310,6 +310,75 @@ class EditorController extends ChangeNotifier {
 
   void setViewportSize(Size s) => viewportSize = s;
 
+  // --- pagine di immagini: aggiungere e togliere -----------------------------
+
+  bool get canEditImagePages => !isPdf && canNavigate && !isAnimating;
+  int get imagesRoom => ImageLoader.maxImages - images.length;
+  bool get canAddImages => canEditImagePages && imagesRoom > 0;
+  bool get canRemoveImagePage => canEditImagePages && images.length > 1;
+
+  /// Aggiunge immagini in fondo, senza toccare quelle già aperte e i loro
+  /// tagli, e porta alla prima aggiunta.
+  void addImages(PickedImages picked) {
+    if (isPdf || picked.length == 0) {
+      for (final d in picked.decoded) {
+        d?.dispose();
+      }
+      return;
+    }
+    _cancelAnimation();
+    final first = images.length;
+    images = [...images, ...picked.files];
+    for (var k = 0; k < picked.length; k++) {
+      final f = picked.files[k];
+      pages.add(
+        EditorPage(
+          index: first + k,
+          widthPx: f.width,
+          heightPx: f.height,
+          image: k < picked.decoded.length ? picked.decoded[k] : null,
+        ),
+      );
+    }
+    for (var i = first; i < pages.length; i++) {
+      if (pages[i].isReady) _touch(i);
+    }
+    _showPage(first);
+    notifyListeners();
+  }
+
+  /// Toglie la pagina corrente (solo immagini, ne resta almeno una).
+  void removeCurrentImagePage() {
+    if (!canRemoveImagePage) return;
+    _cancelAnimation();
+    final i = pageIndex;
+    pages.removeAt(i).evict();
+    images = [...images]..removeAt(i);
+    for (var k = 0; k < pages.length; k++) {
+      pages[k].index = k;
+    }
+    // la memoria delle pagine recenti si ricostruisce con i nuovi numeri
+    _recentPages.clear();
+    _rendering.clear();
+    for (var k = 0; k < pages.length; k++) {
+      if (pages[k].isReady) _recentPages.add(k);
+    }
+    _showPage(i.clamp(0, pages.length - 1));
+    notifyListeners();
+  }
+
+  void _showPage(int i) {
+    pageIndex = i;
+    zoom = 1;
+    pan = Offset.zero;
+    if (page.isReady) {
+      _touch(i);
+    } else {
+      _ensureRendered(i);
+    }
+    if (i + 1 < pages.length) _ensureRendered(i + 1);
+  }
+
   // --- pagine PDF ------------------------------------------------------------
 
   /// Prepara i pixel di una pagina: resa del PDF oppure decodifica
@@ -373,16 +442,8 @@ class EditorController extends ChangeNotifier {
       return;
     }
     _cancelAnimation();
-    pageIndex = i;
-    zoom = 1;
-    pan = Offset.zero;
-    if (page.isReady) {
-      _touch(i);
-    } else {
-      _ensureRendered(i);
-    }
     // prepara anche la pagina successiva
-    if (i + 1 < pages.length) _ensureRendered(i + 1);
+    _showPage(i);
     notifyListeners();
   }
 

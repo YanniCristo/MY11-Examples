@@ -154,4 +154,46 @@ void main() {
     expect(files.single.fileName.contains('_01'), isFalse);
     c.dispose();
   });
+
+  testWidgets('aggiungere immagini non tocca quelle già tagliate', (
+    tester,
+  ) async {
+    final c = await three(tester);
+    await cut(tester, c, 50, 100);
+    final bytes = png(70, 70, 5);
+    final l = (await tester.runAsync(
+      () => ImageLoader.decode(bytes, 'n.png'),
+    ))!;
+    c.addImages(PickedImages.single(l));
+    expect(c.pageCount, 4);
+    expect(c.pageIndex, 3, reason: 'si va alla prima aggiunta');
+    expect(c.doc.width, 70);
+    expect(c.pages[0].doc.height, 150, reason: 'il taglio resta');
+    expect(c.imagesRoom, ImageLoader.maxImages - 4);
+    c.dispose();
+  });
+
+  testWidgets('togliere una pagina rinumera le altre e tiene i tagli', (
+    tester,
+  ) async {
+    final c = await three(tester);
+    await cut(tester, c, 50, 100);
+    c.goToPage(1);
+    c.removeCurrentImagePage();
+    expect(c.pageCount, 2);
+    expect(c.images.map((f) => f.name), ['foto_0.png', 'foto_2.png']);
+    expect([for (final p in c.pages) p.index], [0, 1]);
+    expect(c.pageIndex, 1);
+    await tester.runAsync(
+      () => Future.delayed(const Duration(milliseconds: 200)),
+    );
+    expect(c.doc.width, 90, reason: 'ora la pagina 2 è la terza foto');
+    expect(c.pages[0].doc.height, 150);
+    c.removeCurrentImagePage();
+    expect(c.pageCount, 1);
+    expect(c.canRemoveImagePage, isFalse, reason: 'ne resta almeno una');
+    c.removeCurrentImagePage();
+    expect(c.pageCount, 1);
+    c.dispose();
+  });
 }

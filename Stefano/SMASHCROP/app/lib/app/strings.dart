@@ -79,12 +79,12 @@ class S {
     'Wähle einen Bereich, lösche ihn und der Rest wird automatisch zusammengefügt.',
   );
   static String get homeHint => _t(
-    'Scegli un\'immagine o un documento PDF per iniziare',
-    'Choose an image or a PDF document to start',
-    'Choisissez une image ou un document PDF pour commencer',
-    'Elige una imagen o un documento PDF para empezar',
-    'Escolha uma imagem ou um documento PDF para começar',
-    'Wähle ein Bild oder ein PDF-Dokument, um zu beginnen',
+    'Scegli una o più immagini, oppure un PDF, per iniziare',
+    'Choose one or more images, or a PDF, to start',
+    'Choisissez une ou plusieurs images, ou un PDF, pour commencer',
+    'Elige una o varias imágenes, o un PDF, para empezar',
+    'Escolha uma ou mais imagens, ou um PDF, para começar',
+    'Wähle ein oder mehrere Bilder oder ein PDF, um zu beginnen',
   );
   static String get demoDescription => _t(
     'Esempio: una tabella tra due paragrafi viene rimossa e i paragrafi si uniscono',
@@ -95,12 +95,12 @@ class S {
     'Beispiel: Eine Tabelle zwischen zwei Absätzen wird entfernt und die Absätze werden zusammengefügt',
   );
   static String get loadImage => _t(
-    'Carica immagine',
-    'Load Image',
-    'Ouvrir une image',
-    'Cargar imagen',
-    'Carregar imagem',
-    'Bild laden',
+    'Carica immagini',
+    'Load Images',
+    'Ouvrir des images',
+    'Cargar imágenes',
+    'Carregar imagens',
+    'Bilder laden',
   );
   static String get loadPdf => _t(
     'Carica PDF',
@@ -705,5 +705,56 @@ class S {
     'Diese Bilder sind insgesamt $mb MB groß. Der Browser des Handys könnte '
         'die Seite wegen Speichermangel schließen: nutze sicherheitshalber die '
         'App oder wähle weniger aus.',
+  );
+
+  static String get addImages =>
+      _t('Aggiungi', 'Add', 'Ajouter', 'Añadir', 'Adicionar', 'Hinzufügen');
+  static String get addImagesLabel => _t(
+    'Aggiungi immagini in fondo',
+    'Add images at the end',
+    'Ajouter des images à la fin',
+    'Añadir imágenes al final',
+    'Adicionar imagens no final',
+    'Bilder am Ende hinzufügen',
+  );
+  static String get removePage => _t(
+    'Togli questa pagina',
+    'Remove this page',
+    'Retirer cette page',
+    'Quitar esta página',
+    'Remover esta página',
+    'Diese Seite entfernen',
+  );
+  static String get removePageTitle => _t(
+    'Togliere questa pagina?',
+    'Remove this page?',
+    'Retirer cette page ?',
+    '¿Quitar esta página?',
+    'Remover esta página?',
+    'Diese Seite entfernen?',
+  );
+  static String get removePageBody => _t(
+    'L\'immagine e i suoi tagli escono dal documento. La foto originale non '
+        'viene toccata.',
+    'The image and its cuts leave the document. The original photo is not '
+        'touched.',
+    'L\'image et ses découpes sortent du document. La photo d\'origine '
+        'n\'est pas modifiée.',
+    'La imagen y sus cortes salen del documento. La foto original no se '
+        'modifica.',
+    'A imagem e seus cortes saem do documento. A foto original não é '
+        'alterada.',
+    'Das Bild und seine Schnitte werden aus dem Dokument entfernt. Das '
+        'Originalfoto bleibt unverändert.',
+  );
+  static String get remove =>
+      _t('Togli', 'Remove', 'Retirer', 'Quitar', 'Remover', 'Entfernen');
+  static String imagesLimit(int n) => _t(
+    'Hai già $n immagini: è il massimo.',
+    'You already have $n images: that\'s the maximum.',
+    'Vous avez déjà $n images : c\'est le maximum.',
+    'Ya tienes $n imágenes: es el máximo.',
+    'Você já tem $n imagens: é o máximo.',
+    'Du hast bereits $n Bilder: das ist das Maximum.',
   );
 }

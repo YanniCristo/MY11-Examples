@@ -22,7 +22,8 @@ class EditorPage {
     if (image != null) attach(image);
   }
 
-  final int index;
+  /// Posizione nel documento (per le immagini cambia se si toglie una pagina).
+  int index;
 
   /// Dimensioni della pagina resa (pixel di lavoro): tutti i tagli e le
   /// posizioni sono espressi in queste unità.
