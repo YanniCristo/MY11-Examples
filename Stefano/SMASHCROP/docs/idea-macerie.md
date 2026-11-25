@@ -88,10 +88,24 @@ festa dell'evoluzione). Chi preferisce la precedente la riprende dalla collezion
   (Scartata: "SMASH Trump" — nome + colore + balletto insieme sarebbero troppo espliciti.)
 - anteprima: toccando una skin si vede SMASH che dà il pugno con quella skin.
 
+**Dopo un'evoluzione si apre da sola:** barra completa → schermata "SMASH si è evoluto!" (circa
+2 secondi) → si apre la **Collezione** con la nuova skin già indossata e l'etichetta **"Nuova"**.
+Così chi non sapeva che esiste la scopre. Si chiude con la **X** in alto o con il tasto
+**"Continua a tagliare"**.
+
 **Dove si apre:**
 - dalla **home**, toccando livello/barra di SMASH vicino al logo;
 - dall'**editor**, toccando il contatore **quando SMASH è acceso** (da spento il tocco mostra
   "Attiva SMASH", come deciso).
+
+**Come si capisce che si può toccare:**
+- nel contatore, accanto alla testa dell'evoluzione, una piccola **freccetta ›** (come nelle liste
+  del telefono: "qui c'è altro");
+- un **pallino rosso** sul contatore quando c'è una skin nuova non ancora vista (sparisce aprendo la
+  Collezione);
+- **al primo uso**, una volta sola: il contatore pulsa e compare la nuvoletta "Tocca per la tua
+  collezione" per 3 secondi;
+- in home, accanto a livello e barra, la stessa freccetta e la scritta "Collezione".
 
 **Cosa cambia con la skin scelta:** l'animazione del pugno, la testa nell'interruttore e nel
 contatore, la card da condividere. Il progresso verso la prossima evoluzione **non cambia**: nel
@@ -257,3 +271,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** proposti nomi skin internazionali; la skin dell'acquisto a vita sarà "SMASH Trump" arancione (rischio store da verificare, riserva "SMASH Tycoon").
 - **25 nov 2026:** SMASH Trump confermato con la lettura "trump card" e nessun altro riferimento; SMASH Tycoon di riserva.
 - **25 nov 2026:** skin a vita definitiva: SMASH Tycoon arancione con il balletto (scartato SMASH Trump).
+- **25 nov 2026:** dopo l'evoluzione si apre la Collezione (chiudibile con X o "Continua a tagliare"); per far capire che si tocca: freccetta ›, pallino rosso per skin nuove, suggerimento una tantum al primo uso.
