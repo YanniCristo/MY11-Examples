@@ -205,12 +205,12 @@ Sequenza, sempre con gli elementi della **skin in uso** (es. Popcorn → popcorn
   personaggio su tutto lo schermo (~2 s), testa nella barra che cambia con un lampo, poi si apre la
   Collezione sul nuovo personaggio che fa subito la sua animazione. È l'unico effetto a tutto schermo.
 
-### Proposta da confermare
+### Collezione (deciso)
 
 - **Collezione:** bloccati = sagoma nera (dalla skin_15) con lucchetto e kg mancanti; sbloccati a
   riposo = skin_15 con piccolo dondolio (15↔16); quando lo selezioni fa **tutta la sua animazione**
-  (18 immagini) in grande con i suoi elementi dietro. Nessuna grafica nuova necessaria; pose da eroe
-  facoltative (intestazione/condivisione).
+  (18 immagini) in grande con i suoi elementi dietro. Si aggiungono le **pose da eroe** (una per
+  personaggio) per la schermata dell'evoluzione, l'intestazione della Collezione e l'immagine da condividere.
 
 ## 5. SMASH spento: solo linguaggio visivo (niente testo fisso)
 
@@ -384,3 +384,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** SMASH Burp (18 immagini) approvato. Aggiunti i 6 elementi per skin da spargere su tutta la fascia (livello sotto SMASH). Pacchetto completo dei prompt per ChatGPT preparato.
 - **25 nov 2026:** completate le 6 skin (18 immagini allineate, anteprima, scheda), i 36 elementi della fascia e le 5 icone degli obiettivi; Tycoon con elmo dorato e cresta rossa. Deciso l'effetto a ogni colpo: esplosione sulla fascia, la maggior parte cade sotto i pulsanti, 3–5 pezzi a calamita verso la barra con "gnam". Evoluzione a tutto schermo e Collezione animata: proposte da confermare.
 - **25 nov 2026:** confermati anche le macerie che volano nella barra ("gnam" + "+kg") e l'evoluzione a tutto schermo (pioggia degli elementi del nuovo personaggio, lampo sulla testa, poi Collezione). Resta da confermare la Collezione animata.
+- **25 nov 2026:** confermata la Collezione animata, con in più le pose da eroe (prompt e riferimenti per ChatGPT preparati).
