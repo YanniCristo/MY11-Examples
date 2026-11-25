@@ -66,6 +66,36 @@ Opzioni scartate: blocco 1 cm (troppo lento), blocco 10 cm con soglie da 1 L (tr
 - Da quel momento il pugno lo dà il nuovo SMASH.
 - Da fare: **nomi e aspetto** di ogni forma di SMASH per livello.
 
+## 3b. Collezione delle skin
+
+**Cambio automatico:** quando SMASH evolve, la nuova skin si **indossa da sola** (fa parte della
+festa dell'evoluzione). Chi preferisce la precedente la riprende dalla collezione in un tocco.
+
+**Sezione "Collezione"** (le skin di SMASH):
+- griglia con **tutte** le skin, nell'ordine delle evoluzioni (+ eventuali skin extra);
+- **sbloccate:** si toccano per indossarle; quella in uso ha la spunta;
+- **ancora da sbloccare:** visibili nel loro colore ma con un **lucchetto** e quanto manca
+  (es. "mancano 23 kg"), così fanno venire voglia;
+- **skin extra** dell'acquisto a vita: con un'etichetta dedicata (es. "Founder"); per chi non ha
+  comprato restano chiuse con il prezzo;
+- anteprima: toccando una skin si vede SMASH che dà il pugno con quella skin.
+
+**Dove si apre:**
+- dalla **home**, toccando livello/barra di SMASH vicino al logo;
+- dall'**editor**, toccando il contatore **quando SMASH è acceso** (da spento il tocco mostra
+  "Attiva SMASH", come deciso).
+
+**Cosa cambia con la skin scelta:** l'animazione del pugno, la testa nell'interruttore e nel
+contatore, la card da condividere. Il progresso verso la prossima evoluzione **non cambia**: nel
+contatore a sinistra c'è la testa della skin **in uso**, a destra quella della **prossima
+evoluzione** da sbloccare.
+
+**Extra possibile (solo iPhone e Android che lo supportano):** cambiare anche l'icona dell'app con
+quella della skin. Da valutare.
+
+**Salvataggio:** la skin scelta e quelle sbloccate si salvano insieme al contatore (stessi
+salvataggi senza account).
+
 ## 4. Animazioni (leggere, mai bloccanti)
 
 - Dopo ogni taglio: cubetti che volano/cadono nel contatore, "+0,75 kg", cifre che girano come un **contachilometri**.
@@ -181,6 +211,7 @@ Si può partire con B e sostituire poi con i disegni veri.
 - La prima evoluzione deve **costare lavoro** (soglie più alte del blocco 10 cm).
 - Blocco **5 cm** e soglie confermate: tappa 15 kg; evoluzioni a 150 kg, 450 kg, 1.500 kg, 4.500 kg.
 - Unità: **peso in kg**, sempre la stessa (densità 1,5 t/m³).
+- **Collezione skin:** la nuova skin si indossa da sola all'evoluzione; in "Collezione" si vedono tutte (le bloccate con lucchetto e quanto manca) e si sceglie quella da usare.
 - Contatore protetto **senza login**: locale + iCloud + backup Google/Block Store + valore più alto + codice di recupero.
 - Testa dell'evoluzione mostrata **a colori** (il suo colore vero) a destra della barra.
 - Contatore compatto: totale con **max 3 cifre** (unità e decimali scalano), **barra 0–100%** tra la
@@ -210,3 +241,4 @@ Si può partire con B e sostituire poi con i disegni veri.
   soglie 15 / 150 / 450 / 1.500 / 4.500 kg, testa dell'evoluzione a colori invece del "?".
 - **25 nov 2026:** deciso di restare senza login (niente Firebase): si attivano tutti i salvataggi senza account.
 - **25 nov 2026:** confermato il piano salvataggi; il codice di recupero viene proposto con discrezione dopo le evoluzioni.
+- **25 nov 2026:** definita la collezione delle skin (cambio automatico all'evoluzione, scelta libera tra le sbloccate).
