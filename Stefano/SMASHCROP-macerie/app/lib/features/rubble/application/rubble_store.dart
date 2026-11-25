@@ -248,10 +248,13 @@ class RecoveryCode {
 
   static int _sign(BigInt payload) {
     // FNV-1a a 32 bit su sale + dati, ridotto a 21 bit
+    // la moltiplicazione è spezzata in due perché nel browser i numeri
+    // oltre 2^53 perdono precisione: così il codice è identico su app e web
     var h = 0x811c9dc5;
     for (final c in '$_salt:$payload'.codeUnits) {
       h ^= c;
-      h = (h * 0x01000193) & 0xFFFFFFFF;
+      // h * 0x01000193 = h * 2^24 + h * 0x193, tutto modulo 2^32
+      h = ((h & 0xFF) * 0x1000000 + h * 0x193) % 0x100000000;
     }
     return h & 0x1FFFFF;
   }

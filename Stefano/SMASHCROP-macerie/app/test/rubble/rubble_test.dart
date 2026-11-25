@@ -164,4 +164,15 @@ void main() {
       expect(b.lifetime, isTrue);
     });
   });
+
+  test('codice di recupero uguale su app e browser', () {
+    final c = RecoveryCode.encode(
+      grams: 149000,
+      unlocked: {'smash'},
+      skinId: 'smash',
+    );
+    expect(c, '004H-G80G-PQGR');
+    final d = RecoveryCode.decode('004H-G80G-PQGR')!;
+    expect(d.grams, 149000);
+  });
 }
