@@ -807,4 +807,64 @@ class S {
     'Opções da página',
     'Seitenoptionen',
   );
+
+  // --- menu ---------------------------------------------------------------
+
+  static String get menu => 'Menu';
+  static String get shareApp => _t(
+    'Condividi l\'app',
+    'Share the app',
+    'Partager l\'app',
+    'Compartir la app',
+    'Compartilhar o app',
+    'App teilen',
+  );
+  static String shareAppText(String url) => _t(
+    'Prova SmashCrop: togli da foto e PDF le parti che non servono, con un pugno di SMASH! $url',
+    'Try SmashCrop: remove the parts you don\'t need from photos and PDFs with one punch from SMASH! $url',
+    'Essaie SmashCrop : retire des photos et des PDF les parties inutiles, d\'un coup de poing de SMASH ! $url',
+    'Prueba SmashCrop: quita de fotos y PDF lo que no sirve, ¡con un puñetazo de SMASH! $url',
+    'Experimente o SmashCrop: tire de fotos e PDFs o que não serve, com um soco do SMASH! $url',
+    'Probier SmashCrop: Entferne Überflüssiges aus Fotos und PDFs – mit einem Schlag von SMASH! $url',
+  );
+  static String get privacy => _t(
+    'Privacy',
+    'Privacy',
+    'Confidentialité',
+    'Privacidad',
+    'Privacidade',
+    'Datenschutz',
+  );
+  static String get privacyBody => _t(
+    'SmashCrop lavora sul tuo dispositivo: foto e PDF non vengono caricati su nessun server e non '
+        'li vediamo. Non raccogliamo dati personali e non usiamo account. Sul dispositivo restano '
+        'solo le tue preferenze (lingua, impostazioni) e i tagli del lavoro in corso, per poterlo '
+        'riprendere. I file salvati non contengono posizione GPS né altri dati della foto originale.',
+    'SmashCrop works on your device: photos and PDFs are not uploaded to any server and we never '
+        'see them. We collect no personal data and use no accounts. Only your preferences (language, '
+        'settings) and the cuts of the work in progress stay on the device, so you can resume it. '
+        'Saved files contain no GPS location or other data from the original photo.',
+    'SmashCrop fonctionne sur votre appareil : les photos et PDF ne sont envoyés sur aucun serveur '
+        'et nous ne les voyons pas. Nous ne collectons aucune donnée personnelle et n\'utilisons pas '
+        'de compte. Seuls vos préférences (langue, réglages) et les découpes du travail en cours '
+        'restent sur l\'appareil, pour le reprendre. Les fichiers enregistrés ne contiennent ni '
+        'position GPS ni autres données de la photo d\'origine.',
+    'SmashCrop funciona en tu dispositivo: las fotos y los PDF no se suben a ningún servidor y no '
+        'los vemos. No recogemos datos personales ni usamos cuentas. En el dispositivo solo quedan '
+        'tus preferencias (idioma, ajustes) y los cortes del trabajo en curso, para poder retomarlo. '
+        'Los archivos guardados no contienen la ubicación GPS ni otros datos de la foto original.',
+    'O SmashCrop funciona no seu dispositivo: fotos e PDFs não são enviados para nenhum servidor e '
+        'nós não os vemos. Não coletamos dados pessoais nem usamos contas. No dispositivo ficam só '
+        'suas preferências (idioma, ajustes) e os cortes do trabalho em andamento, para retomá-lo. '
+        'Os arquivos salvos não contêm localização GPS nem outros dados da foto original.',
+    'SmashCrop arbeitet auf deinem Gerät: Fotos und PDFs werden auf keinen Server hochgeladen und '
+        'wir sehen sie nie. Wir sammeln keine persönlichen Daten und nutzen keine Konten. Auf dem '
+        'Gerät bleiben nur deine Einstellungen (Sprache usw.) und die Schnitte der laufenden Arbeit, '
+        'damit du sie fortsetzen kannst. Gespeicherte Dateien enthalten keinen GPS-Standort und keine '
+        'anderen Daten des Originalfotos.',
+  );
+  static String get close =>
+      _t('Chiudi', 'Close', 'Fermer', 'Cerrar', 'Fechar', 'Schließen');
+  static String get version =>
+      _t('Versione', 'Version', 'Version', 'Versión', 'Versão', 'Version');
 }

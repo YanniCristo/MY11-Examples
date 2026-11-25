@@ -11,6 +11,7 @@ import '../../../core/widgets/password_dialog.dart';
 import '../../../app/strings.dart';
 import '../../../app/theme.dart';
 import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/app_menu.dart';
 import '../../../core/widgets/brand.dart';
 import '../../animation/application/smash_frames.dart';
 import '../../export/export_service.dart';
@@ -493,6 +494,12 @@ class _EditorScreenState extends State<EditorScreen>
       children: [
         Row(
           children: [
+            MenuButton(
+              onTap: locked
+                  ? null
+                  : () => showAppMenu(context, preferences: widget.preferences),
+            ),
+            const SizedBox(width: 8),
             const Flexible(
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -505,12 +512,12 @@ class _EditorScreenState extends State<EditorScreen>
             const SizedBox(width: 8),
             SizedBox(
               key: _shareKey,
-              width: 122,
+              width: 44,
               child: AppButton(
-                label: S.share,
+                label: '',
+                semanticLabel: S.share,
                 icon: const Icon(Icons.ios_share),
                 height: 40,
-                fontSize: 14,
                 onPressed: locked ? null : _share,
               ),
             ),

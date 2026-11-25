@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../core/widgets/flag.dart';
+import '../../core/widgets/app_menu.dart';
 import '../../core/widgets/large_file_dialog.dart';
 import '../../core/widgets/password_dialog.dart';
 
@@ -161,7 +161,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   const BrandMark(size: 30),
                   const Spacer(),
-                  _LanguageButton(preferences: widget.preferences),
+                  MenuButton(
+                    onTap: () =>
+                        showAppMenu(context, preferences: widget.preferences),
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -423,151 +426,4 @@ class _ResumeCard extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Bandiera, sigla e freccetta: al tocco apre il menu a tendina delle lingue.
-class _LanguageButton extends StatelessWidget {
-  const _LanguageButton({required this.preferences});
-
-  final AppPreferences preferences;
-
-  Future<void> _choose((AppLang?,) v) async {
-    await preferences.setLanguage(v.$1);
-    preferences.applyLanguage();
-  }
-
-  PopupMenuItem<(AppLang?,)> _item(
-    AppLang flag,
-    String title,
-    AppLang? value, {
-    String? subtitle,
-  }) {
-    final selected = preferences.language == value;
-    return PopupMenuItem<(AppLang?,)>(
-      value: (value,),
-      height: subtitle == null ? 48 : 58,
-      child: Row(
-        children: [
-          LangFlag(flag),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: AppColors.text,
-                    fontSize: 15,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  ),
-                ),
-                if (subtitle != null)
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 12,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          if (selected) const _Check(),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final device = AppLang.device();
-    return PopupMenuButton<(AppLang?,)>(
-      tooltip: S.languageTitle,
-      position: PopupMenuPosition.under,
-      offset: const Offset(0, 6),
-      color: AppColors.surface,
-      elevation: 12,
-      constraints: const BoxConstraints(minWidth: 230, maxWidth: 280),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.border),
-      ),
-      onSelected: _choose,
-      itemBuilder: (context) => [
-        _item(
-          device,
-          S.languageAuto,
-          null,
-          subtitle: '${S.languageDevice} · ${device.nativeName}',
-        ),
-        const PopupMenuDivider(height: 8, color: AppColors.border),
-        for (final l in AppLang.values) _item(l, l.nativeName, l),
-      ],
-      child: Semantics(
-        button: true,
-        label: S.languageTitle,
-        child: Container(
-          height: 38,
-          padding: const EdgeInsets.only(left: 10, right: 8),
-          decoration: BoxDecoration(
-            color: AppColors.button,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              LangFlag(S.lang, width: 22),
-              const SizedBox(width: 7),
-              Text(
-                S.lang.name.toUpperCase(),
-                style: const TextStyle(
-                  color: AppColors.text,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(width: 4),
-              const ChevronDown(size: 16, color: AppColors.textMuted),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Spunta rossa disegnata (non dipende dal font delle icone).
-class _Check extends StatelessWidget {
-  const _Check();
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    width: 20,
-    height: 20,
-    child: CustomPaint(painter: _CheckPainter()),
-  );
-}
-
-class _CheckPainter extends CustomPainter {
-  @override
-  void paint(Canvas c, Size s) {
-    c.drawPath(
-      Path()
-        ..moveTo(s.width * .18, s.height * .52)
-        ..lineTo(s.width * .42, s.height * .74)
-        ..lineTo(s.width * .84, s.height * .28),
-      Paint()
-        ..color = AppColors.red
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = s.width * .13
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_CheckPainter old) => false;
 }
