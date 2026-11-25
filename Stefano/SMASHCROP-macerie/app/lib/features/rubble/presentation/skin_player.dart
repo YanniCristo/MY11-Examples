@@ -98,11 +98,25 @@ class _SkinPlayerState extends State<SkinPlayer>
   Widget build(BuildContext context) {
     final imgs = _imgs;
     if (imgs == null) {
-      return const Center(
-        child: SizedBox.square(
-          dimension: 22,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
+      // mentre l'animazione arriva si vede subito la posa da eroe
+      // (un'immagine sola), o la sua sagoma se è ancora bloccato
+      final pose = Image.asset(
+        widget.skin.pose,
+        fit: BoxFit.contain,
+        gaplessPlayback: true,
+        errorBuilder: (_, _, _) => const SizedBox.shrink(),
+      );
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: widget.locked
+            ? ColorFiltered(
+                colorFilter: const ColorFilter.mode(
+                  Color(0xFF15161C),
+                  BlendMode.srcIn,
+                ),
+                child: pose,
+              )
+            : pose,
       );
     }
     return CustomPaint(

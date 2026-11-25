@@ -6,6 +6,7 @@ import 'package:pdfrx/pdfrx.dart';
 
 import 'app/app.dart';
 import 'features/rubble/application/rubble_store.dart';
+import 'features/rubble/application/skin_assets.dart';
 import 'features/settings/preferences.dart';
 
 Future<void> main() async {
@@ -20,4 +21,12 @@ Future<void> main() async {
   prefs.applyLanguage();
   RubbleStore.instance = await RubbleStore.load();
   runApp(SmashCropApp(preferences: prefs));
+  // in sottofondo, dopo il primo disegno: la skin in uso e la prossima da
+  // sbloccare sono pronte quando servono
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final store = RubbleStore.instance;
+    SkinImages.preload(store.skin);
+    final next = store.nextEvolution;
+    if (next != null) SkinImages.preload(next);
+  });
 }

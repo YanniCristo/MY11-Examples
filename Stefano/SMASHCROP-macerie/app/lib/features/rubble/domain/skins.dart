@@ -36,8 +36,7 @@ class SkinDef {
   final Color color;
 
   String get dir => 'assets/rubble/$id';
-  String frame(int i) => '$dir/f_${(i + 1).toString().padLeft(2, '0')}.webp';
-  String element(int i) => '$dir/e_${i + 1}.webp';
+  String get atlas => '$dir/atlas.webp';
   String get head => '$dir/testa.webp';
   String get headSleep => '$dir/testa_dorme.webp';
   String get pose => '$dir/posa.webp';
