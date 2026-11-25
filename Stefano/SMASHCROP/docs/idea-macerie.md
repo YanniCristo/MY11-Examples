@@ -145,8 +145,9 @@ sulla porzione, eventuale suono).
 | Disintegrazione a soffio | si polverizza e la polvere viene spazzata via dall'onda d'urto |
 
 Aggiungere una skin in futuro = 18 immagini + una scheda, senza riscrivere l'app.
-Le sceneggiature delle 18 immagini di ogni skin si scrivono quando nomi e comportamenti sono
-confermati (da far realizzare con ChatGPT).
+Le sceneggiature delle 18 immagini di ogni skin sono in [sceneggiature-skin.md](sceneggiature-skin.md)
+(da far realizzare con ChatGPT). Ogni skin: **stesso robot e stesse proporzioni** di SMASH; cambiano
+colori, accessori ed espressioni.
 
 ## 3d. I personaggi
 
@@ -338,3 +339,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** confermata SMASH Mamma Mia: pizza rotante che squarcia e schizza pomodoro (stile cartone, mai simile al sangue).
 - **25 nov 2026:** SMASH Tycoon: entra col balletto, si gira, si piega e scorreggia con onda d'urto verso l'epicentro che disintegra la porzione.
 - **25 nov 2026:** squadra completa confermata: SMASH, Burp, Popcorn, Muahaha, Mamma Mia, Tycoon.
+- **25 nov 2026:** scritte le sceneggiature delle 18 immagini per Burp, Popcorn, Muahaha, Mamma Mia e Tycoon (stesso robot, stesse proporzioni).
