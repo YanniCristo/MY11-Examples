@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/widgets/app_menu.dart';
@@ -15,6 +17,7 @@ import '../image_processing/services/image_loader.dart';
 import '../pdf_processing/services/pdf_loader.dart';
 import '../pdf_processing/services/pdf_service.dart';
 import '../settings/preferences.dart';
+import '../settings/work_file/work_file_store.dart';
 import 'demo_illustration.dart';
 
 /// Schermata iniziale: spiega l'app con il prima/dopo e porta all'editor
@@ -48,12 +51,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _discard() async {
     await widget.preferences.clearSavedWork();
+    await WorkFileStore.instance.clear();
     _refreshSaved();
   }
 
-  void _resume() {
+  Future<void> _resume() async {
     final w = _saved;
-    if (w == null) return;
+    if (w == null || _loading) return;
+    // c'è la copia del file: si riparte subito, senza sceglierlo di nuovo
+    setState(() => _loading = true);
+    final bytes = await WorkFileStore.instance.load(
+      name: w.name,
+      size: w.size,
+      isPdf: w.isPdf,
+    );
+    if (!mounted) return;
+    setState(() => _loading = false);
+    if (bytes != null) {
+      w.isPdf
+          ? _loadPdf(resume: w, bytes: bytes)
+          : _loadImage(resume: w, bytes: bytes);
+      return;
+    }
     _toast(S.resumeHint);
     w.isPdf ? _loadPdf(resume: w) : _loadImage(resume: w);
   }
@@ -62,15 +81,25 @@ class _HomeScreenState extends State<HomeScreen> {
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(msg)));
 
-  Future<void> _loadImage({SavedWork? resume}) async {
+  Future<void> _loadImage({SavedWork? resume, Uint8List? bytes}) async {
     if (_loading) return;
     setState(() => _loading = true);
     try {
-      final picked = await _loader.pickMany(
-        confirmSize: (bytes) => confirmLargeImages(context, bytes),
-        onTruncated: (max) => _toast(S.onlyFirstImages(max)),
-      );
+      final picked = bytes != null && resume != null
+          ? PickedImages.single(await ImageLoader.decode(bytes, resume.name))
+          : await _loader.pickMany(
+              confirmSize: (bytes) => confirmLargeImages(context, bytes),
+              onTruncated: (max) => _toast(S.onlyFirstImages(max)),
+            );
       if (picked == null || !mounted) return;
+      final first = picked.files.first.bytes;
+      if (bytes == null && picked.length == 1 && first != null) {
+        WorkFileStore.instance.stage(
+          first,
+          name: picked.files.first.name,
+          isPdf: false,
+        );
+      }
       if (resume != null &&
           (picked.length != 1 ||
               !resume.matches(
@@ -104,15 +133,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _loadPdf({SavedWork? resume}) async {
+  Future<void> _loadPdf({SavedWork? resume, Uint8List? bytes}) async {
     if (_loading) return;
     setState(() => _loading = true);
     try {
-      final pdf = await _pdfLoader.pick(
-        askPassword: ({required bool wrong}) =>
-            askPdfPassword(context, wrong: wrong),
-        confirmSize: (bytes) => confirmLargePdf(context, bytes),
-      );
+      Future<String?> ask({required bool wrong}) =>
+          askPdfPassword(context, wrong: wrong);
+      final pdf = bytes != null && resume != null
+          ? await PdfSession.open(bytes, resume.name, askPassword: ask)
+          : await _pdfLoader.pick(
+              askPassword: ask,
+              confirmSize: (bytes) => confirmLargePdf(context, bytes),
+              onBytes: (b, name) =>
+                  WorkFileStore.instance.stage(b, name: name, isPdf: true),
+            );
       if (pdf == null || !mounted) return;
       if (resume != null &&
           !resume.matches(isPdf: true, name: pdf.name, size: pdf.fileSize)) {

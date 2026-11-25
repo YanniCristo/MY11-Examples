@@ -44,6 +44,7 @@ dependencies:
   file_picker: 13.3.2
   web: ^1.1.2
   file_picker_web: ^4.2.2
+  path_provider: ^2.1.5
 
 # Galleria di iPhone con i numeri di scelta (1, 2, 3…): vedi
 # third_party/image_picker_ios/SMASHCROP_PATCH.md

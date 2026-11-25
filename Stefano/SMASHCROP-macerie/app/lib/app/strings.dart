@@ -838,29 +838,34 @@ class S {
   static String get privacyBody => _t(
     'SmashCrop lavora sul tuo dispositivo: foto e PDF non vengono caricati su nessun server e non '
         'li vediamo. Non raccogliamo dati personali e non usiamo account. Sul dispositivo restano '
-        'solo le tue preferenze (lingua, impostazioni) e i tagli del lavoro in corso, per poterlo '
-        'riprendere. I file salvati non contengono posizione GPS né altri dati della foto originale.',
+        'solo le tue preferenze (lingua, impostazioni) e il lavoro in corso (i tagli e una copia del '
+        'file, che si cancella quando chiudi il lavoro), per poterlo riprendere. I file salvati non contengono posizione GPS né altri dati della foto originale.',
     'SmashCrop works on your device: photos and PDFs are not uploaded to any server and we never '
         'see them. We collect no personal data and use no accounts. Only your preferences (language, '
-        'settings) and the cuts of the work in progress stay on the device, so you can resume it. '
+        'settings) and the work in progress (the cuts and a copy of the file, deleted when you close '
+        'the work) stay on the device, so you can resume it. '
         'Saved files contain no GPS location or other data from the original photo.',
     'SmashCrop fonctionne sur votre appareil : les photos et PDF ne sont envoyés sur aucun serveur '
         'et nous ne les voyons pas. Nous ne collectons aucune donnée personnelle et n\'utilisons pas '
-        'de compte. Seuls vos préférences (langue, réglages) et les découpes du travail en cours '
-        'restent sur l\'appareil, pour le reprendre. Les fichiers enregistrés ne contiennent ni '
+        'de compte. Seuls vos préférences (langue, réglages) et le travail en cours (les découpes et '
+        'une copie du fichier, supprimée quand vous fermez le travail) restent sur l\'appareil, pour '
+        'le reprendre. Les fichiers enregistrés ne contiennent ni '
         'position GPS ni autres données de la photo d\'origine.',
     'SmashCrop funciona en tu dispositivo: las fotos y los PDF no se suben a ningún servidor y no '
         'los vemos. No recogemos datos personales ni usamos cuentas. En el dispositivo solo quedan '
-        'tus preferencias (idioma, ajustes) y los cortes del trabajo en curso, para poder retomarlo. '
+        'tus preferencias (idioma, ajustes) y el trabajo en curso (los cortes y una copia del archivo, '
+        'que se borra al cerrar el trabajo), para poder retomarlo. '
         'Los archivos guardados no contienen la ubicación GPS ni otros datos de la foto original.',
     'O SmashCrop funciona no seu dispositivo: fotos e PDFs não são enviados para nenhum servidor e '
         'nós não os vemos. Não coletamos dados pessoais nem usamos contas. No dispositivo ficam só '
-        'suas preferências (idioma, ajustes) e os cortes do trabalho em andamento, para retomá-lo. '
+        'suas preferências (idioma, ajustes) e o trabalho em andamento (os cortes e uma cópia do '
+        'arquivo, apagada quando você fecha o trabalho), para retomá-lo. '
         'Os arquivos salvos não contêm localização GPS nem outros dados da foto original.',
     'SmashCrop arbeitet auf deinem Gerät: Fotos und PDFs werden auf keinen Server hochgeladen und '
         'wir sehen sie nie. Wir sammeln keine persönlichen Daten und nutzen keine Konten. Auf dem '
-        'Gerät bleiben nur deine Einstellungen (Sprache usw.) und die Schnitte der laufenden Arbeit, '
-        'damit du sie fortsetzen kannst. Gespeicherte Dateien enthalten keinen GPS-Standort und keine '
+        'Gerät bleiben nur deine Einstellungen (Sprache usw.) und die laufende Arbeit (die Schnitte und '
+        'eine Kopie der Datei, die beim Schließen der Arbeit gelöscht wird), damit du sie fortsetzen '
+        'kannst. Gespeicherte Dateien enthalten keinen GPS-Standort und keine '
         'anderen Daten des Originalfotos.',
   );
   static String get close =>

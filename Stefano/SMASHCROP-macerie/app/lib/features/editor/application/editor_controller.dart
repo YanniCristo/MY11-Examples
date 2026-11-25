@@ -15,6 +15,7 @@ import '../../image_processing/services/image_loader.dart';
 import '../../pdf_processing/domain/page_layout.dart';
 import '../../pdf_processing/services/pdf_service.dart';
 import '../../settings/preferences.dart';
+import '../../settings/work_file/work_file_store.dart';
 import '../domain/cut_operation.dart';
 import '../domain/selection_state.dart';
 import '../domain/strip_document.dart';
@@ -620,12 +621,14 @@ class EditorController extends ChangeNotifier {
     );
     if (w != null) {
       preferences.setSavedWork(w.encode());
+      WorkFileStore.instance.promote(name: name, size: size, isPdf: isPdf);
       return;
     }
     // tutto annullato: si toglie il salvataggio, se era di questo file
     final old = SavedWork.decode(preferences.savedWork);
     if (old != null && old.matches(isPdf: isPdf, name: name, size: size)) {
       preferences.clearSavedWork();
+      WorkFileStore.instance.clear();
     }
   }
 

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 
 import 'pdf_service.dart';
@@ -13,6 +15,7 @@ class PdfLoader {
   Future<PdfSession?> pick({
     PasswordPrompt? askPassword,
     Future<bool> Function(int bytes)? confirmSize,
+    void Function(Uint8List bytes, String name)? onBytes,
   }) async {
     final file = await FilePicker.pickFile(
       type: FileType.custom,
@@ -24,6 +27,7 @@ class PdfLoader {
       return null;
     }
     final bytes = await file.xFile.readAsBytes();
+    onBytes?.call(bytes, file.name);
     return PdfSession.open(bytes, file.name, askPassword: askPassword);
   }
 }

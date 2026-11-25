@@ -9,8 +9,9 @@ import 'editor_page.dart';
 /// Il lavoro in corso, salvato sul dispositivo a ogni modifica: se la
 /// pagina web si ricarica (o l'app viene chiusa) si riprende da qui.
 ///
-/// Contiene solo il nome e il peso del file, per riconoscerlo quando lo si
-/// riapre, e i tagli fatti: mai il contenuto del file.
+/// Contiene il nome e il peso del file, per riconoscerlo quando lo si
+/// riapre, e i tagli fatti. La copia del file sta a parte, in
+/// `WorkFileStore`.
 class SavedWork {
   SavedWork({
     required this.isPdf,

@@ -5,7 +5,7 @@ import '../pdf_processing/domain/page_layout.dart';
 
 /// Preferenze leggere salvate sul dispositivo. Nessun file importato
 /// finisce qui dentro: del lavoro in corso si tengono solo nome e peso del
-/// file e le coordinate dei tagli.
+/// file e le coordinate dei tagli (la copia del file è in `WorkFileStore`).
 class AppPreferences {
   AppPreferences._(this._prefs);
 
