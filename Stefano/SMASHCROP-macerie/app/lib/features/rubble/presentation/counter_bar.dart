@@ -116,14 +116,21 @@ class _CounterBarState extends State<CounterBar>
 
     Widget content = Row(
       children: [
-        Text(
-          kgText,
-          maxLines: 1,
-          style: TextStyle(
-            color: AppColors.text,
-            fontSize: widget.compact ? 13 : 16,
-            fontWeight: FontWeight.w800,
-            fontFeatures: const [FontFeature.tabularFigures()],
+        // con tanti chili il numero si rimpicciolisce, le teste restano
+        Flexible(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              kgText,
+              maxLines: 1,
+              style: TextStyle(
+                color: AppColors.text,
+                fontSize: widget.compact ? 13 : 16,
+                fontWeight: FontWeight.w800,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
           ),
         ),
         const SizedBox(width: 6),
@@ -145,7 +152,12 @@ class _CounterBarState extends State<CounterBar>
           ),
         ),
         const SizedBox(width: 4),
-        Expanded(child: bar),
+        Expanded(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 14),
+            child: bar,
+          ),
+        ),
         const SizedBox(width: 4),
         if (next != null)
           SizedBox(
