@@ -65,7 +65,7 @@ class SkinDef {
 
 const _sounds4 = [1, 2, 3, 4];
 List<String> _s(String base) => [
-  for (final i in _sounds4) 'sounds/${base}_$i.m4a',
+  for (final i in _sounds4) 'sounds/${base}_$i.mp3',
 ];
 
 /// Le skin nell'ordine delle evoluzioni; Tycoon è quella dell'acquisto a vita.

@@ -63,7 +63,7 @@ class SoundFx {
     _play(skin.sounds[i]);
   }
 
-  void gnam() => _play('sounds/gnam_barra.m4a', volume: .8);
+  void gnam() => _play('sounds/gnam_barra.mp3', volume: .8);
 
   static void punch() => HapticFeedback.mediumImpact();
   static void tick() => HapticFeedback.lightImpact();

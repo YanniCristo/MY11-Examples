@@ -25,4 +25,4 @@ Specifica completa: [`../SMASHCROP/docs/idea-macerie.md`](../SMASHCROP/docs/idea
 - Effetti diversi sulla porzione per ogni skin (oggi tutti usano la frantumazione + gli elementi).
 
 Codice: `lib/features/rubble/` (contatore, skin, effetti, Collezione, menu).
-Immagini e suoni: `assets/rubble/`, `assets/sounds/`.
+Immagini e suoni: `assets/rubble/`, `assets/sounds/` (mp3).
