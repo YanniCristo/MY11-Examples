@@ -18,6 +18,7 @@ import '../rubble/presentation/counter_bar.dart';
 import '../rubble/presentation/rubble_menu.dart';
 import '../editor/presentation/editor_screen.dart';
 import '../image_processing/services/image_loader.dart';
+import '../image_processing/services/web_pick/web_pick.dart';
 import '../pdf_processing/services/pdf_loader.dart';
 import '../pdf_processing/services/pdf_service.dart';
 import '../settings/preferences.dart';
@@ -260,13 +261,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: AppButton(
-                            label: S.loadImage,
-                            icon: const Icon(Icons.image_outlined),
-                            style: AppButtonStyle.primary,
-                            height: 58,
-                            fontSize: 18,
-                            onPressed: _loading ? null : _loadImage,
+                          child: ImagePickTarget(
+                            onTap: _loading ? null : () => _loadImage(),
+                            child: AppButton(
+                              label: S.loadImage,
+                              icon: const Icon(Icons.image_outlined),
+                              style: AppButtonStyle.primary,
+                              height: 58,
+                              fontSize: 18,
+                              onPressed: _loading ? null : _loadImage,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),

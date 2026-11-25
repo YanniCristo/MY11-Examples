@@ -25,6 +25,7 @@ import '../../rubble/presentation/skin_effects.dart';
 import '../../export/export_service.dart';
 import '../../export/web_share/web_share.dart' as web_share;
 import '../../image_processing/services/image_loader.dart';
+import '../../image_processing/services/web_pick/web_pick.dart';
 import '../../pdf_processing/presentation/layout_panel.dart';
 import '../../pdf_processing/services/pdf_loader.dart';
 import '../../pdf_processing/services/pdf_service.dart';
@@ -856,11 +857,14 @@ class _EditorScreenState extends State<EditorScreen>
       Row(
         children: [
           Expanded(
-            child: AppButton(
-              label: S.loadImage,
-              icon: const Icon(Icons.image_outlined),
-              fontSize: 15,
-              onPressed: c.isCutting ? null : _loadImage,
+            child: ImagePickTarget(
+              onTap: c.isCutting ? null : _loadImage,
+              child: AppButton(
+                label: S.loadImage,
+                icon: const Icon(Icons.image_outlined),
+                fontSize: 15,
+                onPressed: c.isCutting ? null : _loadImage,
+              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -1003,14 +1007,17 @@ class _EditorScreenState extends State<EditorScreen>
         if (!c.isPdf) ...[
           SizedBox(
             width: 112,
-            child: AppButton(
-              label: S.addImages,
-              semanticLabel: S.addImagesLabel,
-              icon: const Icon(Icons.add_photo_alternate_outlined),
-              height: 36,
-              fontSize: 14,
-              hideIconBelow: 104,
-              onPressed: c.canAddImages ? _addImages : null,
+            child: ImagePickTarget(
+              onTap: c.canAddImages ? _addImages : null,
+              child: AppButton(
+                label: S.addImages,
+                semanticLabel: S.addImagesLabel,
+                icon: const Icon(Icons.add_photo_alternate_outlined),
+                height: 36,
+                fontSize: 14,
+                hideIconBelow: 104,
+                onPressed: c.canAddImages ? _addImages : null,
+              ),
             ),
           ),
         ],
