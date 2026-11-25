@@ -745,6 +745,22 @@ class S {
     'Remover esta página?',
     'Diese Seite entfernen?',
   );
+  static String get wholePageTitle => _t(
+    'Stai togliendo tutta la pagina. Vuoi eliminarla?',
+    'You are removing the whole page. Delete it?',
+    'Vous retirez toute la page. La supprimer ?',
+    'Estás quitando toda la página. ¿Eliminarla?',
+    'Você está removendo a página inteira. Excluí-la?',
+    'Du entfernst die ganze Seite. Löschen?',
+  );
+  static String get cannotRemoveAll => _t(
+    'Non puoi togliere tutto: il foglio resterebbe vuoto.',
+    'You can\'t remove everything: the page would be empty.',
+    'Impossible de tout retirer : la page serait vide.',
+    'No puedes quitarlo todo: la hoja quedaría vacía.',
+    'Você não pode remover tudo: a folha ficaria vazia.',
+    'Du kannst nicht alles entfernen: die Seite wäre leer.',
+  );
   static String get removePageBody => _t(
     'L\'immagine e i suoi tagli escono dal documento. La foto originale non '
         'viene toccata.',

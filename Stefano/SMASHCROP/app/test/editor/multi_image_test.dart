@@ -220,4 +220,26 @@ void main() {
     expect(c.canMovePage(1), isFalse);
     c.dispose();
   });
+
+  testWidgets(
+    'A e B su tutta la pagina: niente taglio, si propone di togliere la pagina',
+    (tester) async {
+      final c = await three(tester);
+      c.selection = c.selection.withLines(
+        CutOrientation.horizontal,
+        const LinePair(0, 200),
+      );
+      expect(c.canCut, isFalse, reason: 'non resterebbe nulla');
+      expect(c.selectsWholePage, isTrue);
+      expect(c.canPressCut, isTrue);
+      expect(c.canRemovePage, isTrue);
+      c.selection = c.selection.withLines(
+        CutOrientation.horizontal,
+        const LinePair(10, 200),
+      );
+      expect(c.selectsWholePage, isFalse);
+      expect(c.canCut, isTrue);
+      c.dispose();
+    },
+  );
 }

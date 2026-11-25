@@ -297,13 +297,28 @@ class _EditorScreenState extends State<EditorScreen>
     });
   }
 
-  Future<void> _removePage() async {
+  /// "Rimuovi porzione": se A e B prendono tutta la pagina si propone di
+  /// togliere la pagina (se è l'unica, si spiega perché non si può).
+  void _onRemovePressed() {
+    if (c.canCut) {
+      c.removePortion();
+      return;
+    }
+    if (!c.selectsWholePage) return;
+    if (c.canRemovePage) {
+      _removePage(wholePage: true);
+    } else {
+      _toast(S.cannotRemoveAll);
+    }
+  }
+
+  Future<void> _removePage({bool wholePage = false}) async {
     if (!c.canRemovePage) return;
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: Text(S.removePageTitle),
+        title: Text(wholePage ? S.wholePageTitle : S.removePageTitle),
         content: Text(
           c.isPdf ? S.removePdfPageBody : S.removePageBody,
           style: const TextStyle(color: AppColors.textMuted, fontSize: 15),
@@ -808,7 +823,7 @@ class _EditorScreenState extends State<EditorScreen>
         style: AppButtonStyle.primary,
         height: 54,
         fontSize: 18,
-        onPressed: c.canCut ? c.removePortion : null,
+        onPressed: c.canPressCut ? _onRemovePressed : null,
       ),
       const SizedBox(height: 8),
       Row(

@@ -234,6 +234,22 @@ class EditorController extends ChangeNotifier {
   bool get canCut =>
       selectionVisible && !isCutting && !busyExporting && _pendingCut() != null;
 
+  /// A e B prendono tutta la pagina: non è un taglio (non resterebbe nulla),
+  /// ma il pulsante resta attivo per proporre di togliere la pagina.
+  bool get selectsWholePage {
+    if (!selectionVisible || isCutting || busyExporting) return false;
+    final mode = selection.mode;
+    final pair = selection.active;
+    if (mode == null || pair == null) return false;
+    final length = doc.lengthFor(mode);
+    final lo = (pair.a < pair.b ? pair.a : pair.b).round();
+    final hi = (pair.a < pair.b ? pair.b : pair.a).round();
+    return lo <= 0 && hi >= length;
+  }
+
+  /// Il pulsante "Rimuovi porzione" si può toccare.
+  bool get canPressCut => canCut || selectsWholePage;
+
   /// Foglio attuale: per le immagini coincide con il contenuto.
   PageFrame get frame {
     final override = positioning
