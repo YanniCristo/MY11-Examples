@@ -135,8 +135,12 @@ Note:
 - il codice contiene il totale e una firma dell'app, per scoraggiare codici inventati.
   Barare non fa guadagnare nulla di a pagamento (le evoluzioni sono gratis), quindi basta questo.
 
-**Più avanti, se servirà:** accesso con Apple / Google e salvataggio online (es. Firebase).
-Risolve tutti i casi da solo, ma introduce account e un piccolo server: per ora non serve.
+**Deciso (25 nov): niente login.** Si usano tutti i salvataggi qui sopra (memoria locale, iCloud,
+backup Google + Block Store, regola del valore più alto, codice di recupero).
+Un accesso con Apple / Google richiederebbe Firebase (login + database), configurazione dei login,
+informativa privacy aggiornata, "Accedi con Apple" obbligatorio su iPhone se c'è Google e un tasto
+per eliminare l'account: troppo per il solo caso del cambio piattaforma. Si valuta solo se in futuro
+servirà per altro (es. classifiche o funzioni online).
 
 L'acquisto "a vita" è a parte: si recupera sempre con "Ripristina acquisti" dello store.
 
@@ -171,6 +175,7 @@ Si può partire con B e sostituire poi con i disegni veri.
 - La prima evoluzione deve **costare lavoro** (soglie più alte del blocco 10 cm).
 - Blocco **5 cm** e soglie confermate: tappa 15 kg; evoluzioni a 150 kg, 450 kg, 1.500 kg, 4.500 kg.
 - Unità: **peso in kg**, sempre la stessa (densità 1,5 t/m³).
+- Contatore protetto **senza login**: locale + iCloud + backup Google/Block Store + valore più alto + codice di recupero.
 - Testa dell'evoluzione mostrata **a colori** (il suo colore vero) a destra della barra.
 - Contatore compatto: totale con **max 3 cifre** (unità e decimali scalano), **barra 0–100%** tra la
   testa di SMASH attuale (sinistra) e quella dell'evoluzione (destra).
@@ -197,3 +202,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** vista la simulazione del contatore (cubetti, "+…", contachilometri, barra, SMASH
   spento con tooltip e avviso una tantum). Decisi: unità **peso in kg** fissa (niente cambi di unità),
   soglie 15 / 150 / 450 / 1.500 / 4.500 kg, testa dell'evoluzione a colori invece del "?".
+- **25 nov 2026:** deciso di restare senza login (niente Firebase): si attivano tutti i salvataggi senza account.
