@@ -88,10 +88,14 @@ festa dell'evoluzione). Chi preferisce la precedente la riprende dalla collezion
   (Scartata: "SMASH Trump" — nome + colore + balletto insieme sarebbero troppo espliciti.)
 - anteprima: toccando una skin si vede SMASH che dà il pugno con quella skin.
 
-**Dopo un'evoluzione si apre da sola:** barra completa → schermata "SMASH si è evoluto!" (circa
-2 secondi) → si apre la **Collezione** con la nuova skin già indossata e l'etichetta **"Nuova"**.
-Così chi non sapeva che esiste la scopre. Si chiude con la **X** in alto o con il tasto
-**"Continua a tagliare"**.
+**Dopo un'evoluzione:**
+- **Prima evoluzione:** barra completa → "SMASH si è evoluto!" (circa 2 secondi) → si apre **da sola**
+  la **Collezione**, con la nuova skin già indossata e l'etichetta **"Nuova"**: serve a far
+  scoprire che la Collezione esiste. Si chiude con la **X** o con **"Continua a tagliare"**.
+- **Dalla seconda in poi:** festa breve, poi avviso **"Nuova skin!"** con il tasto **"Vedi"** e il
+  pallino rosso sul contatore; la Collezione la apre l'utente se vuole (non si interrompe il lavoro).
+- **Mai nel mezzo di qualcosa:** se l'evoluzione arriva mentre è aperto il pannello del layout PDF,
+  il posizionamento o un salvataggio, la festa aspetta che l'utente abbia finito.
 
 **Dove si apre:**
 - dalla **home**, toccando livello/barra di SMASH vicino al logo;
@@ -103,8 +107,8 @@ Così chi non sapeva che esiste la scopre. Si chiude con la **X** in alto o con 
   del telefono: "qui c'è altro");
 - un **pallino rosso** sul contatore quando c'è una skin nuova non ancora vista (sparisce aprendo la
   Collezione);
-- **al primo uso**, una volta sola: il contatore pulsa e compare la nuvoletta "Tocca per la tua
-  collezione" per 3 secondi;
+- **dopo il primo taglio con SMASH** (non al primo avvio), una volta sola: il contatore pulsa e
+  compare la nuvoletta "Tocca per la tua collezione" per 3 secondi;
 - in home, accanto a livello e barra, la stessa freccetta e la scritta "Collezione".
 
 **Cosa cambia con la skin scelta:** l'animazione del pugno, la testa nell'interruttore e nel
@@ -272,3 +276,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** SMASH Trump confermato con la lettura "trump card" e nessun altro riferimento; SMASH Tycoon di riserva.
 - **25 nov 2026:** skin a vita definitiva: SMASH Tycoon arancione con il balletto (scartato SMASH Trump).
 - **25 nov 2026:** dopo l'evoluzione si apre la Collezione (chiudibile con X o "Continua a tagliare"); per far capire che si tocca: freccetta ›, pallino rosso per skin nuove, suggerimento una tantum al primo uso.
+- **25 nov 2026:** ritocchi: Collezione aperta da sola solo alla prima evoluzione; mai nel mezzo di pannello/posizionamento/salvataggio; suggerimento dopo il primo taglio con SMASH.
