@@ -314,6 +314,14 @@ Due strade:
 
 Si può partire con B e sostituire poi con i disegni veri.
 
+**Stato (25 nov 2026): grafica quasi completa con la strada A** (disegni veri, ChatGPT + sistemazione):
+- 6 skin × 18 immagini allineate, anteprima e scheda: fatto;
+- 36 elementi della fascia (al posto dei cubetti): fatto;
+- 5 oggetti da cantiere (obiettivi): fatto;
+- 12 teste sveglia/addormentata (barra e interruttore): fatto;
+- 6 pose da eroe (evoluzione, Collezione, condivisione): in lavorazione.
+La card da condividere e le sagome nere della Collezione le genera l'app. Facoltativi: suoni brevi originali.
+
 ---
 
 ## Decisioni prese
