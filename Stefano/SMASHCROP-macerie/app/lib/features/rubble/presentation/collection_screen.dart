@@ -122,10 +122,29 @@ class _CollectionScreenState extends State<CollectionScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  IconButton(
-                    tooltip: S.close,
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close, color: AppColors.text),
+                  // X ben visibile: quadrato stondato rosso
+                  Semantics(
+                    button: true,
+                    label: S.close,
+                    child: Tooltip(
+                      message: S.close,
+                      child: Material(
+                        color: AppColors.red,
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () => Navigator.pop(context),
+                          child: const SizedBox.square(
+                            dimension: 40,
+                            child: Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -156,6 +175,24 @@ class _CollectionScreenState extends State<CollectionScreen> {
                           ),
                         ),
                       ),
+                      // l'obiettivo (carriola, betoniera...) bello grande
+                      if (_sel.goalImage != null)
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: Transform.rotate(
+                            angle: -.12,
+                            child: Opacity(
+                              opacity: unlocked ? 1 : .9,
+                              child: Image.asset(
+                                _sel.goalImage!,
+                                width: 92,
+                                height: 92,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
                       Positioned(
                         left: 12,
                         right: 12,
@@ -181,10 +218,6 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                     color: AppColors.textMuted,
                                   ),
                                   const SizedBox(width: 4),
-                                ],
-                                if (_sel.goalImage != null) ...[
-                                  Image.asset(_sel.goalImage!, height: 22),
-                                  const SizedBox(width: 6),
                                 ],
                                 Flexible(
                                   child: Text(
@@ -311,6 +344,12 @@ class _CollectionScreenState extends State<CollectionScreen> {
                         child: Image.asset(k.head, fit: BoxFit.contain),
                       ),
               ),
+              if (k.goalImage != null)
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Image.asset(k.goalImage!, width: 34, height: 34),
+                ),
               if (!open)
                 const Center(
                   child: Padding(

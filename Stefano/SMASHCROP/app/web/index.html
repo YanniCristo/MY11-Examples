@@ -50,9 +50,35 @@
   <div id="splash" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#0A0B10;font-family:system-ui,sans-serif;color:#9CA3AF">
     <img src="icons/Icon-192.png" alt="" width="96" height="96" style="border-radius:22px">
     <div style="font-weight:800;font-size:24px;letter-spacing:-.3px"><span style="color:#E5172F">SMASH</span><span style="color:#F3F4F6">CROP</span></div>
-    <div id="splash-text" style="font-size:14px">Loading…</div>
+    <div style="width:168px;height:4px;margin-top:10px;border-radius:4px;background:#1E2029;overflow:hidden">
+      <div id="splash-bar" style="width:4%;height:100%;border-radius:4px;background:#E5172F;box-shadow:0 0 10px rgba(229,23,47,.7);transition:width .25s ease-out"></div>
+    </div>
   </div>
-  <script>window.addEventListener('flutter-first-frame',function(){var s=document.getElementById('splash');if(s)s.remove();});</script>
+  <script>
+    // barra di caricamento: avanza da sola rallentando (non si può sapere
+    // quanto manca davvero) e si riempie quando l'app è pronta
+    (function () {
+      var bar = document.getElementById('splash-bar'), start = Date.now(), done = false;
+      function step() {
+        if (done || !bar) return;
+        var t = (Date.now() - start) / 1000;
+        bar.style.width = (4 + 86 * (1 - Math.exp(-t / 2.2))) + '%';
+        setTimeout(step, 120);
+      }
+      step();
+      window.addEventListener('flutter-first-frame', function () {
+        done = true;
+        var s = document.getElementById('splash');
+        if (!s) return;
+        bar.style.width = '100%';
+        setTimeout(function () {
+          s.style.transition = 'opacity .2s';
+          s.style.opacity = '0';
+          setTimeout(function () { s.remove(); }, 220);
+        }, 220);
+      });
+    })();
+  </script>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader
@@ -64,16 +90,12 @@
   <script src="flutter_bootstrap.js" async></script>
 <script>
   (function () {
-    var t = {it: 'Caricamento…', en: 'Loading…', fr: 'Chargement…', es: 'Cargando…', pt: 'Carregando…', de: 'Wird geladen…'};
-    var langs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'en'];
-    var pick = 'en';
+    var langs = ['it', 'en', 'fr', 'es', 'pt', 'de'], pick = 'en';
     try {
       var saved = localStorage.getItem('flutter.language');
-      if (saved) pick = JSON.parse(saved);
-      else for (var i = 0; i < langs.length; i++) { var c = String(langs[i]).slice(0, 2).toLowerCase(); if (t[c]) { pick = c; break; } }
+      var c = saved ? JSON.parse(saved) : String(navigator.language || 'en').slice(0, 2).toLowerCase();
+      if (langs.indexOf(c) >= 0) pick = c;
     } catch (e) {}
-    var el = document.getElementById('splash-text');
-    if (el && t[pick]) el.textContent = t[pick];
     document.documentElement.lang = pick;
   })();
 </script>
