@@ -303,6 +303,35 @@ Annullare un taglio **non** toglie le macerie (SMASH le ha già mangiate).
 - Le evoluzioni **non si comprano mai**, si guadagnano.
 - Con l'**acquisto a vita** si possono sbloccare **skin extra** di SMASH (es. "SMASH Founder").
 
+- **Niente abbonamento:** solo **acquisto a vita**, pagato una volta. Negli store è un
+  *acquisto in-app non consumabile* (Apple: "Non-Consumable"; Google Play: prodotto singolo
+  non consumabile). Non serve account né iscrizione; serve solo il pulsante **Ripristina acquisti**
+  (obbligatorio per Apple), che recupera l'acquisto dall'ID Apple / account Google.
+  Nome mostrato in app: es. "SmashCrop a vita" (senza pubblicità + SMASH Tycoon).
+
+## 9b. Suoni, vibrazione e menu (deciso)
+
+**Suoni**
+- Attivi di base. Nell'app seguono il tasto silenzioso dell'iPhone (categoria audio "ambient":
+  se il telefono è in silenzioso SMASH tace; non interrompe la musica dell'utente).
+- Webapp: partono solo dopo il primo tocco (regola del browser); lì conta l'interruttore nel menu.
+- A ogni taglio uno dei 4 suoni del personaggio, a caso; "gnam" quando la barra mangia.
+
+**Vibrazione:** piccolo colpo a ogni pugno; interruttore nel menu.
+
+**Menu ☰**
+- Home: ☰ in alto a destra; la lingua passa dentro il menu (la bandiera separata sparisce).
+- Editor: ☰ in alto a sinistra, prima del contatore; "Condividi" diventa solo icona, "Salva" resta con
+  la scritta. L'interruttore SMASH on/off resta nell'editor.
+- Voci:
+  1. SMASH: Collezione · Suoni on/off · Vibrazione on/off
+  2. Lingua
+  3. Premium: SmashCrop a vita · Ripristina acquisti
+  4. Il tuo contatore: Salva il codice di recupero · Usa un codice
+  5. Aiuto: Come funziona · Valuta SmashCrop · Scrivici
+  6. **Condividi l'app** (voce a sé)
+  7. In fondo, piccolo: Privacy · Termini · versione
+
 ## 10. Grafica da preparare
 
 Per ogni forma di SMASH: le 18 immagini dell'animazione + testa (interruttore) + miniatura;
@@ -395,3 +424,4 @@ La card da condividere e le sagome nere della Collezione le genera l'app. **Graf
 - **25 nov 2026:** confermati anche le macerie che volano nella barra ("gnam" + "+kg") e l'evoluzione a tutto schermo (pioggia degli elementi del nuovo personaggio, lampo sulla testa, poi Collezione). Resta da confermare la Collezione animata.
 - **25 nov 2026:** confermata la Collezione animata, con in più le pose da eroe (prompt e riferimenti per ChatGPT preparati).
 - **25 nov 2026:** completati teste, pose da eroe e suoni (4 varianti per personaggio da ElevenLabs, scelte a caso a ogni taglio). Tutto il materiale per la copia con le macerie è pronto.
+- **25 nov 2026:** decisi suoni (seguono il silenzioso), vibrazione e menu ☰ (home a destra, editor a sinistra); "Condividi l'app" voce a sé; nessun abbonamento, solo acquisto a vita non consumabile con Ripristina acquisti.
