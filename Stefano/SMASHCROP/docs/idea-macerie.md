@@ -33,7 +33,7 @@ si "mangia". Le macerie si accumulano in un contatore; a certe soglie SMASH
 bisogna lavorare di più: l'utente deve **affezionarsi**, usare l'app più a lungo ed essere
 **bramoso** di arrivare alla prima evoluzione.
 
-**Proposta attuale (da confermare):** blocco **5 cm** (fascia tipica di un A4 ≈ 0,5 L; A4 intero ≈ 3 L).
+**Deciso (25 nov):** blocco **5 cm** (fascia tipica di un A4 ≈ 0,5 L; A4 intero ≈ 3 L).
 
 | Soglia | Cosa succede | Tagli circa |
 |---|---|---|
@@ -138,14 +138,14 @@ Si può partire con B e sostituire poi con i disegni veri.
 - SMASH spento comunicato **solo con il linguaggio visivo** (sezione 5).
 - Evoluzioni **non a pagamento**; skin extra legate all'acquisto a vita.
 - La prima evoluzione deve **costare lavoro** (soglie più alte del blocco 10 cm).
+- Blocco **5 cm** e soglie confermate: tappa 10 L; evoluzioni a 100 L, 300 L, 1 m³, 3 m³.
 - Contatore compatto: totale con **max 3 cifre** (unità e decimali scalano), **barra 0–100%** tra la
   testa di SMASH attuale (sinistra) e quella dell'evoluzione (destra).
 
 ## Domande aperte
 
-1. Confermare blocco 5 cm e soglie (1ª evoluzione a 100 L ≈ 200 tagli, ultima a 3 m³ ≈ 6.000 tagli).
-2. Nomi e aspetto delle forme di SMASH per livello.
-3. Grafica: disegni nuovi o forme modificate dall'app per partire.
+1. Nomi e aspetto delle forme di SMASH per livello.
+2. Grafica: disegni nuovi o forme modificate dall'app per partire.
 
 ## Registro
 
@@ -157,3 +157,4 @@ Si può partire con B e sostituire poi con i disegni veri.
   3 cifre, barra 0–100% tra testa attuale e testa dell'evoluzione.
 - **25 nov 2026:** la scala ×10 portava l'ultimo livello a ~200.000 tagli (troppo). Nuova scala più
   dolce: 100 L, 300 L, 1 m³, 3 m³ (ultima evoluzione ≈ 6.000 tagli).
+- **25 nov 2026:** confermati blocco 5 cm e scala 100 L / 300 L / 1 m³ / 3 m³.
