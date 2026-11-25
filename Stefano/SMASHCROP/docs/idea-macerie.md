@@ -190,7 +190,13 @@ resta per tutte le età.
 
 ## 6. Il contatore
 
-**Editor:** piccolo contatore in un angolo del riquadro, compatto:
+**Editor — posizione decisa (25 nov):** il contatore va **in alto a sinistra, al posto di logo e
+scritta SMASHCROP** (riga di Condividi / Salva). È l'unica area libera: non copre il documento né
+le maniglie A/B. Il logo resta nella home; nell'editor il "marchio" diventa la testa di SMASH nel
+contatore. Spazio disponibile circa 150 px: totale + testa attuale + barra corta + testa
+evoluzione + freccetta › (con 4 cifre, es. "1.500 kg", la barra si accorcia un po').
+
+Schema:
 
 ```
  12,4 kg [😀]▓▓▓▓▓▓░░░░░░[🤖]
@@ -300,6 +306,7 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **Collezione skin:** la nuova skin si indossa da sola all'evoluzione; in "Collezione" si vedono tutte (le bloccate con lucchetto e quanto manca) e si sceglie quella da usare.
 - Contatore protetto **senza login**: locale + iCloud + backup Google/Block Store + valore più alto + codice di recupero.
 - Testa dell'evoluzione mostrata **a colori** (il suo colore vero) a destra della barra.
+- Contatore nell'editor **in alto a sinistra al posto del logo SMASHCROP**.
 - Contatore compatto: totale con **max 3 cifre** (unità e decimali scalano), **barra 0–100%** tra la
   testa di SMASH attuale (sinistra) e quella dell'evoluzione (destra).
 
@@ -340,3 +347,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** SMASH Tycoon: entra col balletto, si gira, si piega e scorreggia con onda d'urto verso l'epicentro che disintegra la porzione.
 - **25 nov 2026:** squadra completa confermata: SMASH, Burp, Popcorn, Muahaha, Mamma Mia, Tycoon.
 - **25 nov 2026:** scritte le sceneggiature delle 18 immagini per Burp, Popcorn, Muahaha, Mamma Mia e Tycoon (stesso robot, stesse proporzioni).
+- **25 nov 2026:** posizione del contatore nell'editor: in alto a sinistra al posto di logo e scritta SMASHCROP.
