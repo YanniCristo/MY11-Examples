@@ -761,6 +761,7 @@ class S {
     'Você não pode remover tudo: a folha ficaria vazia.',
     'Du kannst nicht alles entfernen: die Seite wäre leer.',
   );
+  static String get zoom => _t('Zoom', 'Zoom', 'Zoom', 'Zoom', 'Zoom', 'Zoom');
   static String get removePageBody => _t(
     'L\'immagine e i suoi tagli escono dal documento. La foto originale non '
         'viene toccata.',

@@ -551,61 +551,36 @@ class _EditorScreenState extends State<EditorScreen>
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            SizedBox(
-              width: 90,
-              child: AppButton(
-                label: S.undo,
-                icon: const Icon(Icons.undo),
-                height: 38,
-                fontSize: 14,
-                onPressed: c.canUndo ? c.undo : null,
-              ),
-            ),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 90,
-              child: AppButton(
-                label: S.redo,
-                icon: const Icon(Icons.redo),
-                height: 38,
-                fontSize: 14,
-                onPressed: c.canRedo ? c.redo : null,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              height: 38,
-              width: 52,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.button,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Text(
-                '${c.zoom.toStringAsFixed(1)}x',
-                style: const TextStyle(
-                  color: AppColors.text,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  fontFeatures: [FontFeature.tabularFigures()],
+        // zoom: barra sottile e centrata, senza scritte
+        Center(
+          child: FractionallySizedBox(
+            widthFactor: .62,
+            child: SizedBox(
+              height: 26,
+              child: SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  trackHeight: 3,
+                  activeTrackColor: AppColors.red,
+                  inactiveTrackColor: AppColors.border,
+                  thumbColor: AppColors.red,
+                  disabledThumbColor: AppColors.textMuted,
+                  overlayShape: SliderComponentShape.noOverlay,
+                  thumbShape: const _FlatThumb(),
+                  trackShape: const RoundedRectSliderTrackShape(),
+                ),
+                child: Slider(
+                  value: c.zoom,
+                  min: ViewportTransform.minZoom,
+                  max: ViewportTransform.maxZoom,
+                  semanticFormatterCallback: (v) =>
+                      '${S.zoom} ${v.toStringAsFixed(1)}x',
+                  onChanged: locked || !c.pageReady ? null : c.setZoom,
                 ),
               ),
             ),
-            Expanded(
-              child: Slider(
-                value: c.zoom,
-                min: ViewportTransform.minZoom,
-                max: ViewportTransform.maxZoom,
-                onChanged: locked || !c.pageReady ? null : c.setZoom,
-              ),
-            ),
-          ],
+          ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Expanded(
           child: EditorViewport(controller: c, frames: _frames),
         ),
@@ -633,53 +608,56 @@ class _EditorScreenState extends State<EditorScreen>
     final selVisible = c.selectionVisible;
     return [
       if (c.hasPages || !c.isPdf) ...[_pdfBar(), const SizedBox(height: 8)],
-      AppButton(
-        label: S.removePortion,
-        icon: const Icon(Icons.content_cut),
-        style: AppButtonStyle.primary,
-        height: 54,
-        fontSize: 18,
-        onPressed: c.canPressCut ? _onRemovePressed : null,
-      ),
-      const SizedBox(height: 8),
+      // undo · orizzontale · RIMUOVI PORZIONE · verticale · redo
       Row(
         children: [
+          _square(
+            icon: const Icon(Icons.undo),
+            label: S.undo,
+            onPressed: c.canUndo ? c.undo : null,
+          ),
+          const SizedBox(width: 6),
+          _OrientationSquare(
+            label: S.horizontal,
+            vertical: false,
+            color: kHorizontalColor,
+            active: mode == CutOrientation.horizontal && selVisible,
+            onPressed: c.isCutting || !c.pageReady
+                ? null
+                : () => c.tapOrientation(CutOrientation.horizontal),
+          ),
+          const SizedBox(width: 6),
           Expanded(
             child: AppButton(
-              label: S.horizontal,
-              icon: const DoubleArrow(vertical: false),
-              style: mode == CutOrientation.horizontal && selVisible
-                  ? AppButtonStyle.selected
-                  : AppButtonStyle.secondary,
-              fontSize: 14,
-              hideIconBelow: 124,
-              onPressed: c.isCutting || !c.pageReady
-                  ? null
-                  : () => c.tapOrientation(CutOrientation.horizontal),
+              label: S.removePortion,
+              icon: const Icon(Icons.content_cut),
+              style: AppButtonStyle.primary,
+              height: 48,
+              fontSize: 16,
+              hideIconBelow: 170,
+              onPressed: c.canPressCut ? _onRemovePressed : null,
             ),
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: AppButton(
-              label: S.vertical,
-              icon: const DoubleArrow(vertical: true),
-              style: mode == CutOrientation.vertical && selVisible
-                  ? AppButtonStyle.selected
-                  : AppButtonStyle.secondary,
-              fontSize: 14,
-              hideIconBelow: 124,
-              onPressed: c.isCutting || !c.pageReady
-                  ? null
-                  : () => c.tapOrientation(CutOrientation.vertical),
-            ),
+          const SizedBox(width: 6),
+          _OrientationSquare(
+            label: S.vertical,
+            vertical: true,
+            color: kVerticalColor,
+            active: mode == CutOrientation.vertical && selVisible,
+            onPressed: c.isCutting || !c.pageReady
+                ? null
+                : () => c.tapOrientation(CutOrientation.vertical),
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: SmashToggle(value: c.smashEnabled, onChanged: c.setSmash),
+          const SizedBox(width: 6),
+          _square(
+            icon: const Icon(Icons.redo),
+            label: S.redo,
+            onPressed: c.canRedo ? c.redo : null,
           ),
         ],
       ),
       const SizedBox(height: 8),
+      // carica immagini · SMASH · carica PDF
       Row(
         children: [
           Expanded(
@@ -688,17 +666,30 @@ class _EditorScreenState extends State<EditorScreen>
               child: AppButton(
                 label: S.loadImage,
                 icon: const Icon(Icons.image_outlined),
-                fontSize: 15,
+                height: 42,
+                fontSize: 14,
+                hideIconBelow: 132,
                 onPressed: c.isCutting ? null : _loadImage,
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
+          SizedBox(
+            width: 104,
+            child: SmashToggle(
+              value: c.smashEnabled,
+              onChanged: c.setSmash,
+              height: 42,
+            ),
+          ),
+          const SizedBox(width: 6),
           Expanded(
             child: AppButton(
               label: S.loadPdf,
               icon: const Icon(Icons.description_outlined),
-              fontSize: 15,
+              height: 42,
+              fontSize: 14,
+              hideIconBelow: 112,
               onPressed: c.isCutting ? null : _loadPdf,
             ),
           ),
@@ -706,6 +697,22 @@ class _EditorScreenState extends State<EditorScreen>
       ),
     ];
   }
+
+  /// Pulsante quadrato con sola icona (Annulla, Ripeti).
+  Widget _square({
+    required Widget icon,
+    required String label,
+    required VoidCallback? onPressed,
+  }) => SizedBox(
+    width: _kSquare,
+    child: AppButton(
+      label: '',
+      semanticLabel: label,
+      icon: icon,
+      height: _kSquare,
+      onPressed: onPressed,
+    ),
+  );
 
   /// Navigatore compatto delle pagine e pulsante Layout PDF, in una riga.
   /// "Pag. 2 di 5 ▾": toccandola si apre il menu della pagina corrente
@@ -934,3 +941,102 @@ class _EditorScreenState extends State<EditorScreen>
 }
 
 enum _Output { images, pdf }
+
+const double _kSquare = 48;
+
+/// Colori dei due orientamenti quando sono attivi.
+const Color kHorizontalColor = Color(0xFF1E7BFF); // blu elettrico
+const Color kVerticalColor = Color(0xFFFF2BD1); // fucsia da città futuristica
+
+/// Quadrato dell'orientamento: grigio a riposo, acceso nel suo colore.
+class _OrientationSquare extends StatelessWidget {
+  const _OrientationSquare({
+    required this.label,
+    required this.vertical,
+    required this.color,
+    required this.active,
+    required this.onPressed,
+  });
+  final String label;
+  final bool vertical;
+  final Color color;
+  final bool active;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onPressed != null;
+    return Semantics(
+      button: true,
+      selected: active,
+      enabled: enabled,
+      label: label,
+      excludeSemantics: true,
+      child: Material(
+        color: active ? color : AppColors.button,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: active ? color : AppColors.border,
+            width: active ? 1.6 : 1,
+          ),
+        ),
+        shadowColor: color,
+        elevation: active ? 6 : 0,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onPressed,
+          child: SizedBox.square(
+            dimension: _kSquare,
+            child: Center(
+              child: IconTheme(
+                data: IconThemeData(
+                  color: !enabled
+                      ? AppColors.textMuted
+                      : (active ? Colors.white : AppColors.text),
+                  size: 24,
+                ),
+                child: DoubleArrow(vertical: vertical, size: 24),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Cursore dello zoom piatto e rettangolare, al posto del pallino.
+class _FlatThumb extends SliderComponentShape {
+  const _FlatThumb();
+
+  @override
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) => const Size(20, 10);
+
+  @override
+  void paint(
+    PaintingContext context,
+    Offset center, {
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
+  }) {
+    final color = enableAnimation.value > .5
+        ? (sliderTheme.thumbColor ?? AppColors.red)
+        : (sliderTheme.disabledThumbColor ?? AppColors.textMuted);
+    context.canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(center: center, width: 20, height: 10),
+        const Radius.circular(3),
+      ),
+      Paint()..color = color,
+    );
+  }
+}
