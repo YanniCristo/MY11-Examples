@@ -199,7 +199,9 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                 ],
                                 Flexible(
                                   child: Text(
-                                    unlocked ? _sel.goalLabel : _status(_sel),
+                                    unlocked
+                                        ? _sel.goalDoneLabel
+                                        : _status(_sel),
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       color: AppColors.textMuted,

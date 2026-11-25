@@ -129,7 +129,7 @@ class _EvolutionState extends State<_Evolution>
                         Image.asset(widget.skin.goalImage!, height: 30),
                         const SizedBox(width: 8),
                         Text(
-                          widget.skin.goalLabel,
+                          widget.skin.goalDoneLabel,
                           style: const TextStyle(
                             color: AppColors.text,
                             fontSize: 16,

@@ -924,6 +924,38 @@ class S {
     'Enche um caminhão basculante',
     'Füll einen Kipper',
   );
+  static String get filledWheelbarrow => _t(
+    'Hai riempito una carriola',
+    'You filled a wheelbarrow',
+    'Tu as rempli une brouette',
+    'Has llenado una carretilla',
+    'Você encheu um carrinho de mão',
+    'Du hast eine Schubkarre gefüllt',
+  );
+  static String get filledMixer => _t(
+    'Hai riempito una betoniera',
+    'You filled a cement mixer',
+    'Tu as rempli une bétonnière',
+    'Has llenado una hormigonera',
+    'Você encheu uma betoneira',
+    'Du hast einen Betonmischer gefüllt',
+  );
+  static String get filledSkip => _t(
+    'Hai riempito un cassone',
+    'You filled a skip',
+    'Tu as rempli une benne',
+    'Has llenado un contenedor',
+    'Você encheu uma caçamba',
+    'Du hast eine Mulde gefüllt',
+  );
+  static String get filledTruck => _t(
+    'Hai riempito un camioncino',
+    'You filled a dump truck',
+    'Tu as rempli un camion-benne',
+    'Has llenado un camión volquete',
+    'Você encheu um caminhão basculante',
+    'Du hast einen Kipper gefüllt',
+  );
   static String get starter => _t(
     'Il primo SMASH',
     'The first SMASH',

@@ -60,6 +60,15 @@ class SkinDef {
     'camioncino' => S.fillTruck,
     _ => unlock == Unlock.lifetime ? S.lifetimeName : S.starter,
   };
+
+  /// L'obiettivo raggiunto: "Hai riempito una carriola".
+  String get goalDoneLabel => switch (goal) {
+    'carriola' => S.filledWheelbarrow,
+    'betoniera' => S.filledMixer,
+    'cassone' => S.filledSkip,
+    'camioncino' => S.filledTruck,
+    _ => goalLabel,
+  };
 }
 
 const _sounds4 = [1, 2, 3, 4];
