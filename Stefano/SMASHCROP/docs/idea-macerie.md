@@ -199,11 +199,14 @@ Sequenza, sempre con gli elementi della **skin in uso** (es. Popcorn → popcorn
 - Niente effetti a tutto schermo a ogni colpo; niente mucchietto che si accumula in fondo.
 - Massimo ~30 elementi a schermo, immagini caricate prima; con "riduci movimento" effetti al minimo.
 
-### Proposte da confermare
+### Evoluzione (deciso)
 
-- **Evoluzione (barra a 100):** schermo che si scurisce un attimo, pioggia degli elementi del **nuovo**
+- **Barra a 100:** schermo che si scurisce un attimo, pioggia degli elementi del **nuovo**
   personaggio su tutto lo schermo (~2 s), testa nella barra che cambia con un lampo, poi si apre la
-  Collezione sul nuovo personaggio che fa subito la sua animazione.
+  Collezione sul nuovo personaggio che fa subito la sua animazione. È l'unico effetto a tutto schermo.
+
+### Proposta da confermare
+
 - **Collezione:** bloccati = sagoma nera (dalla skin_15) con lucchetto e kg mancanti; sbloccati a
   riposo = skin_15 con piccolo dondolio (15↔16); quando lo selezioni fa **tutta la sua animazione**
   (18 immagini) in grande con i suoi elementi dietro. Nessuna grafica nuova necessaria; pose da eroe
@@ -380,3 +383,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** posizione del contatore nell'editor: in alto a sinistra al posto di logo e scritta SMASHCROP.
 - **25 nov 2026:** SMASH Burp (18 immagini) approvato. Aggiunti i 6 elementi per skin da spargere su tutta la fascia (livello sotto SMASH). Pacchetto completo dei prompt per ChatGPT preparato.
 - **25 nov 2026:** completate le 6 skin (18 immagini allineate, anteprima, scheda), i 36 elementi della fascia e le 5 icone degli obiettivi; Tycoon con elmo dorato e cresta rossa. Deciso l'effetto a ogni colpo: esplosione sulla fascia, la maggior parte cade sotto i pulsanti, 3–5 pezzi a calamita verso la barra con "gnam". Evoluzione a tutto schermo e Collezione animata: proposte da confermare.
+- **25 nov 2026:** confermati anche le macerie che volano nella barra ("gnam" + "+kg") e l'evoluzione a tutto schermo (pioggia degli elementi del nuovo personaggio, lampo sulla testa, poi Collezione). Resta da confermare la Collezione animata.
