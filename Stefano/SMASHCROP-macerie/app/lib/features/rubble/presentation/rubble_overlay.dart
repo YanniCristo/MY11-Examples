@@ -187,6 +187,10 @@ class _RubblePainter extends CustomPainter {
     if (!s._reduceMotion) {
       final origin = s._toLocal(s.widget.viewportKey);
       if (origin != null) {
+        // come gli elementi: non passa sopra i pulsanti in basso
+        final bottom = s._toLocal(s.widget.bottomKey)?.dy ?? size.height;
+        canvas.save();
+        canvas.clipRect(Rect.fromLTRB(0, 0, size.width, bottom));
         SkinEffects.paint(
           canvas,
           skinId: imgs.skin.id,
@@ -196,6 +200,7 @@ class _RubblePainter extends CustomPainter {
           power: SkinEffects.powerFor(a.rubbleKg),
           seed: a.hashCode,
         );
+        canvas.restore();
       }
     }
     if (sec < 0) return;
