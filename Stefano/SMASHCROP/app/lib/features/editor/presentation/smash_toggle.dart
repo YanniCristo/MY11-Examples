@@ -43,12 +43,28 @@ class SmashToggle extends StatelessWidget {
                 final showLabel = c.maxWidth >= 118;
                 return Row(
                   children: [
-                    Opacity(
-                      opacity: value ? 1 : .55,
-                      child: Image.asset(
-                        'assets/branding/smash_face.png',
-                        width: 30,
-                        height: 30,
+                    // acceso: SMASH sveglio; spento: SMASH che dorme. Le due
+                    // immagini restano caricate entrambe, così il cambio è
+                    // immediato e non lampeggia.
+                    SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Opacity(
+                            opacity: value ? 1 : 0,
+                            child: Image.asset(
+                              'assets/branding/smash_face.png',
+                            ),
+                          ),
+                          Opacity(
+                            opacity: value ? 0 : .85,
+                            child: Image.asset(
+                              'assets/branding/smash_face_sleep.png',
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     if (showLabel) ...[
