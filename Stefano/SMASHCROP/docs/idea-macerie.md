@@ -238,7 +238,13 @@ Si può partire con B e sostituire poi con i disegni veri.
 - Blocco **5 cm** e soglie confermate: tappa 15 kg; evoluzioni a 150 kg, 450 kg, 1.500 kg, 4.500 kg.
 - Unità: **peso in kg**, sempre la stessa (densità 1,5 t/m³).
 - Gli oggetti da cantiere sono **obiettivi** ("Riempi una carriola"), **non** i nomi delle skin.
-- Nomi skin proposti (internazionali, corti): SMASH, SMASH Crunch, SMASH Turbo, SMASH Kaboom, SMASH XXL (da confermare).
+- Nomi skin: demenziali, corti, comprensibili in tutte le lingue.
+  - **Confermata: SMASH Burp** (obiettivo: riempi una carriola). Non dà il pugno: **distrugge con un
+    rutto dall'eco distruttivo** (onde d'urto ad anelli che si allargano e frantumano la porzione,
+    scritta da fumetto "BURP" con eco; eventuale suono originale, sempre breve e saltabile).
+  - Proposte ancora da confermare: SMASH Disco (betoniera), SMASH Pew Pew con **vista laser e visore
+    orizzontale** (cassone), SMASH Mamma Mia (camioncino). Altre idee: Yummy, Boing, Bonk, Banana.
+  - Il visore è uno stile generico da robot: il film resta solo un ammiccamento, mai nominato.
 - Skin a vita: **SMASH Tycoon, arancione, con il balletto** (nome neutro, parodia nel movimento, niente musica).
 - **Collezione skin:** la nuova skin si indossa da sola all'evoluzione; in "Collezione" si vedono tutte (le bloccate con lucchetto e quanto manca) e si sceglie quella da usare.
 - Contatore protetto **senza login**: locale + iCloud + backup Google/Block Store + valore più alto + codice di recupero.
@@ -277,3 +283,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** skin a vita definitiva: SMASH Tycoon arancione con il balletto (scartato SMASH Trump).
 - **25 nov 2026:** dopo l'evoluzione si apre la Collezione (chiudibile con X o "Continua a tagliare"); per far capire che si tocca: freccetta ›, pallino rosso per skin nuove, suggerimento una tantum al primo uso.
 - **25 nov 2026:** ritocchi: Collezione aperta da sola solo alla prima evoluzione; mai nel mezzo di pannello/posizionamento/salvataggio; suggerimento dopo il primo taglio con SMASH.
+- **25 nov 2026:** confermata SMASH Burp (distrugge con un rutto dall'eco distruttivo); scartati Crunch/Turbo/Kaboom/XXL; proposte Disco, Pew Pew (vista laser), Mamma Mia.
