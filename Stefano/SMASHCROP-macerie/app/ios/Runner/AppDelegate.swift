@@ -1,3 +1,4 @@
+import AdServices
 import Flutter
 import UIKit
 
@@ -14,6 +15,20 @@ import UIKit
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "CloudSave") {
       CloudSave.register(with: registrar)
+    }
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AppleAds") {
+      // Apple Ads: il "gettone" di attribuzione (nessun SDK esterno, nessun
+      // permesso di tracciamento richiesto)
+      let channel = FlutterMethodChannel(name: "smashcrop/apple_ads", binaryMessenger: registrar.messenger())
+      channel.setMethodCallHandler { call, result in
+        guard call.method == "token" else { result(FlutterMethodNotImplemented); return }
+        if #available(iOS 14.3, *) {
+          result(try? AAAttribution.attributionToken())
+        } else {
+          result(nil)
+        }
+      }
+      AppleAdsChannel.shared = channel
     }
   }
 }
@@ -66,3 +81,9 @@ final class CloudSave: NSObject {
     }
   }
 }
+
+/// Tiene vivo il canale di Apple Ads.
+enum AppleAdsChannel {
+  static var shared: FlutterMethodChannel?
+}
+

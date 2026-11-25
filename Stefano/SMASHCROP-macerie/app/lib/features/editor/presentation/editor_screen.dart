@@ -9,6 +9,7 @@ import '../../../core/widgets/large_file_dialog.dart';
 import '../../../core/widgets/password_dialog.dart';
 
 import '../../../app/strings.dart';
+import '../../ads/ads_tracker.dart';
 import '../../../app/theme.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_menu.dart';
@@ -135,6 +136,7 @@ class _EditorScreenState extends State<EditorScreen>
     final gain = _rubble.add(a.rubbleKg);
     if (_rubble.sound) SoundFx.instance.pling();
     if (_rubble.haptics) SoundFx.tick();
+    if (gain.evolutions.isNotEmpty) AdsTracker.instance.firstEvolution();
     _pendingEvolutions.addAll(gain.evolutions);
     _pendingMilestones.addAll(gain.milestones);
     if (!_rubble.collectionHintShown) {
@@ -301,7 +303,7 @@ class _EditorScreenState extends State<EditorScreen>
   /// togliere la pagina (se è l'unica, si spiega perché non si può).
   void _onRemovePressed() {
     if (c.canCut) {
-      c.removePortion();
+      if (c.removePortion()) AdsTracker.instance.firstCut();
       return;
     }
     if (!c.selectsWholePage) return;
@@ -442,7 +444,10 @@ class _EditorScreenState extends State<EditorScreen>
           mimeType: 'application/pdf',
         );
         // su web il file viene scaricato senza conferma
-        if (uri != null || kIsWeb) _toast(kIsWeb ? S.downloaded : S.pdfSaved);
+        if (uri != null || kIsWeb) {
+          AdsTracker.instance.firstSave();
+          _toast(kIsWeb ? S.downloaded : S.pdfSaved);
+        }
         return;
       }
       final files = await c.buildImageExports();
@@ -457,6 +462,7 @@ class _EditorScreenState extends State<EditorScreen>
         return;
       }
       final (n, outcome) = await c.exporter.saveAllToPhotos(files);
+      if (outcome == SaveOutcome.saved) AdsTracker.instance.firstSave();
       _toast(switch (outcome) {
         SaveOutcome.saved => files.length > 1 ? S.savedMany(n) : S.saved,
         SaveOutcome.denied => S.saveDenied,
@@ -477,6 +483,7 @@ class _EditorScreenState extends State<EditorScreen>
       for (final f in files) {
         ok = await c.exporter.download(f.bytes, f.fileName, f.mimeType) && ok;
       }
+      if (ok) AdsTracker.instance.firstSave();
       _toast(ok ? S.downloaded : S.saveFailed);
     }
 
@@ -591,7 +598,7 @@ class _EditorScreenState extends State<EditorScreen>
             ? await c.exporter.share(files.first, origin: _shareOrigin())
             : await c.exporter.shareAll(files, origin: _shareOrigin());
       }
-      if (!ok) _toast(S.shareFailed);
+      ok ? AdsTracker.instance.firstSave() : _toast(S.shareFailed);
     } catch (_) {
       _toast(S.shareFailed);
     }

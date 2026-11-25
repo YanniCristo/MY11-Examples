@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Meta (Facebook): SEGNAPOSTO, sostituire con i valori veri
+         (vedi PUBBLICITA.md). Finché sono segnaposto l'SDK non parte. -->
+    <string name="facebook_app_id">000000000000000</string>
+    <string name="facebook_client_token">METTI_CLIENT_TOKEN_META</string>
+</resources>

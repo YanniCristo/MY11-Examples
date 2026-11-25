@@ -854,36 +854,45 @@ class S {
   );
   static String get privacyBody => _t(
     'SmashCrop lavora sul tuo dispositivo: foto e PDF non vengono caricati su nessun server e non '
-        'li vediamo. Non raccogliamo dati personali e non usiamo account. Sul dispositivo restano '
-        'solo le tue preferenze (lingua, impostazioni) e il lavoro in corso (i tagli e una copia del '
-        'file, che si cancella quando chiudi il lavoro), per poterlo riprendere. I file salvati non contengono posizione GPS né altri dati della foto originale.',
+        'li vediamo. Non usiamo account. Per capire quali pubblicità funzionano, l\'app manda a Meta, '
+        'TikTok, Google e Apple solo eventi d\'uso (per esempio «primo taglio»), mai i tuoi file; su '
+        'iPhone l\'identificativo pubblicitario si usa solo se lo permetti. Sul dispositivo restano le tue '
+        'preferenze e il lavoro in corso (i tagli e una copia del file, che si cancella quando chiudi il '
+        'lavoro). I file salvati non contengono posizione GPS né altri dati della foto originale.',
     'SmashCrop works on your device: photos and PDFs are not uploaded to any server and we never '
-        'see them. We collect no personal data and use no accounts. Only your preferences (language, '
-        'settings) and the work in progress (the cuts and a copy of the file, deleted when you close '
-        'the work) stay on the device, so you can resume it. '
-        'Saved files contain no GPS location or other data from the original photo.',
+        'see them. We use no accounts. To learn which ads work, the app sends Meta, TikTok, Google and '
+        'Apple only usage events (for example "first cut"), never your files; on iPhone the advertising '
+        'identifier is used only if you allow it. Your preferences and the work in progress (the cuts and '
+        'a copy of the file, deleted when you close the work) stay on the device. Saved files contain no '
+        'GPS location or other data from the original photo.',
     'SmashCrop fonctionne sur votre appareil : les photos et PDF ne sont envoyés sur aucun serveur '
-        'et nous ne les voyons pas. Nous ne collectons aucune donnée personnelle et n\'utilisons pas '
-        'de compte. Seuls vos préférences (langue, réglages) et le travail en cours (les découpes et '
-        'une copie du fichier, supprimée quand vous fermez le travail) restent sur l\'appareil, pour '
-        'le reprendre. Les fichiers enregistrés ne contiennent ni '
-        'position GPS ni autres données de la photo d\'origine.',
+        'et nous ne les voyons pas. Nous n\'utilisons pas de compte. Pour savoir quelles publicités '
+        'fonctionnent, l\'app envoie à Meta, TikTok, Google et Apple uniquement des événements '
+        'd\'utilisation (par exemple « première découpe »), jamais vos fichiers ; sur iPhone, '
+        'l\'identifiant publicitaire n\'est utilisé que si vous l\'autorisez. Vos préférences et le '
+        'travail en cours (les découpes et une copie du fichier, supprimée quand vous fermez le travail) '
+        'restent sur l\'appareil. Les fichiers enregistrés ne contiennent ni position GPS ni autres '
+        'données de la photo d\'origine.',
     'SmashCrop funciona en tu dispositivo: las fotos y los PDF no se suben a ningún servidor y no '
-        'los vemos. No recogemos datos personales ni usamos cuentas. En el dispositivo solo quedan '
-        'tus preferencias (idioma, ajustes) y el trabajo en curso (los cortes y una copia del archivo, '
-        'que se borra al cerrar el trabajo), para poder retomarlo. '
+        'los vemos. No usamos cuentas. Para saber qué anuncios funcionan, la app envía a Meta, TikTok, '
+        'Google y Apple solo eventos de uso (por ejemplo «primer corte»), nunca tus archivos; en iPhone '
+        'el identificador publicitario solo se usa si lo permites. Tus preferencias y el trabajo en curso '
+        '(los cortes y una copia del archivo, que se borra al cerrar el trabajo) quedan en el dispositivo. '
         'Los archivos guardados no contienen la ubicación GPS ni otros datos de la foto original.',
     'O SmashCrop funciona no seu dispositivo: fotos e PDFs não são enviados para nenhum servidor e '
-        'nós não os vemos. Não coletamos dados pessoais nem usamos contas. No dispositivo ficam só '
-        'suas preferências (idioma, ajustes) e o trabalho em andamento (os cortes e uma cópia do '
-        'arquivo, apagada quando você fecha o trabalho), para retomá-lo. '
-        'Os arquivos salvos não contêm localização GPS nem outros dados da foto original.',
+        'nós não os vemos. Não usamos contas. Para saber quais anúncios funcionam, o app envia à Meta, '
+        'TikTok, Google e Apple apenas eventos de uso (por exemplo "primeiro corte"), nunca seus '
+        'arquivos; no iPhone o identificador de publicidade só é usado se você permitir. Suas '
+        'preferências e o trabalho em andamento (os cortes e uma cópia do arquivo, apagada quando você '
+        'fecha o trabalho) ficam no dispositivo. Os arquivos salvos não contêm localização GPS nem outros '
+        'dados da foto original.',
     'SmashCrop arbeitet auf deinem Gerät: Fotos und PDFs werden auf keinen Server hochgeladen und '
-        'wir sehen sie nie. Wir sammeln keine persönlichen Daten und nutzen keine Konten. Auf dem '
-        'Gerät bleiben nur deine Einstellungen (Sprache usw.) und die laufende Arbeit (die Schnitte und '
-        'eine Kopie der Datei, die beim Schließen der Arbeit gelöscht wird), damit du sie fortsetzen '
-        'kannst. Gespeicherte Dateien enthalten keinen GPS-Standort und keine '
-        'anderen Daten des Originalfotos.',
+        'wir sehen sie nie. Wir nutzen keine Konten. Um zu erfahren, welche Werbung funktioniert, sendet '
+        'die App an Meta, TikTok, Google und Apple nur Nutzungsereignisse (zum Beispiel „erster Schnitt"), '
+        'nie deine Dateien; auf dem iPhone wird die Werbe-ID nur verwendet, wenn du es erlaubst. Deine '
+        'Einstellungen und die laufende Arbeit (die Schnitte und eine Kopie der Datei, die beim Schließen '
+        'der Arbeit gelöscht wird) bleiben auf dem Gerät. Gespeicherte Dateien enthalten keinen '
+        'GPS-Standort und keine anderen Daten des Originalfotos.',
   );
   static String get close =>
       _t('Chiudi', 'Close', 'Fermer', 'Cerrar', 'Fechar', 'Schließen');

@@ -2,6 +2,8 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // SDK di TikTok
+        maven { url = uri("https://jitpack.io") }
     }
 }
 

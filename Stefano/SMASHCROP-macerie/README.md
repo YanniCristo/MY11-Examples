@@ -26,6 +26,10 @@ Specifica completa: [`../SMASHCROP/docs/idea-macerie.md`](../SMASHCROP/docs/idea
 - **Salvataggio automatico senza login**: iCloud (chiave-valore) su iPhone e Google Block Store su
   Android. Unione delle copie: chili più alti e tutto ciò che è sbloccato da entrambe.
 
+## Pubblicità
+
+SDK di Meta, TikTok, Google (Firebase) e Apple Ads già montati con valori segnaposto, richiesta di tracciamento su iPhone ed eventi: vedi **PUBBLICITA.md**.
+
 ## ⚠️ Da fare quando si apre il progetto in Xcode
 
 1. Runner → **Signing & Capabilities** → **+ Capability** → **iCloud**.
