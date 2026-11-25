@@ -80,9 +80,12 @@ festa dell'evoluzione). Chi preferisce la precedente la riprende dalla collezion
   ("Riempi una carriola"). Le skin hanno nomi propri di SMASH (da decidere);
 - **skin extra** dell'acquisto a vita: **"SMASH Trump", arancione** (scelta di Stefano, 25 nov);
   per chi non ha comprato resta chiusa con il prezzo.
-  ⚠️ Da verificare prima della pubblicazione: il nome di una persona reale in una funzione a
-  pagamento può essere respinto da App Store / Google Play e "Trump" è un marchio registrato.
-  Alternativa pronta con lo stesso ammiccamento senza nome: "SMASH Tycoon" (arancione);
+  Motivazione: in inglese *trump* è una parola comune (*trump card* = carta vincente, briscola;
+  *to trump* = battere): "SMASH Trump" = la skin vincente.
+  Regole per ridurre il rischio in revisione store: **nessun altro riferimento** (niente ciuffo,
+  cravatta rossa, slogan o gesti riconoscibili), solo SMASH arancione; se lo store chiede, si
+  spiega il significato di *trump card*.
+  Riserva pronta se la revisione lo respinge: "SMASH Tycoon" (stessa grafica, cambia solo il nome);
 - anteprima: toccando una skin si vede SMASH che dà il pugno con quella skin.
 
 **Dove si apre:**
@@ -252,3 +255,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** definita la collezione delle skin (cambio automatico all'evoluzione, scelta libera tra le sbloccate).
 - **25 nov 2026:** vista la simulazione della Collezione: ok; gli oggetti da cantiere diventano l'obiettivo ("Riempi una carriola"), non il nome della skin.
 - **25 nov 2026:** proposti nomi skin internazionali; la skin dell'acquisto a vita sarà "SMASH Trump" arancione (rischio store da verificare, riserva "SMASH Tycoon").
+- **25 nov 2026:** SMASH Trump confermato con la lettura "trump card" e nessun altro riferimento; SMASH Tycoon di riserva.
