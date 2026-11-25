@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/widgets/app_menu.dart';
+import '../../core/widgets/language_button.dart';
 import '../../core/widgets/large_file_dialog.dart';
 import '../../core/widgets/password_dialog.dart';
 
@@ -163,8 +164,18 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Row(
                 children: [
-                  const BrandMark(size: 30),
-                  const Spacer(),
+                  const Flexible(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: BrandMark(size: 30),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  LanguageButton(preferences: widget.preferences),
+                  const SizedBox(width: 8),
                   MenuButton(
                     onTap: () => showAppMenu(
                       context,
