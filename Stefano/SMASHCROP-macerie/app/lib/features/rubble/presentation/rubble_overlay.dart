@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../editor/application/editor_controller.dart';
 import '../application/skin_assets.dart';
+import 'skin_effects.dart';
 
 /// Gli elementi della skin che esplodono dalla fascia a ogni colpo.
 ///
@@ -97,8 +98,11 @@ class _RubbleOverlayState extends State<RubbleOverlay> {
     }
   }
 
+  bool _reduceMotion = false;
+
   @override
   Widget build(BuildContext context) {
+    _reduceMotion = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
     return IgnorePointer(
       child: CustomPaint(size: Size.infinite, painter: _RubblePainter(this)),
     );
@@ -176,9 +180,25 @@ class _RubblePainter extends CustomPainter {
     final imgs = s.widget.images;
     if (a == null || a.rubbleKg <= 0 || imgs == null) return;
     final sec = (a.elapsedMs - a.timeline.impactMs) / 1000;
-    if (sec < 0) return;
+    if (sec < SkinEffects.start) return;
     final b = s.burstFor(a);
     if (b == null) return;
+    // il tocco della skin (sotto agli elementi)
+    if (!s._reduceMotion) {
+      final origin = s._toLocal(s.widget.viewportKey);
+      if (origin != null) {
+        SkinEffects.paint(
+          canvas,
+          skinId: imgs.skin.id,
+          strip: a.stripRect.shift(origin),
+          impact: b.impact,
+          sec: sec,
+          power: SkinEffects.powerFor(a.rubbleKg),
+          seed: a.hashCode,
+        );
+      }
+    }
+    if (sec < 0) return;
     final target =
         s._toLocal(s.widget.targetKey, center: true) ?? const Offset(40, 20);
     final bottom = s._toLocal(s.widget.bottomKey)?.dy ?? size.height;

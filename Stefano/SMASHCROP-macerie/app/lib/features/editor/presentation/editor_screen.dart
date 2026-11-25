@@ -21,6 +21,7 @@ import '../../rubble/presentation/counter_bar.dart';
 import '../../rubble/presentation/evolution_overlay.dart';
 import '../../rubble/presentation/rubble_menu.dart';
 import '../../rubble/presentation/rubble_overlay.dart';
+import '../../rubble/presentation/skin_effects.dart';
 import '../../export/export_service.dart';
 import '../../export/web_share/web_share.dart' as web_share;
 import '../../image_processing/services/image_loader.dart';
@@ -746,7 +747,29 @@ class _EditorScreenState extends State<EditorScreen>
         Expanded(
           child: KeyedSubtree(
             key: _viewportKey,
-            child: EditorViewport(controller: c, frames: _frames),
+            child: ValueListenableBuilder<int>(
+              valueListenable: c.frameTick,
+              child: EditorViewport(controller: c, frames: _frames),
+              builder: (context, _, child) {
+                final a = c.animation;
+                final skin = _skinImgs?.skin.id;
+                if (a == null ||
+                    skin == null ||
+                    a.rubbleKg <= 0 ||
+                    (MediaQuery.maybeDisableAnimationsOf(context) ?? false)) {
+                  return child!;
+                }
+                final sec = (a.elapsedMs - a.timeline.impactMs) / 1000;
+                return Transform.translate(
+                  offset: SkinEffects.shake(
+                    skin,
+                    sec,
+                    SkinEffects.powerFor(a.rubbleKg),
+                  ),
+                  child: child,
+                );
+              },
+            ),
           ),
         ),
         const SizedBox(height: 8),

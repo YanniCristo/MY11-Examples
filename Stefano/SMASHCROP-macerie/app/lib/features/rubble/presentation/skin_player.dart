@@ -6,6 +6,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../animation/domain/smash_config.dart';
 import '../application/skin_assets.dart';
 import '../domain/skins.dart';
+import 'skin_effects.dart';
 
 /// Mostra un personaggio della Collezione: fa una volta tutta la sua
 /// animazione (con gli elementi della fascia che esplodono dietro) e poi
@@ -153,6 +154,19 @@ class _PlayerPainter extends CustomPainter {
           Paint()..color = Color.fromRGBO(0, 0, 0, a),
         );
       }
+    }
+    // il tocco della skin, come nell'editor
+    if (t != null && t > SkinEffects.start && t < SkinEffects.end) {
+      final c = dst.topLeft + (imgs.skin.impactAnchor - src.topLeft) * k;
+      SkinEffects.paint(
+        canvas,
+        skinId: imgs.skin.id,
+        strip: Rect.fromCenter(center: c, width: 200 * k, height: 60 * k),
+        impact: c,
+        sec: t,
+        power: .75,
+        seed: 7,
+      );
     }
     final img = imgs.frames[frame];
     final paint = Paint()..filterQuality = FilterQuality.medium;

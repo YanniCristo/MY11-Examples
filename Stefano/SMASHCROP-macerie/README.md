@@ -17,6 +17,12 @@ Specifica completa: [`../SMASHCROP/docs/idea-macerie.md`](../SMASHCROP/docs/idea
 - **Suoni** (4 varianti a caso per personaggio, seguono il silenzioso dell'iPhone) e **vibrazione**.
 - **Menu ☰**: Collezione, suoni, vibrazione, Premium (in arrivo), codice di recupero, aiuto.
 - **Codice di recupero** (12 caratteri con firma) per cambio telefono / webapp.
+- **Effetti per skin** sopra la base comune (vetro + elementi): SMASH onda d'urto, polvere e
+  tremolio; Burp bolla di gomma + gas verde con bollicine; Popcorn chicchi che scoppiano; Muahaha
+  fumo viola, pipistrelli, fantasmini, scintille; Mamma Mia pomodoro da cartone che si schiaccia +
+  basilico e spaghetti; Tycoon monete d'oro e coriandoli. Disegnati in codice
+  (`lib/features/rubble/presentation/skin_effects.dart`), più grandi con tagli più grandi, spenti
+  con "riduci movimento", visibili anche nella Collezione.
 - **Salvataggio automatico senza login**: iCloud (chiave-valore) su iPhone e Google Block Store su
   Android. Unione delle copie: chili più alti e tutto ciò che è sbloccato da entrambe.
 
@@ -32,7 +38,6 @@ Specifica completa: [`../SMASHCROP/docs/idea-macerie.md`](../SMASHCROP/docs/idea
 ## Ancora da fare
 
 - Acquisto a vita (Tycoon + niente pubblicità) e "Ripristina acquisti".
-- Effetti diversi sulla porzione per ogni skin (oggi tutti usano la frantumazione + gli elementi).
 
 Codice: `lib/features/rubble/` (contatore, skin, effetti, Collezione, menu).
 Immagini e suoni: `assets/rubble/`, `assets/sounds/` (mp3).

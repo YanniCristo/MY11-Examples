@@ -433,4 +433,12 @@ La card da condividere e le sagome nere della Collezione le genera l'app. **Graf
   `RubbleStore.mergeFrom` (chili più alti, skin e traguardi di entrambe, acquisto a vita resta;
   su app appena installata riprende anche skin, suoni e vibrazione). Scrittura raggruppata ogni 2 s.
   **Da fare in Xcode:** capability iCloud → Key-value storage (vedi README della copia).
+- **25 nov 2026 (sera):** fatti gli effetti diversi per ogni skin, sopra la base comune (vetro che si
+  rompe + elementi al contatore), durata ~1 s come prima, tutto disegnato in codice senza immagini:
+  SMASH onda d'urto + polvere + leggero tremolio dello schermo; Burp gomma rosa che si gonfia e
+  scoppia + gas verde con bollicine; Popcorn chicchi che saltano e diventano popcorn; Muahaha fumo
+  viola, pipistrelli, fantasmini simpatici, scintille arancio (Halloween per tutti); Mamma Mia
+  pomodoro da cartone (picciolo, riflesso, semini) che salta e si schiaccia, basilico e spaghetti,
+  niente schizzi; Tycoon monete d'oro generiche e coriandoli dorati. Intensità in base ai kg del
+  taglio; con "riduci movimento" resta solo la base; anteprima anche nella Collezione.
 
