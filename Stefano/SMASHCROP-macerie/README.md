@@ -30,14 +30,15 @@ Specifica completa: [`../SMASHCROP/docs/idea-macerie.md`](../SMASHCROP/docs/idea
 
 SDK di Meta, TikTok, Google (Firebase) e Apple Ads già montati con valori segnaposto, richiesta di tracciamento su iPhone ed eventi: vedi **PUBBLICITA.md**.
 
-## ⚠️ Da fare quando si apre il progetto in Xcode
+## Xcode: niente da fare a mano
 
-1. Runner → **Signing & Capabilities** → **+ Capability** → **iCloud**.
-2. Spuntare **Key-value storage** (non servono CloudKit né Documents).
-3. Senza questo passo l'app funziona lo stesso, ma il contatore resta solo sul telefono.
-4. Prova: fai qualche taglio con SMASH, aspetta qualche secondo, cancella l'app, reinstallala
-   (TestFlight) con lo stesso ID Apple: i kg devono tornare.
-   Su Android: stessa prova con un telefono con backup Google attivo.
+iCloud (Key-value storage) è già nel progetto (`ios/Runner/Runner.entitlements`). Aprendo il progetto
+con la firma automatica, in Signing & Capabilities deve comparire **iCloud** con **Key-value storage**
+spuntato: basta controllare che ci sia.
+
+Prova: fai qualche taglio con SMASH, aspetta qualche secondo, cancella l'app, reinstallala
+(TestFlight) con lo stesso ID Apple: i kg devono tornare.
+Su Android: stessa prova con un telefono con backup Google attivo.
 
 ## Ancora da fare
 

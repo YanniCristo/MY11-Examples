@@ -1,0 +1,3 @@
+"NSUserTrackingUsageDescription" = "Your data is used only to measure which ads brought you to SmashCrop. Nothing you edit ever leaves your phone.";
+"NSPhotoLibraryUsageDescription" = "SmashCrop opens the images you choose from your library so you can edit them.";
+"NSPhotoLibraryAddUsageDescription" = "SmashCrop saves the images you edited to Photos.";

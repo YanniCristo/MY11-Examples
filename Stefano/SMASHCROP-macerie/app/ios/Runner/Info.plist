@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>SmashCrop apre le immagini che scegli dalla tua libreria per modificarle.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>SmashCrop salva nelle Foto le immagini che hai modificato.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -18,6 +14,15 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>it</string>
+		<string>en</string>
+		<string>fr</string>
+		<string>es</string>
+		<string>pt</string>
+		<string>de</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>smashcrop</string>
 	<key>CFBundlePackageType</key>
@@ -28,8 +33,49 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FBSDKAutoLogMetaDataEnabled</key>
+	<false/>
+	<key>FacebookAppID</key>
+	<string>4528815827358406</string>
+	<key>FacebookAutoInitEnabled</key>
+	<false/>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<false/>
+	<key>FacebookClientToken</key>
+	<string>56600b3daa9736eed5cd9b55cd4e2c9f</string>
+	<key>FacebookDisplayName</key>
+	<string>SmashCrop PDF &amp; Image</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>SmashCrop salva nelle Foto le immagini che hai modificato.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>SmashCrop apre le immagini che scegli dalla tua libreria per modificarle.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Your data is used only to measure which ads brought you to SmashCrop. Nothing you edit ever leaves your phone.</string>
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>cstr6suwn9.skadnetwork</string>
+		</dict>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>v9wttpbfk9.skadnetwork</string>
+		</dict>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>n38lu8286q.skadnetwork</string>
+		</dict>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>238da6jt44.skadnetwork</string>
+		</dict>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>22mmun2rn5.skadnetwork</string>
+		</dict>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -69,38 +115,6 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<!-- Richiesta di tracciamento (ATT) -->
-	<key>NSUserTrackingUsageDescription</key>
-	<string>Your data is used only to measure which ads brought you to SmashCrop. Nothing you edit ever leaves your phone.</string>
-	<!-- Meta (Facebook): app "SmashCrop PDF & Image" su Meta for Developers -->
-	<key>FacebookAppID</key>
-	<string>4528815827358406</string>
-	<key>FacebookClientToken</key>
-	<string>56600b3daa9736eed5cd9b55cd4e2c9f</string>
-	<key>FacebookDisplayName</key>
-	<string>SmashCrop PDF &amp; Image</string>
-	<key>FacebookAutoInitEnabled</key>
-	<false/>
-	<key>FacebookAutoLogAppEventsEnabled</key>
-	<false/>
-	<key>FBSDKAutoLogMetaDataEnabled</key>
-	<false/>
-	<!-- SKAdNetwork: Google e Meta (TikTok: aggiungere la sua lista, vedi PUBBLICITA.md) -->
-	<key>SKAdNetworkItems</key>
-	<array>
-		<dict>
-			<key>SKAdNetworkIdentifier</key>
-			<string>cstr6suwn9.skadnetwork</string>
-		</dict>
-		<dict>
-			<key>SKAdNetworkIdentifier</key>
-			<string>v9wttpbfk9.skadnetwork</string>
-		</dict>
-		<dict>
-			<key>SKAdNetworkIdentifier</key>
-			<string>n38lu8286q.skadnetwork</string>
-		</dict>
 	</array>
 </dict>
 </plist>

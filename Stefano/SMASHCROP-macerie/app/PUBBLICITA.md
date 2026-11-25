@@ -46,12 +46,12 @@ Nelle campagne conviene ottimizzare su `first_save` (utenti che l'app l'hanno us
 
 ## Da fare prima di pubblicare
 
-1. **Testo della richiesta di tracciamento**: ora è in inglese in `Info.plist` (`NSUserTrackingUsageDescription`). Per averlo in 6 lingue va aggiunto in Xcode un file `InfoPlist.strings` localizzato.
-2. **TikTok su iPhone (SKAdNetwork)**: in `Info.plist` ci sono gli ID di Google e Meta; aggiungere la lista di TikTok presa dalla loro documentazione.
-3. **Privacy negli store**:
+1. **Testo della richiesta di tracciamento**: già fatto in 6 lingue (`ios/Runner/<lingua>.lproj/InfoPlist.strings`, insieme ai testi del permesso Foto).
+2. **TikTok su iPhone (SKAdNetwork)**: già aggiunti in `Info.plist` gli ID di TikTok/Pangle (`238da6jt44`, `22mmun2rn5`). Quando si attiva TikTok, controllare in TikTok Ads Manager se ne chiede altri.
+3. **Privacy negli store** (non è Xcode: è il questionario sui siti di Apple e Google al momento della pubblicazione):
    - App Store Connect → Privacy dell'app: dichiarare "Identificatori (ID dispositivo)" e "Dati d'uso (interazione con il prodotto)" usati per **pubblicità di terze parti / analisi**, collegati al tracciamento.
    - Google Play → Sicurezza dei dati: stessi dati (ID pubblicità, interazioni con l'app).
    - Il testo della privacy dentro l'app è già aggiornato (6 lingue).
 4. **Europa (GDPR) su Android**: Android non ha una richiesta come l'ATT. Per gli utenti europei la cosa corretta è un banner di consenso prima di attivare Meta e TikTok (es. Google UMP). È il prossimo passo consigliato se le campagne girano in Europa.
-5. **iCloud** (promemoria): in Xcode, Signing & Capabilities → iCloud → Key-value storage.
-6. In Xcode l'iOS minimo resta 15.0 (richiesto da Meta e TikTok).
+5. **iCloud**: già nel progetto (`Runner.entitlements`); in Xcode basta controllare che in Signing & Capabilities compaia iCloud → Key-value storage.
+6. L'iOS minimo è già 15.0 (richiesto da Meta e TikTok).
