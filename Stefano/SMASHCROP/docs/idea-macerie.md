@@ -142,6 +142,7 @@ sulla porzione, eventuale suono).
 | Schiacciamento | appiattita con crepe e tremore |
 | Affettatura + schizzi | tagliata a fette dalla pizza, schizzi di pomodoro che colano e svaniscono |
 | Salto a ritmo | rimbalza a tempo e sparisce |
+| Disintegrazione a soffio | si polverizza e la polvere viene spazzata via dall'onda d'urto |
 
 Aggiungere una skin in futuro = 18 immagini + una scheda, senza riscrivere l'app.
 Le sceneggiature delle 18 immagini di ogni skin si scrivono quando nomi e comportamenti sono
@@ -156,7 +157,11 @@ confermati (da far realizzare con ChatGPT).
 | Riempi una betoniera | SMASH Boing | molle ai piedi: salta sulla porzione e la catapulta via | catapulta | proposta |
 | Riempi un cassone | SMASH Inferno *(o Phantom / Zombot)* | horror: visore laser rosso, luci che calano | combustione | proposta |
 | Riempi un camioncino | **SMASH Mamma Mia** | lancia una **pizza rotante** come un frisbee: squarcia la porzione e riempie tutto di pomodoro | affettatura + schizzi di pomodoro | confermata |
-| a vita | **SMASH Tycoon** (arancione) | balletto | salto a ritmo | confermata |
+| a vita | **SMASH Tycoon** (arancione) | entra col **balletto** (stile comizio: pugni chiusi, avambracci che pompano alternati all'altezza del petto, leggero dondolio dei fianchi, passetti laterali); poi **si gira, si piega e scorreggia**: l'onda d'urto parte verso l'epicentro e disintegra tutto | disintegrazione a soffio (polvere spazzata via dall'onda) | confermata |
+
+Regola Tycoon: umorismo da cartone (nuvoletta verde-gialla stilizzata, scritta "PRRRT", onda
+d'urto ad anelli); è un robot con l'armatura, niente nudità; il balletto è solo nel movimento,
+nessun altro riferimento alla persona; nessuna musica del brano associato.
 
 Regola pomodoro (Mamma Mia): schizzi **chiaramente di pomodoro da cartone** (rosso-arancio vivo,
 semini, foglia di basilico, pezzetti di mozzarella), mai rosso scuro né colature che sembrino
@@ -330,3 +335,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** confermata SMASH Burp (distrugge con un rutto dall'eco distruttivo); scartati Crunch/Turbo/Kaboom/XXL; proposte Disco, Pew Pew (vista laser), Mamma Mia.
 - **25 nov 2026:** definito il metodo skin (18 PNG del personaggio + effetto porzione fatto dall'app) e proposta la rosa dei personaggi (Boing, Inferno, Mamma Mia).
 - **25 nov 2026:** confermata SMASH Mamma Mia: pizza rotante che squarcia e schizza pomodoro (stile cartone, mai simile al sangue).
+- **25 nov 2026:** SMASH Tycoon: entra col balletto, si gira, si piega e scorreggia con onda d'urto verso l'epicentro che disintegra la porzione.
