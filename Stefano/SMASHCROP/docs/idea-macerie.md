@@ -122,6 +122,45 @@ quella della skin. Da valutare.
 **Salvataggio:** la skin scelta e quelle sbloccate si salvano insieme al contatore (stessi
 salvataggi senza account).
 
+## 3c. Come sono fatte le skin (metodo)
+
+Ogni skin = **una cartella con 18 immagini PNG** (sfondo trasparente, stessa struttura e stessi
+tempi di SMASH: entrata, colpo, uscita) **+ una piccola scheda** (fotogramma del colpo, effetto
+sulla porzione, eventuale suono).
+
+- **Il personaggio** e i **suoi effetti** (laser, anelli del rutto, scritte da fumetto, braci…) si
+  disegnano nelle 18 immagini.
+- **La porzione** è il documento vero dell'utente (sempre diverso): la anima **l'app**, con pochi
+  effetti riutilizzabili:
+
+| Effetto sulla porzione | Descrizione |
+|---|---|
+| Frantumazione | schegge che volano (quello di oggi) |
+| Sbriciolamento a onde | si sgretola dal centro verso fuori |
+| Catapulta | viene sparata via fuori dallo schermo |
+| Combustione | si annerisce e diventa cenere che sale |
+| Schiacciamento | appiattita con crepe e tremore |
+| Salto a ritmo | rimbalza a tempo e sparisce |
+
+Aggiungere una skin in futuro = 18 immagini + una scheda, senza riscrivere l'app.
+Le sceneggiature delle 18 immagini di ogni skin si scrivono quando nomi e comportamenti sono
+confermati (da far realizzare con ChatGPT).
+
+## 3d. I personaggi
+
+| Obiettivo | Skin | Come distrugge | Effetto porzione | Stato |
+|---|---|---|---|---|
+| inizio | **SMASH** | pugno | frantumazione | esistente |
+| Riempi una carriola | **SMASH Burp** | rutto dall'eco distruttivo | sbriciolamento a onde | confermata |
+| Riempi una betoniera | SMASH Boing | molle ai piedi: salta sulla porzione e la catapulta via | catapulta | proposta |
+| Riempi un cassone | SMASH Inferno *(o Phantom / Zombot)* | horror: visore laser rosso, luci che calano | combustione | proposta |
+| Riempi un camioncino | SMASH Mamma Mia | gigante: entra facendo tremare tutto e ci si siede sopra | schiacciamento | proposta |
+| a vita | **SMASH Tycoon** (arancione) | balletto | salto a ritmo | confermata |
+
+Regole horror (Inferno): niente sangue, ferite, corpi o mostri realistici, niente jump scare né
+urla; stile "Halloween per tutti" (buio, occhi che brillano, laser, braci, glitch), così l'app
+resta per tutte le età.
+
 ## 4. Animazioni (leggere, mai bloccanti)
 
 - Dopo ogni taglio: cubetti che volano/cadono nel contatore, "+0,75 kg", cifre che girano come un **contachilometri**.
@@ -284,3 +323,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** dopo l'evoluzione si apre la Collezione (chiudibile con X o "Continua a tagliare"); per far capire che si tocca: freccetta ›, pallino rosso per skin nuove, suggerimento una tantum al primo uso.
 - **25 nov 2026:** ritocchi: Collezione aperta da sola solo alla prima evoluzione; mai nel mezzo di pannello/posizionamento/salvataggio; suggerimento dopo il primo taglio con SMASH.
 - **25 nov 2026:** confermata SMASH Burp (distrugge con un rutto dall'eco distruttivo); scartati Crunch/Turbo/Kaboom/XXL; proposte Disco, Pew Pew (vista laser), Mamma Mia.
+- **25 nov 2026:** definito il metodo skin (18 PNG del personaggio + effetto porzione fatto dall'app) e proposta la rosa dei personaggi (Boing, Inferno, Mamma Mia).
