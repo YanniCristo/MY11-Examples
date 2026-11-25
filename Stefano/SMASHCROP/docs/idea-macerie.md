@@ -27,32 +27,26 @@ si "mangia". Le macerie si accumulano in un contatore; a certe soglie SMASH
 - Il contatore scala da solo: **cm³ → litri → m³**.
 - Graficamente le macerie sono **cubetti** che cadono nel contatore (unità e animazione coincidono).
 
-### ⚠️ Da decidere: spessore del blocco e soglie
+### Spessore e soglie
 
-Nella prima proposta (blocco 1 cm) il cassone da 1 m³ richiedeva ~10.000 tagli.
-Con blocco 10 cm ("mattone") le soglie sono sembrate **troppo basse** (1 L al primo taglio).
+**Indicazione (25 nov):** le soglie con blocco 10 cm sono **troppo basse**. Con il primo SMASH
+bisogna lavorare di più: l'utente deve **affezionarsi**, usare l'app più a lungo ed essere
+**bramoso** di arrivare alla prima evoluzione.
 
-Opzioni sul tavolo:
+**Proposta attuale (da confermare):** blocco **5 cm** (fascia tipica di un A4 ≈ 0,5 L; A4 intero ≈ 3 L).
 
-**A. Blocco 10 cm, soglie alzate** (fascia tipica ≈ 1 L, A4 intero ≈ 6 L)
-
-| Soglia | Oggetto | Tagli circa |
+| Soglia | Cosa succede | Tagli circa |
 |---|---|---|
-| 10 L | secchio | 10 |
-| 100 L | carriola | 100 |
-| 1 m³ | cassone | 1.000 |
-| 10 m³ | camion | 10.000 |
-| 100 m³ | palazzina demolita | 100.000 |
+| 10 L | tappa: "Hai riempito un secchio!" (nessuna evoluzione) | ~20 |
+| 100 L | **1ª evoluzione** – una carriola | ~200 |
+| 1 m³ | **2ª evoluzione** – un cassone | ~2.000 |
+| 10 m³ | **3ª evoluzione** – un camion | ~20.000 |
+| 100 m³ | **4ª evoluzione** – una palazzina demolita | ~200.000 |
 
-**B. Blocco 2 cm, stessi oggetti** (fascia tipica ≈ 0,2 L)
-secchio ~50 tagli, carriola ~500, cassone ~5.000.
+Le tappe intermedie senza evoluzione (secchio, poi eventualmente altre) servono a dare piccole
+soddisfazioni mentre si aspetta la prima evoluzione, senza regalarla.
 
-Ritmo con ~10 tagli a settimana:
-- A: secchio ~1 settimana, carriola ~2–3 mesi, cassone ~2 anni;
-- B: secchio ~5 settimane, carriola ~1 anno, cassone molti anni.
-
-Variante: A con il secchio a 25 L.
-**Domanda aperta:** in quanto tempo un utente normale deve arrivare alla prima evoluzione (una settimana, un mese, di più)?
+Opzioni scartate: blocco 1 cm (troppo lento), blocco 10 cm con soglie da 1 L (troppo veloce).
 
 ## 3. Livelli ed evoluzioni
 
@@ -77,10 +71,27 @@ Variante: A con il secchio a 25 L.
 - SMASH **acceso di default** al primo avvio; se l'utente lo spegne, l'app ricorda la scelta.
 - Interruttore a portata di mano (la testa di SMASH nell'editor, come oggi), non nascosto nelle impostazioni.
 
-## 6. Dove si vede
+## 6. Il contatore
 
-- **Editor:** piccolo contatore in un angolo del riquadro (icona macerie + valore, es. "12,4 L").
-- **Home:** livello di SMASH e barra verso la prossima evoluzione, vicino al logo.
+**Editor:** piccolo contatore in un angolo del riquadro, compatto:
+
+```
+ 12,4 L  [😀]▓▓▓▓▓▓░░░░░░[🤖]
+ totale   SMASH  barra    evoluzione
+          attuale 0→100%  successiva
+```
+
+- **A sinistra il totale**, mai più di **3 cifre** (meglio 2) per non occupare spazio.
+  Quando sale cambia unità e usa i decimali per restare corto:
+  `850 cm³` → `1,2 L` → `12,4 L` → `124 L` → `1,24 m³` → `12,4 m³` → `124 m³`.
+  (Regola: sempre 2–3 cifre significative; virgola come separatore, punto in inglese.)
+- **Barra da 0 a 100%** verso la prossima evoluzione.
+- **Solo le teste**: a sinistra della barra la testa di SMASH attuale, a destra quella dell'evoluzione.
+  Idea da valutare: la testa dell'evoluzione in **ombra/silhouette** finché non la si raggiunge, per
+  aumentare la curiosità.
+- Con SMASH spento: tutto in grigio + SMASH addormentato 💤 (vedi sezione 5).
+
+**Home:** livello di SMASH e la stessa barra verso la prossima evoluzione, vicino al logo.
 
 ## 7. Condivisione
 
@@ -121,10 +132,13 @@ Si può partire con B e sostituire poi con i disegni veri.
 - Livelli legati a **oggetti reali da cantiere**.
 - SMASH spento comunicato **solo con il linguaggio visivo** (sezione 5).
 - Evoluzioni **non a pagamento**; skin extra legate all'acquisto a vita.
+- La prima evoluzione deve **costare lavoro** (soglie più alte del blocco 10 cm).
+- Contatore compatto: totale con **max 3 cifre** (unità e decimali scalano), **barra 0–100%** tra la
+  testa di SMASH attuale (sinistra) e quella dell'evoluzione (destra).
 
 ## Domande aperte
 
-1. Spessore del blocco e soglie (A, B o A con secchio a 25 L); tempo desiderato per la prima evoluzione.
+1. Confermare blocco 5 cm e soglie (1ª evoluzione a 100 L ≈ 200 tagli) o renderle ancora più alte.
 2. Nomi e aspetto delle forme di SMASH per livello.
 3. Grafica: disegni nuovi o forme modificate dall'app per partire.
 
@@ -133,3 +147,6 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** nata l'idea; prime proposte (km → metri cubi, spessore blocco, oggetti da cantiere, SMASH spento solo visivo).
   Un primo tentativo di implementarla direttamente nell'app è stato **annullato e ripristinato**
   (nessuna modifica arrivata su GitHub o nella pagina di prova): si lavorerà solo su una copia.
+- **25 nov 2026:** soglie giudicate troppo basse → proposta blocco 5 cm con prima evoluzione a 100 L
+  (~200 tagli) e tappe intermedie senza evoluzione. Definito il contatore compatto: totale con max
+  3 cifre, barra 0–100% tra testa attuale e testa dell'evoluzione.
