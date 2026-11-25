@@ -103,11 +103,39 @@ Opzioni scartate: blocco 1 cm (troppo lento), blocco 10 cm con soglie da 1 L (tr
 Card da postare, es. "Il mio SMASH ha divorato 3,2 m³ di macerie", con SMASH al suo livello
 e link all'app. Marketing gratis.
 
-## 8. Salvataggio del contatore
+## 8. Non perdere il contatore (senza account)
 
-Sul dispositivo, recuperabile reinstallando l'app, **senza account**:
-- Android: backup automatico Google;
-- iPhone: iCloud (key-value store).
+Cosa salvare: totale macerie (cm³), livelli già raggiunti, data del primo e dell'ultimo taglio.
+Sono pochi byte.
+
+**Regola d'oro: il contatore non scende mai.** Quando arrivano due valori (telefono e copia nel
+cloud, oppure due dispositivi) si tiene sempre **il più alto**. Così un ripristino vecchio non
+cancella i progressi.
+
+| Situazione | Come si salva |
+|---|---|
+| Aggiornamento dell'app | memoria del telefono (già oggi) |
+| Disinstalla e reinstalla, telefono nuovo **iPhone → iPhone** | **iCloud** (archivio chiave-valore): sincronizza da solo tra i dispositivi Apple dello stesso utente, nessun login |
+| Disinstalla e reinstalla, telefono nuovo **Android → Android** | **backup Google** (Block Store + backup automatico): ripristino automatico con lo stesso account Google |
+| Cambio **iPhone ↔ Android**, oppure webapp | **codice di recupero** (vedi sotto) |
+
+Note:
+- Il backup automatico Android avviene circa una volta al giorno: l'ultimo giorno di macerie
+  potrebbe mancare. Block Store è più immediato: si usano entrambi.
+- **Webapp:** Safari cancella i dati dei siti non usati per 7 giorni (salvo app aggiunta alla
+  schermata Home). Nella webapp il contatore è fragile: serve il codice di recupero.
+
+**Codice di recupero** (per cambio piattaforma e webapp):
+- dalla schermata di SMASH: "Salva i miei progressi" → un codice corto (o QR) da conservare;
+- sull'altro dispositivo: "Ho un codice" → si inserisce e il contatore riparte da lì (si tiene il
+  valore più alto);
+- il codice contiene il totale e una firma dell'app, per scoraggiare codici inventati.
+  Barare non fa guadagnare nulla di a pagamento (le evoluzioni sono gratis), quindi basta questo.
+
+**Più avanti, se servirà:** accesso con Apple / Google e salvataggio online (es. Firebase).
+Risolve tutti i casi da solo, ma introduce account e un piccolo server: per ora non serve.
+
+L'acquisto "a vita" è a parte: si recupera sempre con "Ripristina acquisti" dello store.
 
 Annullare un taglio **non** toglie le macerie (SMASH le ha già mangiate).
 
@@ -158,3 +186,6 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** la scala ×10 portava l'ultimo livello a ~200.000 tagli (troppo). Nuova scala più
   dolce: 100 L, 300 L, 1 m³, 3 m³ (ultima evoluzione ≈ 6.000 tagli).
 - **25 nov 2026:** confermati blocco 5 cm e scala 100 L / 300 L / 1 m³ / 3 m³.
+- **25 nov 2026:** definito come non perdere il contatore: memoria locale + iCloud (iPhone) +
+  backup Google/Block Store (Android), regola "si tiene sempre il valore più alto", codice di
+  recupero per cambio piattaforma e webapp; account online rimandato.
