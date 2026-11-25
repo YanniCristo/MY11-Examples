@@ -1,6 +1,6 @@
 # Sceneggiature delle skin di SMASH (18 immagini ciascuna)
 
-Da dare a ChatGPT insieme alle **18 immagini originali di SMASH** (`assets/frames_hd/` o
+Da dare a ChatGPT insieme alle **18 immagini originali di SMASH** (`assets/characters/smash/frames_hd/` o
 `app/assets/smash/`), che fanno da riferimento per stile, dimensioni e posizioni.
 Fa parte dell'idea [SMASH mangia-macerie](idea-macerie.md): da usare solo sulla copia dell'app.
 
@@ -30,6 +30,18 @@ Fa parte dell'idea [SMASH mangia-macerie](idea-macerie.md): da usare solo sulla 
 > 9. Stile per tutte le età: niente sangue, ferite, nudità, armi realistiche, niente testi oltre a
 >    quelli indicati (scritte da fumetto in lettere grandi).
 > 10. Nomina i file `skin_01.png` … `skin_18.png` nell'ordine.
+
+**Colori: ogni skin ha i suoi, diversi da tutte le altre** (così si riconoscono a colpo d'occhio,
+anche solo dalla testa nel contatore):
+
+| Skin | Colori principali |
+|---|---|
+| SMASH | rosso (originale) |
+| Burp | verde lime + verde oliva |
+| Popcorn | giallo burro + strisce rosse e bianche |
+| Muahaha | nero lucido + viola scuro, visore rosso |
+| Mamma Mia | bianco + rosso + dettagli verdi |
+| Tycoon | arancione + dettagli dorati |
 
 **Struttura (uguale per tutte le skin, come SMASH):**
 
