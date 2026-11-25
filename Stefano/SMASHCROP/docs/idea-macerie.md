@@ -319,8 +319,9 @@ Si può partire con B e sostituire poi con i disegni veri.
 - 36 elementi della fascia (al posto dei cubetti): fatto;
 - 5 oggetti da cantiere (obiettivi): fatto;
 - 12 teste sveglia/addormentata (barra e interruttore): fatto;
-- 6 pose da eroe (evoluzione, Collezione, condivisione): in lavorazione.
-La card da condividere e le sagome nere della Collezione le genera l'app. Facoltativi: suoni brevi originali.
+- 6 pose da eroe (evoluzione, Collezione, condivisione): fatto (1024×1024, stessa grandezza del robot, piedi alla stessa altezza);
+- suoni: fatto (4 varianti a caso per ogni personaggio + "gnam" della barra, in `assets/suoni/`).
+La card da condividere e le sagome nere della Collezione le genera l'app. **Grafica e suoni completi.**
 
 ---
 
@@ -393,3 +394,4 @@ La card da condividere e le sagome nere della Collezione le genera l'app. Facolt
 - **25 nov 2026:** completate le 6 skin (18 immagini allineate, anteprima, scheda), i 36 elementi della fascia e le 5 icone degli obiettivi; Tycoon con elmo dorato e cresta rossa. Deciso l'effetto a ogni colpo: esplosione sulla fascia, la maggior parte cade sotto i pulsanti, 3–5 pezzi a calamita verso la barra con "gnam". Evoluzione a tutto schermo e Collezione animata: proposte da confermare.
 - **25 nov 2026:** confermati anche le macerie che volano nella barra ("gnam" + "+kg") e l'evoluzione a tutto schermo (pioggia degli elementi del nuovo personaggio, lampo sulla testa, poi Collezione). Resta da confermare la Collezione animata.
 - **25 nov 2026:** confermata la Collezione animata, con in più le pose da eroe (prompt e riferimenti per ChatGPT preparati).
+- **25 nov 2026:** completati teste, pose da eroe e suoni (4 varianti per personaggio da ElevenLabs, scelte a caso a ogni taglio). Tutto il materiale per la copia con le macerie è pronto.
