@@ -1,0 +1,173 @@
+import 'dart:ui' as ui;
+
+import 'package:flutter/scheduler.dart';
+import 'package:material_ui/material_ui.dart';
+
+import '../../animation/domain/smash_config.dart';
+import '../application/skin_assets.dart';
+import '../domain/skins.dart';
+
+/// Mostra un personaggio della Collezione: fa una volta tutta la sua
+/// animazione (con gli elementi della fascia che esplodono dietro) e poi
+/// resta a riposo con il pollice alzato, dondolando tra le immagini 15 e 16.
+class SkinPlayer extends StatefulWidget {
+  const SkinPlayer({
+    super.key,
+    required this.skin,
+    this.playId = 0,
+    this.locked = false,
+  });
+
+  final SkinDef skin;
+
+  /// Cambiandolo l'animazione riparte.
+  final int playId;
+
+  /// Bloccata: sagoma scura, ferma.
+  final bool locked;
+
+  @override
+  State<SkinPlayer> createState() => _SkinPlayerState();
+}
+
+class _SkinPlayerState extends State<SkinPlayer>
+    with SingleTickerProviderStateMixin {
+  late final Ticker _ticker = createTicker(_onTick);
+  SkinImages? _imgs;
+  double _ms = 0;
+  double _startedAt = 0;
+
+  static const _fd = 100.0; // 10 fotogrammi al secondo
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void didUpdateWidget(SkinPlayer old) {
+    super.didUpdateWidget(old);
+    if (old.skin.id != widget.skin.id) {
+      _imgs = null;
+      _load();
+    } else if (old.playId != widget.playId) {
+      _startedAt = _ms;
+    }
+  }
+
+  Future<void> _load() async {
+    final s = widget.skin;
+    try {
+      final imgs = await SkinImages.load(s);
+      if (!mounted || widget.skin.id != s.id) return;
+      setState(() {
+        _imgs = imgs;
+        _startedAt = _ms;
+      });
+      if (!_ticker.isActive) _ticker.start();
+    } catch (_) {}
+  }
+
+  void _onTick(Duration d) {
+    setState(() => _ms = d.inMicroseconds / 1000);
+  }
+
+  @override
+  void dispose() {
+    _ticker.dispose();
+    super.dispose();
+  }
+
+  int _frame() {
+    if (widget.locked) return 14;
+    final t = _ms - _startedAt;
+    var acc = 0.0;
+    for (var i = 0; i < SmashSprite.frameCount; i++) {
+      acc += SmashSprite.frameUnits[i] * _fd;
+      // le ultime due immagini sono l'uscita: si torna a riposo prima
+      if (i == 15) break;
+      if (t < acc) return i;
+    }
+    // riposo: 15 e 16 alternate lentamente
+    return ((t / 600).floor() % 2 == 0) ? 14 : 15;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final imgs = _imgs;
+    if (imgs == null) {
+      return const Center(
+        child: SizedBox.square(
+          dimension: 22,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
+    }
+    return CustomPaint(
+      painter: _PlayerPainter(
+        imgs,
+        _frame(),
+        widget.locked ? null : (_ms - _startedAt) / 1000,
+        widget.locked,
+      ),
+      size: Size.infinite,
+    );
+  }
+}
+
+class _PlayerPainter extends CustomPainter {
+  _PlayerPainter(this.imgs, this.frame, this.sec, this.locked);
+  final SkinImages imgs;
+  final int frame;
+  final double? sec;
+  final bool locked;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // il robot occupa la tela 730×470: la si centra sul robot (x 150–600)
+    const src = Rect.fromLTWH(120, 0, 520, 420);
+    final k = (size.width / src.width).clamp(0.0, size.height / src.height);
+    final w = src.width * k, h = src.height * k;
+    final dst = Rect.fromLTWH(
+      (size.width - w) / 2,
+      (size.height - h) / 2,
+      w,
+      h,
+    );
+    // elementi della fascia che esplodono dal punto del colpo
+    final t = sec == null ? null : sec! - 0.5;
+    if (t != null && t > 0 && t < 1.4) {
+      final c = dst.topLeft + (imgs.skin.impactAnchor - src.topLeft) * k;
+      for (var i = 0; i < 10; i++) {
+        final ang = -2.6 + i * .52;
+        final v = Offset(_cos(ang), _sin(ang)) * (140 + (i % 3) * 50) * k * 1.6;
+        final p = c + v * t + Offset(0, 500 * k * t * t);
+        final a = (1 - t / 1.4).clamp(0.0, 1.0);
+        final img = imgs.elements[i % 6];
+        final s = 30 * k * 1.6;
+        canvas.drawImageRect(
+          img,
+          Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
+          Rect.fromCenter(center: p, width: s, height: s),
+          Paint()..color = Color.fromRGBO(0, 0, 0, a),
+        );
+      }
+    }
+    final img = imgs.frames[frame];
+    final paint = Paint()..filterQuality = FilterQuality.medium;
+    if (locked) {
+      paint.colorFilter = const ColorFilter.mode(
+        Color(0xFF15161C),
+        BlendMode.srcIn,
+      );
+    }
+    canvas.drawImageRect(img, src, dst, paint);
+  }
+
+  static double _cos(double a) => ui.Offset.fromDirection(a).dx;
+  static double _sin(double a) => ui.Offset.fromDirection(a).dy;
+
+  @override
+  bool shouldRepaint(_PlayerPainter old) => true;
+}
