@@ -140,6 +140,7 @@ sulla porzione, eventuale suono).
 | Catapulta | viene sparata via fuori dallo schermo |
 | Combustione | si annerisce e diventa cenere che sale |
 | Schiacciamento | appiattita con crepe e tremore |
+| Affettatura + schizzi | tagliata a fette dalla pizza, schizzi di pomodoro che colano e svaniscono |
 | Salto a ritmo | rimbalza a tempo e sparisce |
 
 Aggiungere una skin in futuro = 18 immagini + una scheda, senza riscrivere l'app.
@@ -154,8 +155,12 @@ confermati (da far realizzare con ChatGPT).
 | Riempi una carriola | **SMASH Burp** | rutto dall'eco distruttivo | sbriciolamento a onde | confermata |
 | Riempi una betoniera | SMASH Boing | molle ai piedi: salta sulla porzione e la catapulta via | catapulta | proposta |
 | Riempi un cassone | SMASH Inferno *(o Phantom / Zombot)* | horror: visore laser rosso, luci che calano | combustione | proposta |
-| Riempi un camioncino | SMASH Mamma Mia | gigante: entra facendo tremare tutto e ci si siede sopra | schiacciamento | proposta |
+| Riempi un camioncino | **SMASH Mamma Mia** | lancia una **pizza rotante** come un frisbee: squarcia la porzione e riempie tutto di pomodoro | affettatura + schizzi di pomodoro | confermata |
 | a vita | **SMASH Tycoon** (arancione) | balletto | salto a ritmo | confermata |
+
+Regola pomodoro (Mamma Mia): schizzi **chiaramente di pomodoro da cartone** (rosso-arancio vivo,
+semini, foglia di basilico, pezzetti di mozzarella), mai rosso scuro né colature che sembrino
+sangue; svaniscono in pochi istanti.
 
 Regole horror (Inferno): niente sangue, ferite, corpi o mostri realistici, niente jump scare né
 urla; stile "Halloween per tutti" (buio, occhi che brillano, laser, braci, glitch), così l'app
@@ -324,3 +329,4 @@ Si può partire con B e sostituire poi con i disegni veri.
 - **25 nov 2026:** ritocchi: Collezione aperta da sola solo alla prima evoluzione; mai nel mezzo di pannello/posizionamento/salvataggio; suggerimento dopo il primo taglio con SMASH.
 - **25 nov 2026:** confermata SMASH Burp (distrugge con un rutto dall'eco distruttivo); scartati Crunch/Turbo/Kaboom/XXL; proposte Disco, Pew Pew (vista laser), Mamma Mia.
 - **25 nov 2026:** definito il metodo skin (18 PNG del personaggio + effetto porzione fatto dall'app) e proposta la rosa dei personaggi (Boing, Inferno, Mamma Mia).
+- **25 nov 2026:** confermata SMASH Mamma Mia: pizza rotante che squarcia e schizza pomodoro (stile cartone, mai simile al sangue).
