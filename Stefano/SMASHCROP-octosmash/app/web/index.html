@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="SmashCrop PDF & Image: rimuovi sezioni di foto e PDF e ricongiungi il resto.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+
+  <!--
+    Uncomment the tag below to lay the app out underneath the parts of the
+    screen that the device obstructs, such as a display cutout, the rounded
+    corners of the screen, or a home indicator.
+
+    Without it, the browser keeps the app clear of them, and `SafeArea` and
+    `MediaQuery.paddingOf` report no padding. With it, the app covers the whole
+    screen, and it is up to the app to keep its own content out of the way,
+    which is what `SafeArea` is for.
+  -->
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"> -->
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SmashCrop">
+  <link rel="apple-touch-icon" href="icons/Icon-180.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>SmashCrop</title>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body style="margin:0;background:#000">
+  <div id="splash" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#000;font-family:system-ui,sans-serif;color:#9CA3AF">
+    <img src="icons/splash_logo.webp" alt="SmashCrop PDF &amp; Image" style="width:min(86vw,58vh,460px);height:auto;aspect-ratio:1">
+    <div style="width:168px;height:4px;margin-top:10px;border-radius:4px;background:#1E2029;overflow:hidden">
+      <div id="splash-bar" style="width:4%;height:100%;border-radius:4px;background:#E5172F;box-shadow:0 0 10px rgba(229,23,47,.7);transition:width .25s ease-out"></div>
+    </div>
+  </div>
+  <script>
+    // barra di caricamento: avanza da sola rallentando (non si può sapere
+    // quanto manca davvero) e si riempie quando l'app è pronta
+    (function () {
+      var bar = document.getElementById('splash-bar'), start = Date.now(), done = false;
+      function step() {
+        if (done || !bar) return;
+        var t = (Date.now() - start) / 1000;
+        bar.style.width = (4 + 86 * (1 - Math.exp(-t / 2.2))) + '%';
+        setTimeout(step, 120);
+      }
+      step();
+      window.addEventListener('flutter-first-frame', function () {
+        done = true;
+        var s = document.getElementById('splash');
+        if (!s) return;
+        bar.style.width = '100%';
+        setTimeout(function () {
+          s.style.transition = 'opacity .2s';
+          s.style.opacity = '0';
+          setTimeout(function () { s.remove(); }, 220);
+        }, 220);
+      });
+    })();
+  </script>
+  <!--
+    You can customize the "flutter_bootstrap.js" script.
+    This is useful to provide a custom configuration to the Flutter loader
+    or to give the user feedback during the initialization process.
+
+    For more details:
+    * https://docs.flutter.dev/platform-integration/web/initialization
+  -->
+  <script src="flutter_bootstrap.js" async></script>
+<script>
+  (function () {
+    var langs = ['it', 'en', 'fr', 'es', 'pt', 'de'], pick = 'en';
+    try {
+      var saved = localStorage.getItem('flutter.language');
+      var c = saved ? JSON.parse(saved) : String(navigator.language || 'en').slice(0, 2).toLowerCase();
+      if (langs.indexOf(c) >= 0) pick = c;
+    } catch (e) {}
+    document.documentElement.lang = pick;
+  })();
+</script>
+</body>
+</html>
