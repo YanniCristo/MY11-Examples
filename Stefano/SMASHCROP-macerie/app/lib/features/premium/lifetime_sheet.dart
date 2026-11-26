@@ -100,6 +100,8 @@ class _LifetimeSheetState extends State<_LifetimeSheet> {
                 child: SkinPlayer(
                   skin: skinById('tycoon'),
                   placeholder: 'assets/rubble/tycoon/premium.webp',
+                  // a riposo solo pose con l'elmo dritto (non 14 e 15)
+                  restFrames: (12, 13),
                 ),
               ),
             ),

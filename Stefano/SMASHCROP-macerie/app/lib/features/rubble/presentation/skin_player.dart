@@ -18,6 +18,7 @@ class SkinPlayer extends StatefulWidget {
     this.playId = 0,
     this.locked = false,
     this.placeholder,
+    this.restFrames = const (14, 15),
   });
 
   final SkinDef skin;
@@ -30,6 +31,9 @@ class SkinPlayer extends StatefulWidget {
 
   /// Immagine da mostrare mentre l'animazione carica, al posto della posa.
   final String? placeholder;
+
+  /// I due fotogrammi che si alternano a riposo, dopo l'animazione.
+  final (int, int) restFrames;
 
   @override
   State<SkinPlayer> createState() => _SkinPlayerState();
@@ -95,7 +99,8 @@ class _SkinPlayerState extends State<SkinPlayer>
       if (t < acc) return i;
     }
     // riposo: 15 e 16 alternate lentamente
-    return ((t / 600).floor() % 2 == 0) ? 14 : 15;
+    final (a, b) = widget.restFrames;
+    return ((t / 600).floor() % 2 == 0) ? a : b;
   }
 
   @override
