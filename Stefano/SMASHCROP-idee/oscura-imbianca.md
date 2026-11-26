@@ -27,6 +27,10 @@ del testo dei documenti.
   - **un angolo sposta** il rettangolo; lo sposta anche trascinare il suo interno;
   - **un angolo ruota** il rettangolo a 360°.
   - Ogni angolo ha la sua icona (↘ ridimensiona, ✥ sposta, ⟳ ruota) per capire cosa fa.
+- **Cosa si colora:** solo l'interno del rettangolo, cioè quello che si vede bianco o nero.
+  Il **contorno** del rettangolo e le maniglie degli angoli servono solo a vederlo e a
+  manovrarlo: **sotto di loro non si colora** (al contrario del taglio, dove le linee rosse
+  sono comprese).
 - **Aiuto per rimetterlo dritto:** mentre si ruota compaiono una **linea tratteggiata
   orizzontale e una verticale** che passano per il centro del rettangolo, come riferimento
   per riportarlo in bolla. Solo un aiuto visivo, **niente calamita** (il rettangolo non scatta
