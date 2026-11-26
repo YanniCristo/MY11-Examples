@@ -134,6 +134,33 @@ void main() {
     }
   });
 
+  test('al rilascio la linea ignora lo scatto del dito', () {
+    ({int ms, double screen, double value}) s(int ms, double px) =>
+        (ms: ms, screen: px, value: px * 2);
+    // dito fermo a 100, poi nel rilascio scivola a 108: torna a 100
+    expect(
+      EditorController.settledValue([s(0, 60), s(300, 100), s(950, 108)], 1000),
+      200,
+    );
+    // trascinamento veloce fino al rilascio: resta dove è arrivato
+    expect(
+      EditorController.settledValue([
+        for (var i = 0; i <= 10; i++) s(900 + i * 10, 50.0 + i * 8),
+      ], 1000),
+      isNull,
+    );
+    // movimento finale grande: è voluto
+    expect(
+      EditorController.settledValue([s(300, 100), s(960, 160)], 1000),
+      isNull,
+    );
+    // nessun movimento alla fine: niente da correggere
+    expect(
+      EditorController.settledValue([s(0, 60), s(300, 100)], 1000),
+      isNull,
+    );
+  });
+
   testWidgets('risultato identico con e senza SMASH', (tester) async {
     final a = await make(tester, smash: true);
     final b = await make(tester, smash: false);

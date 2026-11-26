@@ -562,7 +562,55 @@ class EditorController extends ChangeNotifier {
   void startLineDrag(LineHandle h) {
     if (isCutting || !selectionVisible) return;
     draggingHandle = h;
+    _dragTrail.clear();
+    _dragClock
+      ..reset()
+      ..start();
     notifyListeners();
+  }
+
+  // --- precisione al rilascio -----------------------------------------------
+  //
+  // Quando il dito si stacca l'area di contatto si restringe e il telefono
+  // legge il punto qualche pixel più in là: la linea "salta" proprio alla
+  // fine. Si tiene la scia degli ultimi movimenti e, se il dito era quasi
+  // fermo prima di staccarsi, al rilascio la linea torna dove era.
+  final _dragTrail = <({int ms, double screen, double value})>[];
+  final _dragClock = Stopwatch();
+
+  /// Gli ultimi millisecondi prima del rilascio che possono essere "scatto".
+  static const _liftWindowMs = 90;
+
+  /// Prima dello scatto il dito era fermo: si è mosso al massimo di tanto
+  /// (pixel dello schermo) nei 200 ms precedenti.
+  static const _stillPx = 6.0;
+
+  /// Lo scatto finale è piccolo: oltre questa distanza è un movimento voluto.
+  static const _maxLiftPx = 28.0;
+
+  /// Linea da ripristinare al rilascio, o `null` se va bene dov'è.
+  @visibleForTesting
+  static double? settledValue(
+    List<({int ms, double screen, double value})> trail,
+    int upMs,
+  ) {
+    if (trail.length < 2) return null;
+    final cut = upMs - _liftWindowMs;
+    // ultima posizione prima della finestra dello scatto
+    final before = trail.lastWhere(
+      (s) => s.ms <= cut,
+      orElse: () => trail.first,
+    );
+    if (before.ms > cut) return null;
+    final last = trail.last;
+    if (last.ms <= cut) return null; // nessun movimento alla fine
+    if ((last.screen - before.screen).abs() > _maxLiftPx) return null;
+    // il dito era fermo prima dello scatto?
+    final calm = trail.where((s) => s.ms > cut - 200 && s.ms <= cut);
+    for (final s in calm) {
+      if ((s.screen - before.screen).abs() > _stillPx) return null;
+    }
+    return before.value == last.value ? null : before.value;
   }
 
   void dragLineTo(Offset viewportPos) {
@@ -579,11 +627,31 @@ class EditorController extends ChangeNotifier {
       mode,
       h == LineHandle.a ? pair.withA(v) : pair.withB(v),
     );
+    _dragTrail.add((
+      ms: _dragClock.elapsedMilliseconds,
+      screen: mode == CutOrientation.horizontal
+          ? viewportPos.dy
+          : viewportPos.dx,
+      value: v,
+    ));
+    if (_dragTrail.length > 60) _dragTrail.removeAt(0);
     notifyListeners();
   }
 
   void endLineDrag() {
-    if (draggingHandle == null) return;
+    final h = draggingHandle;
+    if (h == null) return;
+    final mode = selection.mode;
+    final back = settledValue(_dragTrail, _dragClock.elapsedMilliseconds);
+    if (mode != null && back != null) {
+      final pair = selection.lines[mode]!;
+      selection = selection.withLines(
+        mode,
+        h == LineHandle.a ? pair.withA(back) : pair.withB(back),
+      );
+    }
+    _dragTrail.clear();
+    _dragClock.stop();
     draggingHandle = null;
     notifyListeners();
   }
