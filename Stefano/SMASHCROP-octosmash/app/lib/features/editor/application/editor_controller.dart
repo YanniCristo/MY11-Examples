@@ -681,8 +681,8 @@ class EditorController extends ChangeNotifier {
   int octoAnimStart = 0;
   bool get octoAnimating => octoAnimStart != 0;
 
-  /// L'animazione in corso spruzza inchiostro bianco (la fa OctoSmash Nero).
-  bool octoAnimWhiteInk = false;
+  /// Chi spruzza nell'animazione in corso.
+  OctoTool octoAnimTool = OctoTool.bianco;
 
   /// Centro del rettangolo da colpire (documento): OctoSmash si mette in
   /// modo che lo spruzzo arrivi lì.
@@ -726,12 +726,13 @@ class EditorController extends ChangeNotifier {
   /// Un solo rettangolo alla volta: se c'è già, cambia solo colore e resta
   /// dov'è; altrimenti ne nasce uno al centro di quello che si vede (o
   /// dove si è preso il colore con la pipetta).
-  void addOctoRect({required int color, Offset? at}) {
+  void addOctoRect({required int color, required OctoTool tool, Offset? at}) {
     if (!octoMode || !pageReady) return;
     if (octoRects.isNotEmpty) {
       octoRects
         ..removeRange(1, octoRects.length)
-        ..first.color = color;
+        ..first.color = color
+        ..first.tool = tool;
       octoSelected = 0;
       notifyListeners();
       return;
@@ -746,7 +747,9 @@ class EditorController extends ChangeNotifier {
     final visW = viewportSize.width / transform.scale;
     final w = math.max(OctoRect.minSide, math.min(d.width * .6, visW * .5));
     final h = math.max(OctoRect.minSide, w * .25);
-    octoRects.add(OctoRect(center: center, w: w, h: h, color: color));
+    octoRects.add(
+      OctoRect(center: center, w: w, h: h, color: color, tool: tool),
+    );
     octoSelected = octoRects.length - 1;
     notifyListeners();
   }
@@ -801,7 +804,7 @@ class EditorController extends ChangeNotifier {
       return;
     }
     octoSplashDuration = octoSplashMs;
-    octoAnimWhiteInk = octoSplash!.first.white;
+    octoAnimTool = octoSplash!.first.tool;
     octoAnimTarget = octoSplash!.first.center;
     octoAnimStart = now;
     octoSplashStart = now + octoSplashAtMs;
@@ -945,7 +948,7 @@ class EditorController extends ChangeNotifier {
       ..remove(color)
       ..insert(0, color);
     if (pickedColors.length > 8) pickedColors.removeLast();
-    addOctoRect(color: color, at: content);
+    addOctoRect(color: color, tool: OctoTool.pipetta, at: content);
   }
 
   /// Colore di un pixel dell'originale (compreso l'inchiostro già messo).

@@ -52,6 +52,7 @@ void main() {
       w: 40,
       h: 20,
       color: InkFill.whiteInk,
+      tool: OctoTool.bianco,
     );
     final fixed = r.corner(2);
     r.resizeFrom(0, const Offset(60, 70));
@@ -118,6 +119,7 @@ void main() {
       w: 40,
       h: 20,
       color: InkFill.black,
+      tool: OctoTool.bianco,
     );
     // punto che darebbe circa 89,6° rispetto all'angolo in alto a destra
     final base = math.atan2(-10, 20);

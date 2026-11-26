@@ -404,8 +404,10 @@ class OctoPainter extends CustomPainter {
 
   /// OctoSmash attraversa la pagina come SMASH: entra, spruzza, esce.
   void _paintRobot(Canvas canvas, Size size) {
-    // inchiostro bianco → OctoSmash Nero; nero e colori → OctoSmash Bianco
-    final imgs = OctoFrames.lines[c.octoAnimWhiteInk ? 'nero' : 'bianco'];
+    // chi spruzza lo decide il tasto usato (Pipetta e Multicolor: per ora
+    // fotogrammi del Bianco, finché non arrivano i loro)
+    final imgs =
+        OctoFrames.lines[c.octoAnimTool == OctoTool.nero ? 'nero' : 'bianco'];
     if (imgs == null) return;
     final ms = DateTime.now().millisecondsSinceEpoch - c.octoAnimStart;
     final i = (ms ~/ EditorController.octoFrameMs).clamp(0, imgs.length - 1);

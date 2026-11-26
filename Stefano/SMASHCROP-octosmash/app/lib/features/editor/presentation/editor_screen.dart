@@ -37,6 +37,7 @@ import '../../pdf_processing/services/pdf_loader.dart';
 import '../../pdf_processing/services/pdf_service.dart';
 import '../../settings/preferences.dart';
 import '../../octo/domain/ink_fill.dart';
+import '../../octo/domain/octo_rect.dart';
 import '../../octo/presentation/ink_counter_bar.dart';
 import '../../octo/presentation/octo_layer.dart';
 import '../../octo/presentation/octo_palette.dart';
@@ -310,7 +311,10 @@ class _EditorScreenState extends State<EditorScreen>
     HapticFeedback.selectionClick();
     c.cancelPicking();
     setState(() => _octoWhite = white);
-    c.addOctoRect(color: white ? InkFill.whiteInk : InkFill.black);
+    c.addOctoRect(
+      color: white ? InkFill.whiteInk : InkFill.black,
+      tool: white ? OctoTool.nero : OctoTool.bianco,
+    );
   }
 
   void _pick() {
@@ -336,7 +340,7 @@ class _EditorScreenState extends State<EditorScreen>
     );
     if (color != null) {
       HapticFeedback.selectionClick();
-      c.addOctoRect(color: color);
+      c.addOctoRect(color: color, tool: OctoTool.multicolor);
     }
   }
 
@@ -376,12 +380,12 @@ class _EditorScreenState extends State<EditorScreen>
         ? Color(c.livePickColor!)
         : null;
     final liveDark = live != null && live.computeLuminance() < .45;
-    // un solo rettangolo: c'è già → i tasti ne cambiano il colore (✓ su
-    // quello in uso); non c'è → "+" per crearlo
-    final cur = c.octoRects.isEmpty ? null : c.octoRects.first.color;
-    IconData mark(int color) => cur == null
+    // un solo rettangolo: c'è già → i tasti cambiano personaggio e colore
+    // (✓ su chi lo spruzzerà); non c'è → "+" per crearlo
+    final cur = c.octoRects.isEmpty ? null : c.octoRects.first.tool;
+    IconData mark(OctoTool tool) => cur == null
         ? Icons.add
-        : (cur == color ? Icons.check : Icons.format_color_fill);
+        : (cur == tool ? Icons.check : Icons.format_color_fill);
     return Row(
       children: [
         box(
@@ -389,7 +393,7 @@ class _EditorScreenState extends State<EditorScreen>
           fill: Colors.white,
           border: const Color(0xFFB8BEC8),
           onTap: () => _addOcto(true),
-          child: Icon(mark(InkFill.whiteInk), size: 26, color: Colors.black),
+          child: Icon(mark(OctoTool.nero), size: 26, color: Colors.black),
         ),
         const SizedBox(width: 6),
         box(
@@ -397,7 +401,7 @@ class _EditorScreenState extends State<EditorScreen>
           fill: Colors.black,
           border: const Color(0xFF8A919C),
           onTap: () => _addOcto(false),
-          child: Icon(mark(InkFill.black), size: 26, color: Colors.white),
+          child: Icon(mark(OctoTool.bianco), size: 26, color: Colors.white),
         ),
         const SizedBox(width: 6),
         Expanded(

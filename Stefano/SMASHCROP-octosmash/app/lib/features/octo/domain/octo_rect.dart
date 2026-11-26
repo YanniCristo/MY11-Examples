@@ -3,6 +3,22 @@ import 'dart:ui' show Offset;
 
 import 'ink_fill.dart';
 
+/// Chi spruzza il rettangolo: lo decide l'ultimo tasto premuto, non il
+/// colore (dalla tavolozza si può scegliere anche il bianco).
+enum OctoTool {
+  /// ⬜ → OctoSmash Nero, inchiostro bianco.
+  nero,
+
+  /// ⬛ → OctoSmash Bianco, inchiostro nero.
+  bianco,
+
+  /// 💧 → OctoSmash Pipetta, col colore preso.
+  pipetta,
+
+  /// 🎨 → OctoSmash Multicolor, col colore scelto.
+  multicolor,
+}
+
 /// Un rettangolo di OctoSmash ancora in lavorazione (prima di "Fatto"), in
 /// pixel del documento **attuale**. Si sposta, si ridimensiona e si ruota.
 class OctoRect {
@@ -12,6 +28,7 @@ class OctoRect {
     required this.h,
     this.angle = 0,
     required this.color,
+    required this.tool,
   });
 
   Offset center;
@@ -23,6 +40,9 @@ class OctoRect {
   /// Colore dell'inchiostro (ARGB opaco): bianco, nero o un colore preso
   /// con la pipetta o dalla tavolozza.
   int color;
+
+  /// Personaggio che lo spruzzerà.
+  OctoTool tool;
 
   bool get white => color == InkFill.whiteInk;
 

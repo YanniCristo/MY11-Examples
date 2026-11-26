@@ -124,7 +124,12 @@ del testo dei documenti.
 - **Undo dopo "Fatto":** si annulla tornando a SMASH e usando Undo, oppure tocco lungo sul
   cestino in OctoSmash per annullare l'ultimo colpo d'inchiostro.
 - **Un solo rettangolo alla volta** (cambiato il 26 nov 2026): se il rettangolo c'è già,
-  ⬜ ⬛ 💧 🎨 ne cambiano solo il colore; per il successivo si preme "Fatto" e se ne crea un altro.
+  ⬜ ⬛ 💧 🎨 ne cambiano personaggio e colore e tengono posizione e forma; per il successivo
+  si preme "Fatto" e se ne crea un altro.
+- **Chi spruzza lo decide l'ultimo tasto premuto, non il colore** (deciso il 26 nov 2026):
+  ⬜ → OctoSmash Nero (inchiostro bianco), ⬛ → OctoSmash Bianco (inchiostro nero),
+  💧 → OctoSmash Pipetta, 🎨 → OctoSmash Multicolor (anche se dalla tavolozza si sceglie il
+  bianco o il nero). Il ✓ sul tasto indica il personaggio in uso.
 - **Acquisto a vita:** OctoSmash resta gratis; una skin speciale (es. OctoSmash Oro) solo
   con "a vita".
 
