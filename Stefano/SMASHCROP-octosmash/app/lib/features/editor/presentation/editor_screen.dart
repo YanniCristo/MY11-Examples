@@ -286,10 +286,12 @@ class _EditorScreenState extends State<EditorScreen>
   // --- OctoSmash ---------------------------------------------------------------
 
   /// Ultimo colore usato (per la testa e il contatore dell'inchiostro).
-  bool _octoWhite = false;
+  /// Personaggio in uso: quello del rettangolo in lavorazione, altrimenti
+  /// l'ultimo che ha spruzzato.
+  OctoTool get _octoTool =>
+      c.octoRects.isNotEmpty ? c.octoRects.first.tool : c.octoAnimTool;
 
-  String _octoHead({bool sleep = false}) =>
-      'assets/octo/testa${sleep ? '_dorme' : ''}_${_octoWhite ? 'nero' : 'bianco'}.webp';
+  String _octoHead({bool sleep = false}) => octoHead(_octoTool, sleep: sleep);
 
   bool _octoSleepToast = false;
 
@@ -310,7 +312,6 @@ class _EditorScreenState extends State<EditorScreen>
   void _addOcto(bool white) {
     HapticFeedback.selectionClick();
     c.cancelPicking();
-    setState(() => _octoWhite = white);
     c.addOctoRect(
       color: white ? InkFill.whiteInk : InkFill.black,
       tool: white ? OctoTool.nero : OctoTool.bianco,
@@ -1065,7 +1066,7 @@ class _EditorScreenState extends State<EditorScreen>
                       opacity: c.octoEnabled ? 1 : .55,
                       child: InkCounterBar(
                         store: _rubble,
-                        white: _octoWhite,
+                        head: _octoHead(sleep: !c.octoEnabled),
                         awake: c.octoEnabled,
                       ),
                     )

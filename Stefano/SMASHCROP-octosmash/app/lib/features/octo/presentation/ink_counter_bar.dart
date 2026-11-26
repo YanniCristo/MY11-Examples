@@ -12,7 +12,7 @@ class InkCounterBar extends StatelessWidget {
   const InkCounterBar({
     super.key,
     required this.store,
-    required this.white,
+    required this.head,
     this.awake = true,
   });
 
@@ -21,8 +21,8 @@ class InkCounterBar extends StatelessWidget {
 
   final RubbleStore store;
 
-  /// `true` se si sta usando l'inchiostro bianco (OctoSmash Nero).
-  final bool white;
+  /// Testa del personaggio in uso.
+  final String head;
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +32,7 @@ class InkCounterBar extends StatelessWidget {
         // un solo contatore: tutti gli inchiostri insieme
         final l = (store.inkWhiteMl + store.inkBlackMl) / 1000;
         final next = InkMath.nextGoal(l);
-        final head =
-            'assets/octo/testa${awake ? '' : '_dorme'}_${white ? 'nero' : 'bianco'}.webp';
+
         return Container(
           height: 40,
           padding: const EdgeInsets.symmetric(horizontal: 10),

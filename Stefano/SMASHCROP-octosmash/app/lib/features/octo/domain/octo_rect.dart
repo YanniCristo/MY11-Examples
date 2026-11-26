@@ -19,6 +19,10 @@ enum OctoTool {
   multicolor,
 }
 
+/// Testa del personaggio (sveglio o che dorme), per contatore e interruttore.
+String octoHead(OctoTool tool, {bool sleep = false}) =>
+    'assets/octo/teste/${tool.name}_testa${sleep ? '_dorme' : ''}.webp';
+
 /// Un rettangolo di OctoSmash ancora in lavorazione (prima di "Fatto"), in
 /// pixel del documento **attuale**. Si sposta, si ridimensiona e si ruota.
 class OctoRect {
