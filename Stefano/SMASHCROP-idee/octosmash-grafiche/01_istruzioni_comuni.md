@@ -30,4 +30,4 @@
 >    senza deformazioni** in queste due immagini (si vedono a lungo).
 > 10. Stile per tutte le età: niente sangue, ferite, armi realistiche, niente marchi, niente testi
 >     oltre alle scritte da fumetto indicate (lettere grandi).
-> 11. Nomina i file `octo_<nome>_01.png` … `octo_<nome>_18.png` nell'ordine.
+> 11. Nomina i file `octosmash_<nome>_01.png` … `octosmash_<nome>_18.png` nell'ordine.

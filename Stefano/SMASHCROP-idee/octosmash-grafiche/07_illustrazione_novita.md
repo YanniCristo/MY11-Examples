@@ -11,4 +11,4 @@ Compare una volta sola quando esce l'aggiornamento, per far scoprire OctoSmash.
 > Gocce d'inchiostro nero e bianco che volano. Il foglio ha solo righe grigie astratte, nessun
 > testo leggibile. Nessuna scritta nell'immagine.
 
-File: `octo_novita.png`
+File: `octosmash_novita.png`

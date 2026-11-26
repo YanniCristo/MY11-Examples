@@ -41,11 +41,13 @@ del testo dei documenti.
 
 ## I personaggi
 
-- **OctoSmash bianco**, polpo con 8 tentacoli, tutto bianco → spruzza **inchiostro nero**
+**Il nome base è OctoSmash** (sempre "OctoSmash + nome" per le varianti).
+
+- **OctoSmash Bianco**, robot con 8 tentacoli, tutto bianco → spruzza **inchiostro nero**
   → tasto ⬛ Nero / *Oscura*.
-- **OctoSmash nero**, polpo nero → spruzza **inchiostro bianco** → tasto ⬜ Bianco / *Imbianca*.
+- **OctoSmash Nero**, tutto nero → spruzza **inchiostro bianco** → tasto ⬜ Bianco / *Imbianca*.
 - Stessa testa e stessi occhi di SMASH, con i tentacoli al posto di braccia e gambe, così si
-  riconoscono come parte della famiglia. Il polpo nero sullo sfondo scuro dell'app va
+  riconoscono come parte della famiglia. L'OctoSmash Nero sullo sfondo scuro dell'app va
   contornato (bordo chiaro o bagliore) per vedersi.
 
 ## Entrare e uscire dalla modalità OctoSmash
@@ -53,8 +55,8 @@ del testo dei documenti.
 - **Entrare:** tocco lungo su "Rimuovi porzione".
 - **Uscire:**
   - **tocco lungo su "✓ Fatto"**;
-  - oppure dall'**interruttore SMASH on/off**: in modalità OctoSmash mostra la testa del
-    polpo e, se lo si spegne, il polpo **non si addormenta**: si esce e si torna a SMASH;
+  - oppure dall'**interruttore SMASH on/off**: in modalità OctoSmash mostra la testa di
+    OctoSmash e, se lo si spegne, OctoSmash **non si addormenta**: si esce e si torna a SMASH;
   - oppure dalla **riga delle pagine**: in modalità OctoSmash uno dei tasti grandi
     ("Pag. 1 di 1", "Aggiungi" o "Layout" nei PDF) diventa **"← Torna a SMASH"**.
     Le frecce ‹ › restano per cambiare pagina.

@@ -30,5 +30,5 @@ condividere.
 
 ## Nomi dei file
 
-`octo_<nome>_testa.png`, `octo_<nome>_testa_dorme.png`, `octo_<nome>_posa.png`
-(es. `octo_perla_testa.png`).
+`octosmash_<nome>_testa.png`, `octosmash_<nome>_testa_dorme.png`, `octosmash_<nome>_posa.png`
+(es. `octosmash_perla_testa.png`).

@@ -1,5 +1,8 @@
 # I 12 OctoSmash
 
+**Il nome base è OctoSmash.** Ogni personaggio si chiama sempre *OctoSmash + nome*
+(es. OctoSmash Perla, OctoSmash Kraken): mai solo "Perla" o "Kraken", mai "polpo".
+
 Due linee da 6. Per ognuna: **1 di partenza**, **4 che si sbloccano** riempiendo i contenitori
 d'inchiostro, **1 che si ottiene solo con l'acquisto "SmashCrop a vita"**.
 Le evoluzioni non cambiano funzione: sono **più belle, più potenti, più bizzarre**. Bianchi e
