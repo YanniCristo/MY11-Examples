@@ -69,6 +69,11 @@ del testo dei documenti.
   e il **cestino si illumina**: un tocco e il rettangolo sparisce.
 - Con più rettangoli: si tocca quello da togliere per selezionarlo, poi il cestino.
 - Senza nessun rettangolo selezionato il cestino resta spento.
+- **Priorità sulla pagina:** il cestino oggi cancella anche le pagine (con più pagine è già
+  acceso). Finché c'è almeno un rettangolo in lavorazione, **il rettangolo domina**: il
+  cestino cancella solo il rettangolo selezionato, mai la pagina. Quando non ci sono più
+  rettangoli in lavorazione (tutti tolti o confermati con "Fatto"), il cestino torna a
+  cancellare la pagina come sempre.
 
 ## Garanzie
 
