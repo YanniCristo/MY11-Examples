@@ -21,7 +21,17 @@ del testo dei documenti.
   - i due tasti sono un quadrato del loro colore con un **"+" del colore opposto** al centro
     (⬜ con + nero, ⬛ con + bianco): si capisce subito che da lì si **aggiungono** rettangoli.
 - Toccando ⬜ o ⬛ un **rettangolo** di quel colore compare **al centro** dell'immagine.
-  L'utente lo **sposta** dove serve (e, da decidere, lo ridimensiona dagli angoli).
+- **I quattro angoli del rettangolo** (deciso il 26 nov 2026):
+  - **due angoli opposti ridimensionano** (si tira l'angolo e il rettangolo si allarga o si
+    stringe);
+  - **un angolo sposta** il rettangolo; lo sposta anche trascinare il suo interno;
+  - **un angolo ruota** il rettangolo a 360°.
+  - Ogni angolo ha la sua icona (↘ ridimensiona, ✥ sposta, ⟳ ruota) per capire cosa fa.
+- **Aiuto per rimetterlo dritto:** mentre si ruota compaiono una **linea tratteggiata
+  orizzontale e una verticale** che passano per il centro del rettangolo, come riferimento
+  per riportarlo in bolla. Solo un aiuto visivo, **niente calamita** (il rettangolo non scatta
+  da solo: Stefano odia le app con la calamita); al massimo una vibrazione leggera quando è
+  esattamente dritto.
 - **✓ Fatto** → l'OctoSmash giusto spruzza l'inchiostro e la zona diventa bianca o nera
   definitivamente. Si può annullare con Undo come un taglio.
 
@@ -42,7 +52,6 @@ del testo dei documenti.
 
 ## Da decidere
 
-- Il rettangolo si ridimensiona (maniglie agli angoli) o ha misura fissa?
 - Più rettangoli prima di "Fatto": il "+" lo suggerisce (ogni tocco ne aggiunge uno), da confermare.
 - Contatore dei litri separato da quello dei kg, o due barre nella stessa schermata?
 - Quando uscire: non all'uscita dell'app, ma come primo aggiornamento lanciato come novità
