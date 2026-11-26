@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:smashcrop/features/editor/domain/edit_history.dart';

@@ -664,6 +664,17 @@ class EditorController extends ChangeNotifier {
   List<OctoRect>? octoSplash;
   int octoSplashStart = 0;
 
+  /// Inizio dell'animazione di OctoSmash dopo "Fatto" (0 = ferma).
+  int octoAnimStart = 0;
+  bool get octoAnimating => octoAnimStart != 0;
+
+  /// Tempi dell'animazione (10 fotogrammi al secondo come SMASH): lo spruzzo
+  /// parte col fotogramma 6 (SPLASH!) e l'inchiostro si posa subito dopo.
+  static const octoFrameMs = 100;
+  static const octoSplashAtMs = 500;
+  static const octoSplashMs = 550;
+  static const octoAnimMs = 18 * octoFrameMs + 200;
+
   /// Chiamata a ogni "Fatto" con i litri spruzzati di ogni colore.
   void Function(double blackLitres, double whiteLitres)? onInk;
 
@@ -742,13 +753,25 @@ class EditorController extends ChangeNotifier {
 
   /// "Fatto": breve spruzzo, poi l'inchiostro entra nel documento.
   void commitOcto() {
-    if (!octoMode || octoRects.isEmpty || octoSplash != null) return;
+    if (!octoMode || octoRects.isEmpty || octoSplash != null || octoAnimating) {
+      return;
+    }
+    final now = DateTime.now().millisecondsSinceEpoch;
     octoSplash = List.of(octoRects);
-    octoSplashStart = DateTime.now().millisecondsSinceEpoch;
+    octoAnimStart = now;
+    octoSplashStart = now + octoSplashAtMs;
     octoSelected = null;
     octoRects.clear();
     notifyListeners();
-    Timer(const Duration(milliseconds: 550), _applySplash);
+    Timer(
+      const Duration(milliseconds: octoSplashAtMs + octoSplashMs),
+      _applySplash,
+    );
+    Timer(const Duration(milliseconds: octoAnimMs), () {
+      if (_disposed) return;
+      octoAnimStart = 0;
+      notifyListeners();
+    });
   }
 
   void _applySplash() {

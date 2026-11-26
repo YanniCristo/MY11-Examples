@@ -51,9 +51,9 @@ class _EditorViewportState extends State<EditorViewport> {
 
   // durante lo spruzzo di OctoSmash si ridisegna a ogni fotogramma
   void _watchSplash() {
-    if (c.octoSplash != null && _splashTimer == null) {
+    if ((c.octoSplash != null || c.octoAnimating) && _splashTimer == null) {
       _splashTimer = Timer.periodic(const Duration(milliseconds: 16), (_) {
-        if (!mounted || c.octoSplash == null) {
+        if (!mounted || (c.octoSplash == null && !c.octoAnimating)) {
           _splashTimer?.cancel();
           _splashTimer = null;
         }
@@ -77,57 +77,62 @@ class _EditorViewportState extends State<EditorViewport> {
           builder: (context, box) {
             c.setViewportSize(box.biggest);
             c.devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
-            return GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapUp: c.octoMode ? (d) => _octo.tap(d.localPosition) : null,
-              onScaleStart: (d) {
-                // OctoSmash: un dito su un rettangolo lo muove, non la pagina
-                if (d.pointerCount == 1 && _octo.start(d.localFocalPoint)) {
-                  return;
-                }
-                c.gestureStart(d.localFocalPoint);
-              },
-              onScaleUpdate: (d) {
-                if (_octo.active) {
-                  if (d.pointerCount > 1) {
-                    _octo.end();
-                    c.gestureStart(d.localFocalPoint);
-                  } else {
-                    _octo.update(d.localFocalPoint);
+            // il gesto parte solo dopo qualche pixel di movimento: per capire
+            // cosa si è toccato conta il punto dove il dito si è appoggiato
+            return Listener(
+              onPointerDown: (e) => _octo.down(e.localPosition),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTapUp: c.octoMode ? (d) => _octo.tap(d.localPosition) : null,
+                onScaleStart: (d) {
+                  // OctoSmash: un dito su un rettangolo lo muove, non la pagina
+                  if (d.pointerCount == 1 && _octo.start()) {
                     return;
                   }
-                }
-                c.gestureUpdate(d.localFocalPoint, d.scale);
-              },
-              onScaleEnd: (_) => _octo.end(),
-              child: Stack(
-                key: _key,
-                children: [
-                  Positioned.fill(
-                    child: RepaintBoundary(
-                      child: CustomPaint(
-                        painter: EditorPainter(c, widget.frames),
-                      ),
-                    ),
-                  ),
-                  if (c.octoMode || c.octoSplash != null)
+                  c.gestureStart(d.localFocalPoint);
+                },
+                onScaleUpdate: (d) {
+                  if (_octo.active) {
+                    if (d.pointerCount > 1) {
+                      _octo.end();
+                      c.gestureStart(d.localFocalPoint);
+                    } else {
+                      _octo.update(d.localFocalPoint);
+                      return;
+                    }
+                  }
+                  c.gestureUpdate(d.localFocalPoint, d.scale);
+                },
+                onScaleEnd: (_) => _octo.end(),
+                child: Stack(
+                  key: _key,
+                  children: [
                     Positioned.fill(
-                      child: IgnorePointer(
-                        child: CustomPaint(painter: OctoPainter(c)),
-                      ),
-                    ),
-                  ..._selection(box.biggest),
-                  if (!c.pageReady)
-                    const Center(
-                      child: SizedBox.square(
-                        dimension: 28,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.6,
-                          color: AppColors.red,
+                      child: RepaintBoundary(
+                        child: CustomPaint(
+                          painter: EditorPainter(c, widget.frames),
                         ),
                       ),
                     ),
-                ],
+                    if (c.octoMode || c.octoSplash != null || c.octoAnimating)
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: CustomPaint(painter: OctoPainter(c)),
+                        ),
+                      ),
+                    ..._selection(box.biggest),
+                    if (!c.pageReady)
+                      const Center(
+                        child: SizedBox.square(
+                          dimension: 28,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.6,
+                            color: AppColors.red,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             );
           },

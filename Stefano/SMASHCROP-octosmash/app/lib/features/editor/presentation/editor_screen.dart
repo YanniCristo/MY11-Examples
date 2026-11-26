@@ -345,7 +345,8 @@ class _EditorScreenState extends State<EditorScreen>
               style: AppButtonStyle.primary,
               height: 48,
               fontSize: 16,
-              onPressed: c.octoRects.isEmpty || c.octoSplash != null
+              onPressed:
+                  c.octoRects.isEmpty || c.octoSplash != null || c.octoAnimating
                   ? null
                   : () {
                       HapticFeedback.mediumImpact();

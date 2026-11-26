@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
@@ -22,9 +23,26 @@ class OctoGestures {
   OctoGestures(this.c);
   final EditorController c;
 
-  static const double gripRadius = 26;
+  /// Raggio in cui si prende una maniglia (sullo schermo).
+  static const double gripRadius = 34;
+
+  /// Distanza delle maniglie dall'angolo, in fuori lungo la diagonale: così
+  /// non coprono la parte che verrà colorata.
+  static const double gripOut = 22;
+
+  /// Centro della maniglia dell'angolo [k] del rettangolo [r], sullo schermo.
+  static Offset gripAt(EditorController c, OctoRect r, int k) {
+    final o = c.contentToScreen(r.center);
+    final p = c.contentToScreen(r.corner(k));
+    final d = p - o;
+    final len = d.distance;
+    return len < 1e-6 ? p : p + d / len * gripOut;
+  }
 
   int? _rect;
+  Offset? _down;
+  // differenza fra angolo vero e punto del dito, per ridimensionare
+  Offset _grab = Offset.zero;
   OctoGrip? _grip;
   int _corner = 0;
   Offset _last = Offset.zero;
@@ -34,21 +52,30 @@ class OctoGestures {
 
   /// Prova a prendere un rettangolo nel punto [screen]. `true` se l'ha preso
   /// (allora il gesto non sposta né ingrandisce la pagina).
-  bool start(Offset screen) {
-    if (!c.octoMode || c.octoSplash != null) return false;
-    // prima gli angoli del rettangolo selezionato, poi quelli degli altri
-    final order = [
-      if (c.octoSelected != null) c.octoSelected!,
-      for (var i = c.octoRects.length - 1; i >= 0; i--)
-        if (i != c.octoSelected) i,
-    ];
-    for (final i in order) {
-      final r = c.octoRects[i];
+  void down(Offset screen) => _down = screen;
+
+  bool start() {
+    final screen = _down;
+    if (screen == null ||
+        !c.octoMode ||
+        c.octoSplash != null ||
+        c.octoAnimating) {
+      return false;
+    }
+    // le maniglie (solo del rettangolo selezionato): vince la più vicina
+    final s = c.octoSelected;
+    if (s != null && s < c.octoRects.length) {
+      final r = c.octoRects[s];
+      var best = -1;
+      var bestD = gripRadius;
       for (var k = 0; k < 4; k++) {
-        if ((c.contentToScreen(r.corner(k)) - screen).distance <= gripRadius) {
-          return _take(i, gripOf(k), k, screen);
+        final d = (gripAt(c, r, k) - screen).distance;
+        if (d <= bestD) {
+          bestD = d;
+          best = k;
         }
       }
+      if (best >= 0) return _take(s, gripOf(best), best, screen);
     }
     final p = c.screenToContent(screen);
     for (var i = c.octoRects.length - 1; i >= 0; i--) {
@@ -64,6 +91,7 @@ class OctoGestures {
     _grip = g;
     _corner = corner;
     _last = c.screenToContent(screen);
+    _grab = corner >= 0 ? c.octoRects[i].corner(corner) - _last : Offset.zero;
     _lastDeg = 999;
     if (c.octoSelected != i) c.selectOcto(i);
     return true;
@@ -78,7 +106,7 @@ class OctoGestures {
       case OctoGrip.move:
         r.move(p - _last);
       case OctoGrip.resize:
-        r.resizeFrom(_corner, p);
+        r.resizeFrom(_corner, p + _grab);
       case OctoGrip.rotate:
         r.rotateTo(p);
         // una vibrazione leggera quando è esattamente dritto (niente calamita)
@@ -114,8 +142,38 @@ class OctoGestures {
 /// Disegna i rettangoli di OctoSmash (pieni del loro colore: il contorno e le
 /// maniglie non coprono niente), le guide tratteggiate mentre si ruota e lo
 /// spruzzo d'inchiostro dopo "Fatto".
+/// I 18 fotogrammi di OctoSmash (per ora solo la linea Bianca), con i piedi
+/// già allineati a y = 335 sulla tela 730×470.
+abstract final class OctoFrames {
+  static const int count = 18;
+  static const double feetY = 335, bodyH = 210;
+  static List<ui.Image>? images;
+  static bool _loading = false;
+
+  static void load() {
+    if (images != null || _loading) return;
+    _loading = true;
+    () async {
+      final list = <ui.Image>[];
+      for (var i = 1; i <= count; i++) {
+        final data = await rootBundle.load(
+          'assets/octo/bianco/octo_${i.toString().padLeft(2, '0')}.webp',
+        );
+        final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+        list.add((await codec.getNextFrame()).image);
+        codec.dispose();
+      }
+      images = list;
+    }().catchError((_) {
+      _loading = false;
+    });
+  }
+}
+
 class OctoPainter extends CustomPainter {
-  OctoPainter(this.c) : super(repaint: c);
+  OctoPainter(this.c) : super(repaint: c) {
+    OctoFrames.load();
+  }
   final EditorController c;
 
   static const _cyan = Color(0xFF22E4F2);
@@ -129,14 +187,13 @@ class OctoPainter extends CustomPainter {
     canvas.clipRect(Offset.zero & size);
     final splash = c.octoSplash;
     if (splash != null) _paintSplash(canvas, splash);
+    if (c.octoAnimating) _paintRobot(canvas, size);
     for (var i = 0; i < c.octoRects.length; i++) {
       final r = c.octoRects[i];
       final pts = _screen(r);
       final path = Path()..addPolygon(pts, true);
-      canvas.drawPath(
-        path,
-        Paint()..color = r.white ? Colors.white : Colors.black,
-      );
+      // velato: si vede bene cosa c'è sotto finché non si preme "Fatto"
+      canvas.drawPath(path, Paint()..color = _veil(r.white));
       final sel = i == c.octoSelected;
       // contorno solo per vederlo: sta fuori dal rettangolo, non colora
       canvas.drawPath(
@@ -151,7 +208,15 @@ class OctoPainter extends CustomPainter {
       if (sel) {
         if (c.octoRotating) _guides(canvas, size, c.contentToScreen(r.center));
         for (var k = 0; k < 4; k++) {
-          _grip(canvas, pts[k], gripOf(k));
+          final g = OctoGestures.gripAt(c, r, k);
+          canvas.drawLine(
+            pts[k],
+            g,
+            Paint()
+              ..color = _cyan
+              ..strokeWidth = 2,
+          );
+          _grip(canvas, g, gripOf(k));
         }
       }
     }
@@ -171,10 +236,10 @@ class OctoPainter extends CustomPainter {
   }
 
   void _grip(Canvas canvas, Offset at, OctoGrip g) {
-    canvas.drawCircle(at, 15, Paint()..color = _cyan);
+    canvas.drawCircle(at, 16, Paint()..color = _cyan);
     canvas.drawCircle(
       at,
-      15,
+      16,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2
@@ -204,11 +269,14 @@ class OctoPainter extends CustomPainter {
   /// riempiono in poco più di mezzo secondo.
   void _paintSplash(Canvas canvas, List<OctoRect> rs) {
     final t =
-        ((DateTime.now().millisecondsSinceEpoch - c.octoSplashStart) / 550)
+        ((DateTime.now().millisecondsSinceEpoch - c.octoSplashStart) /
+                EditorController.octoSplashMs)
             .clamp(0.0, 1.0);
     for (final r in rs) {
       final pts = _screen(r);
       final path = Path()..addPolygon(pts, true);
+      // in attesa dello spruzzo resta velato com'era
+      canvas.drawPath(path, Paint()..color = _veil(r.white));
       final b = path.getBounds();
       final paint = Paint()..color = r.white ? Colors.white : Colors.black;
       canvas.save();
@@ -226,6 +294,27 @@ class OctoPainter extends CustomPainter {
       }
       canvas.restore();
     }
+  }
+
+  static Color _veil(bool white) =>
+      (white ? Colors.white : Colors.black).withValues(alpha: .5);
+
+  /// OctoSmash attraversa la pagina come SMASH: entra, spruzza, esce.
+  void _paintRobot(Canvas canvas, Size size) {
+    final imgs = OctoFrames.images;
+    if (imgs == null) return;
+    final ms = DateTime.now().millisecondsSinceEpoch - c.octoAnimStart;
+    final i = (ms ~/ EditorController.octoFrameMs).clamp(0, imgs.length - 1);
+    final s = size.width * .32 / OctoFrames.bodyH;
+    final w = 730 * s, h = 470 * s;
+    final left = (size.width - w) / 2;
+    final top = size.height * .62 - OctoFrames.feetY * s;
+    canvas.drawImageRect(
+      imgs[i],
+      const Rect.fromLTWH(0, 0, 730, 470),
+      Rect.fromLTWH(left, top, w, h),
+      Paint()..filterQuality = FilterQuality.medium,
+    );
   }
 
   @override
