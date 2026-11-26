@@ -44,15 +44,25 @@ del testo dei documenti.
   riconoscono come parte della famiglia. Il polpo nero sullo sfondo scuro dell'app va
   contornato (bordo chiaro o bagliore) per vedersi.
 
+## Entrare e uscire dalla modalità OctoSmash
+
+- **Entrare:** tocco lungo su "Rimuovi porzione".
+- **Uscire:**
+  - **tocco lungo su "✓ Fatto"**;
+  - oppure dall'**interruttore SMASH on/off**: in modalità OctoSmash mostra la testa del
+    polpo e, se lo si spegne, il polpo **non si addormenta**: si esce e si torna a SMASH.
+
 ## Contatore e Collezione
 
-- Con OctoSmash il contatore non conta i kg di macerie ma i **litri di inchiostro** usati.
+- Contatore dell'inchiostro **separato** da quello delle macerie (deciso il 26 nov 2026).
+- Quando arriva OctoSmash **cambia tutto in alto**: la barra passa ai **litri di inchiostro**
+  e l'interruttore on/off mostra l'OctoSmash al posto di SMASH. Uscendo dalla modalità
+  tornano i kg di macerie e SMASH.
 - Stessa dinamica delle macerie: obiettivi da riempire e **evoluzioni** con le loro skin,
   in due linee separate, **OctoSmash bianco** e **OctoSmash nero**.
 
 ## Da decidere
 
 - Più rettangoli prima di "Fatto": il "+" lo suggerisce (ogni tocco ne aggiunge uno), da confermare.
-- Contatore dei litri separato da quello dei kg, o due barre nella stessa schermata?
 - Quando uscire: non all'uscita dell'app, ma come primo aggiornamento lanciato come novità
   (notifica, post e annuncio dedicato alla privacy), per non togliere forza al taglio.
