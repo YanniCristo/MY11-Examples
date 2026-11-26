@@ -58,9 +58,14 @@ del testo dei documenti.
   - oppure dalla **riga delle pagine**: in modalità OctoSmash uno dei tasti grandi
     ("Pag. 1 di 1", "Aggiungi" o "Layout" nei PDF) diventa **"← Torna a SMASH"**.
     Le frecce ‹ › restano per cambiare pagina.
-- **Un altro tasto grande della riga delle pagine resta libero** in modalità OctoSmash:
-  da decidere a cosa serve (proposte: "Raddrizza", che rimette il rettangolo selezionato
-  a 0° con un tocco, oppure "Duplica").
+- **L'altro tasto grande della riga delle pagine** diventa il **tasto dell'angolo**
+  (deciso il 26 nov 2026):  **[ ◀ ]  ⟳ 3°  [ ▶ ]**
+  - ◀ ▶ ruotano il rettangolo selezionato di **1° alla volta**; tenendo premuto scorre
+    (come le frecce della precisione al pixel);
+  - al centro l'**angolo attuale**;
+  - **toccando il numero** il rettangolo torna dritto a **0°** (il "Raddrizza").
+  - Serve anche per i documenti fotografati storti: il rettangolo segue l'inclinazione.
+  - Si accende solo con un rettangolo selezionato, come il cestino.
 
 ## Eliminare un rettangolo
 
