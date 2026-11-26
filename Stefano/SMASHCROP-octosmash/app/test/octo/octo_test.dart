@@ -111,4 +111,19 @@ void main() {
     expect(InkFill.fromList([0, 0, 1, 1, 0, 1]).white, isTrue);
     expect(InkFill.fromList([0, 0, 1, 1, 0, 0]).color, InkFill.black);
   });
+
+  test('la rotazione col dito va a gradi interi esatti', () {
+    final r = OctoRect(
+      center: const Offset(0, 0),
+      w: 40,
+      h: 20,
+      color: InkFill.black,
+    );
+    // punto che darebbe circa 89,6° rispetto all'angolo in alto a destra
+    final base = math.atan2(-10, 20);
+    final a = base + 89.6 * math.pi / 180;
+    r.rotateTo(Offset(math.cos(a) * 50, math.sin(a) * 50));
+    expect(r.degrees, 90);
+    expect(r.angle, closeTo(math.pi / 2, 1e-12));
+  });
 }

@@ -69,7 +69,14 @@ class OctoRect {
   void rotateTo(Offset p) {
     final v = p - center;
     final base = math.atan2(-h / 2, w / 2);
-    angle = _norm(math.atan2(v.dy, v.dx) - base);
+    angle = _whole(math.atan2(v.dy, v.dx) - base);
+  }
+
+  /// Sempre a gradi interi: quello che dice il numero è l'angolo vero
+  /// (90° è a piombo, non 89,6°).
+  static double _whole(double a) {
+    final d = (_norm(a) * 180 / math.pi).round();
+    return _norm(d * math.pi / 180);
   }
 
   static double _norm(double a) {
@@ -80,7 +87,7 @@ class OctoRect {
     return a;
   }
 
-  void rotateBy(double deg) => angle = _norm(angle + deg * math.pi / 180);
+  void rotateBy(double deg) => angle = _whole(angle + deg * math.pi / 180);
 
   /// Gradi interi per il tasto dell'angolo (-179…180).
   int get degrees => (angle * 180 / math.pi).round();
