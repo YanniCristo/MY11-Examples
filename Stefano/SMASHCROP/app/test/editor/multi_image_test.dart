@@ -151,7 +151,8 @@ void main() {
     expect(c.multiImage, isFalse);
     final files = (await tester.runAsync(c.buildImageExports))!;
     expect(files.single.fileName.endsWith('.png'), isTrue);
-    expect(files.single.fileName.contains('_01'), isFalse);
+    // il nome contiene anche l'ora (alle 01:xx c'è "_01"): si guarda solo la fine
+    expect(files.single.fileName.endsWith('_01.png'), isFalse);
     c.dispose();
   });
 

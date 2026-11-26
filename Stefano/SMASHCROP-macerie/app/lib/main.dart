@@ -6,6 +6,7 @@ import 'package:pdfrx/pdfrx.dart';
 
 import 'app/app.dart';
 import 'features/ads/ads_tracker.dart';
+import 'features/premium/premium.dart';
 import 'features/rubble/application/rubble_store.dart';
 import 'features/rubble/application/skin_assets.dart';
 import 'features/settings/preferences.dart';
@@ -32,5 +33,7 @@ Future<void> main() async {
     // pubblicità: richiesta di tracciamento (iPhone) e SDK, dopo la prima
     // schermata
     AdsTracker.instance.start();
+    // l'acquisto a vita: prezzo e acquisti in sospeso
+    Premium.instance.start();
   });
 }

@@ -10,6 +10,7 @@ import '../../../core/widgets/password_dialog.dart';
 
 import '../../../app/strings.dart';
 import '../../ads/ads_tracker.dart';
+import '../../premium/lifetime_sheet.dart';
 import '../../../app/theme.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_menu.dart';
@@ -248,6 +249,18 @@ class _EditorScreenState extends State<EditorScreen>
     super.dispose();
   }
 
+  /// Un file salvato o condiviso: evento per le campagne e, la prima volta,
+  /// l'invito a "SmashCrop a vita" (una volta sola, solo nelle app).
+  void _savedOk() {
+    AdsTracker.instance.firstSave();
+    final s = RubbleStore.instance;
+    if (kIsWeb || s.lifetime || s.lifetimeOffered) return;
+    s.flag((s) => s.lifetimeOffered = true);
+    Future<void>.delayed(const Duration(milliseconds: 1400), () {
+      if (mounted) showLifetimeSheet(context, intro: S.lifetimeOfferIntro);
+    });
+  }
+
   void _toast(String msg) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -445,7 +458,7 @@ class _EditorScreenState extends State<EditorScreen>
         );
         // su web il file viene scaricato senza conferma
         if (uri != null || kIsWeb) {
-          AdsTracker.instance.firstSave();
+          _savedOk();
           _toast(kIsWeb ? S.downloaded : S.pdfSaved);
         }
         return;
@@ -462,7 +475,7 @@ class _EditorScreenState extends State<EditorScreen>
         return;
       }
       final (n, outcome) = await c.exporter.saveAllToPhotos(files);
-      if (outcome == SaveOutcome.saved) AdsTracker.instance.firstSave();
+      if (outcome == SaveOutcome.saved) _savedOk();
       _toast(switch (outcome) {
         SaveOutcome.saved => files.length > 1 ? S.savedMany(n) : S.saved,
         SaveOutcome.denied => S.saveDenied,
@@ -483,7 +496,7 @@ class _EditorScreenState extends State<EditorScreen>
       for (final f in files) {
         ok = await c.exporter.download(f.bytes, f.fileName, f.mimeType) && ok;
       }
-      if (ok) AdsTracker.instance.firstSave();
+      if (ok) _savedOk();
       _toast(ok ? S.downloaded : S.saveFailed);
     }
 
@@ -598,7 +611,7 @@ class _EditorScreenState extends State<EditorScreen>
             ? await c.exporter.share(files.first, origin: _shareOrigin())
             : await c.exporter.shareAll(files, origin: _shareOrigin());
       }
-      ok ? AdsTracker.instance.firstSave() : _toast(S.shareFailed);
+      ok ? _savedOk() : _toast(S.shareFailed);
     } catch (_) {
       _toast(S.shareFailed);
     }

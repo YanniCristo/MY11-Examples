@@ -445,4 +445,8 @@ La card da condividere e le sagome nere della Collezione le genera l'app. **Graf
   suoni, lettori caricati in anticipo all'apertura dell'editor (prima il suono veniva scaricato al
   colpo e arrivava in ritardo). Il "gnam" della barra sembrava una scorreggia dopo il pugno: sostituito
   da un "pling" breve (due note che salgono). Effetti delle skin ritagliati sopra i pulsanti in basso.
+- **26 nov 2026:** nuovo logo (icona, scritta campionata, avvio nero col logo completo) in entrambe le
+  versioni. Acquisto **"SmashCrop a vita"** collegato (in_app_purchase, prodotto non consumabile
+  `smashcrop_lifetime` da creare negli store): bottoncino arancione "A vita" nella home, Tycoon nella
+  Collezione, menu Premium, invito una sola volta dopo il primo salvataggio. Prezzo da decidere.
 

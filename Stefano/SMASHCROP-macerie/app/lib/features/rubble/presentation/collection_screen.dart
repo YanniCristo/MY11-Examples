@@ -4,6 +4,7 @@ import '../../../app/strings.dart';
 import '../../../app/theme.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/close_square_button.dart';
+import '../../premium/lifetime_sheet.dart';
 import '../application/rubble_store.dart';
 import '../domain/rubble_math.dart';
 import '../domain/skins.dart';
@@ -222,18 +223,27 @@ class _CollectionScreenState extends State<CollectionScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: AppButton(
-                      label: inUse ? S.inUse : S.useSkin,
-                      icon: Icon(inUse ? Icons.check : Icons.bolt),
-                      style: inUse
-                          ? AppButtonStyle.secondary
-                          : AppButtonStyle.primary,
-                      height: 48,
-                      fontSize: 16,
-                      onPressed: unlocked && !inUse
-                          ? () => s.choose(_sel)
-                          : null,
-                    ),
+                    child: !unlocked && _sel.unlock == Unlock.lifetime
+                        ? AppButton(
+                            label: S.unlockWithLifetime,
+                            icon: const Icon(Icons.workspace_premium),
+                            style: AppButtonStyle.primary,
+                            height: 48,
+                            fontSize: 15,
+                            onPressed: () => showLifetimeSheet(context),
+                          )
+                        : AppButton(
+                            label: inUse ? S.inUse : S.useSkin,
+                            icon: Icon(inUse ? Icons.check : Icons.bolt),
+                            style: inUse
+                                ? AppButtonStyle.secondary
+                                : AppButtonStyle.primary,
+                            height: 48,
+                            fontSize: 16,
+                            onPressed: unlocked && !inUse
+                                ? () => s.choose(_sel)
+                                : null,
+                          ),
                   ),
                   const SizedBox(width: 8),
                   SizedBox(
@@ -299,7 +309,12 @@ class _CollectionScreenState extends State<CollectionScreen> {
       label: k.name,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () => _select(k),
+        onTap: () {
+          _select(k);
+          if (k.unlock == Unlock.lifetime && !s.isUnlocked(k)) {
+            showLifetimeSheet(context);
+          }
+        },
         child: Container(
           decoration: BoxDecoration(
             color: AppColors.button,

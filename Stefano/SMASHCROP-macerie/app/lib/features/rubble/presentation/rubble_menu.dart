@@ -5,6 +5,8 @@ import '../../../app/strings.dart';
 import '../../../app/theme.dart';
 import '../../../core/widgets/app_menu.dart';
 import '../application/rubble_store.dart';
+import '../../premium/lifetime_sheet.dart';
+import '../../premium/premium.dart';
 import 'collection_screen.dart';
 
 /// Le voci del menu ☰ della versione con le macerie, prima di lingua e
@@ -59,12 +61,22 @@ List<MenuSection> rubbleMenuSections(BuildContext context, RubbleStore s) {
       MenuEntry(
         icon: Icons.workspace_premium_outlined,
         label: S.lifetimeName,
-        onTap: () => info(S.lifetimeName, S.comingSoon),
+        onTap: () {
+          Navigator.pop(context);
+          showLifetimeSheet(context);
+        },
       ),
       MenuEntry(
         icon: Icons.restore,
         label: S.restorePurchases,
-        onTap: () => info(S.restorePurchases, S.comingSoon),
+        onTap: () {
+          Navigator.pop(context);
+          showLifetimeSheet(context);
+          Future<void>.delayed(
+            const Duration(milliseconds: 400),
+            Premium.instance.restore,
+          );
+        },
       ),
     ]),
     MenuSection(title: S.yourCounter, [

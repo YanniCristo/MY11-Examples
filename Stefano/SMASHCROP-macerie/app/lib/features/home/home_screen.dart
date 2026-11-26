@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/widgets/app_menu.dart';
+import '../premium/lifetime_sheet.dart';
 import '../../core/widgets/language_button.dart';
 import '../../core/widgets/large_file_dialog.dart';
 import '../../core/widgets/password_dialog.dart';
@@ -208,6 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+                  LifetimeChip(listenable: RubbleStore.instance),
                   const SizedBox(width: 8),
                   LanguageButton(preferences: widget.preferences),
                   const SizedBox(width: 8),

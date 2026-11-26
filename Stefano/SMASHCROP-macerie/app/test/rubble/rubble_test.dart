@@ -176,6 +176,19 @@ void main() {
     expect(d.grams, 149000);
   });
 
+  test('acquisto a vita e invito restano anche passando dal cloud', () {
+    final a = RubbleStore.memory()
+      ..flag((s) {
+        s.lifetime = true;
+        s.lifetimeOffered = true;
+      });
+    final b = RubbleStore.memory()..add(1);
+    expect(b.mergeFrom(a.encode()), isTrue);
+    expect(b.lifetime, isTrue);
+    expect(b.lifetimeOffered, isTrue);
+    expect(b.isUnlocked(skinById('tycoon')), isTrue);
+  });
+
   test('il codice di recupero non sblocca Tycoon', () {
     final owner = RubbleStore.memory()
       ..add(4600)

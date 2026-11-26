@@ -37,12 +37,15 @@ class RubbleStore extends ChangeNotifier {
   bool sound = true;
   bool haptics = true;
 
-  /// Acquisto a vita (per ora mai vero: l'acquisto non è ancora collegato).
+  /// Acquisto a vita ("SmashCrop a vita", vedi features/premium).
   bool lifetime = false;
   bool firstEvolutionDone = false;
   bool collectionHintShown = false;
   bool sleepToastShown = false;
   bool recoveryOffered = false;
+
+  /// L'invito a "SmashCrop a vita" dopo il primo salvataggio è già comparso.
+  bool lifetimeOffered = false;
 
   /// Ultimo guadagno (per il "+0,30 kg" sul contatore) e suo contatore.
   double lastGainKg = 0;
@@ -148,6 +151,7 @@ class RubbleStore extends ChangeNotifier {
       collectionHintShown = m['ch'] as bool? ?? false;
       sleepToastShown = m['st'] as bool? ?? false;
       recoveryOffered = m['ro'] as bool? ?? false;
+      lifetimeOffered = m['lo'] as bool? ?? false;
       // controllo di coerenza: le skin vanno con i chili
       for (final e in kEvolutions) {
         if (kg >= e.thresholdKg) unlocked.add(e.id);
@@ -169,6 +173,7 @@ class RubbleStore extends ChangeNotifier {
     'ch': collectionHintShown,
     'st': sleepToastShown,
     'ro': recoveryOffered,
+    'lo': lifetimeOffered,
   });
 
   void _save() {
@@ -197,6 +202,7 @@ class RubbleStore extends ChangeNotifier {
     collectionHintShown = collectionHintShown || o.collectionHintShown;
     sleepToastShown = sleepToastShown || o.sleepToastShown;
     recoveryOffered = recoveryOffered || o.recoveryOffered;
+    lifetimeOffered = lifetimeOffered || o.lifetimeOffered;
     // su un'app appena installata si riprendono anche skin e impostazioni
     if (wasEmpty) {
       skinId = o.skinId;

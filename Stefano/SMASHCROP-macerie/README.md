@@ -40,9 +40,26 @@ Prova: fai qualche taglio con SMASH, aspetta qualche secondo, cancella l'app, re
 (TestFlight) con lo stesso ID Apple: i kg devono tornare.
 Su Android: stessa prova con un telefono con backup Google attivo.
 
+## Acquisto "SmashCrop a vita"
+
+Già nel codice (`lib/features/premium/`, pacchetto `in_app_purchase`): niente pubblicità + SMASH Tycoon,
+pagato una volta, con "Ripristina acquisti". Dove compare:
+- bottoncino arancione **"👑 A vita"** in alto nella home (sparisce dopo l'acquisto);
+- Collezione: toccando Tycoon col lucchetto, o il pulsante "Sblocca con SmashCrop a vita";
+- menu ☰ → Premium (SmashCrop a vita · Ripristina acquisti);
+- **una sola volta**, poco dopo il primo file salvato o condiviso (solo nelle app, non nel web).
+Dopo l'acquisto Tycoon si indossa subito e parte l'evento "Purchase" per le campagne.
+Nel web il pulsante spiega che si compra dall'app.
+
+**Da fare negli store** (stesso ID su entrambi): `smashcrop_lifetime`
+- App Store Connect → l'app → Acquisti in-app → **Non consumabile**, ID `smashcrop_lifetime`, prezzo, nome e descrizione.
+- Google Play Console → Monetizza → Prodotti → **Prodotti in-app**, ID `smashcrop_lifetime`, prezzo.
+Il prezzo mostrato in app arriva dallo store, nella valuta di chi compra.
+Prova: TestFlight con un account Sandbox (iPhone) e "tester delle licenze" (Android).
+
 ## Ancora da fare
 
-- Acquisto a vita (Tycoon + niente pubblicità) e "Ripristina acquisti".
+- I banner pubblicitari della versione gratis (con, sotto, "Togli la pubblicità per sempre").
 
 Codice: `lib/features/rubble/` (contatore, skin, effetti, Collezione, menu).
 Immagini e suoni: `assets/rubble/`, `assets/sounds/` (mp3).

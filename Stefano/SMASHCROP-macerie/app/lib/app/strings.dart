@@ -1001,6 +1001,120 @@ class S {
   );
   static String get newBadge =>
       _t('Nuova', 'New', 'Nouveau', 'Nuevo', 'Novo', 'Neu');
+  static String get lifetimeChip => _t(
+    'A vita',
+    'For life',
+    'À vie',
+    'Para siempre',
+    'Vitalício',
+    'Für immer',
+  );
+  static String get lifetimeNoAds => _t(
+    'Niente pubblicità, per sempre',
+    'No ads, forever',
+    'Zéro pub, pour toujours',
+    'Sin anuncios, para siempre',
+    'Sem anúncios, para sempre',
+    'Keine Werbung, für immer',
+  );
+  static String get lifetimeTycoon => _t(
+    'Sblocchi SMASH Tycoon e il suo balletto',
+    'Unlock SMASH Tycoon and his dance',
+    'Débloque SMASH Tycoon et sa danse',
+    'Desbloquea a SMASH Tycoon y su baile',
+    'Desbloqueie o SMASH Tycoon e a dança dele',
+    'Schalte SMASH Tycoon und seinen Tanz frei',
+  );
+  static String get lifetimeOnce => _t(
+    'Paghi una volta sola. Niente abbonamento.',
+    'Pay once. No subscription.',
+    'Tu paies une seule fois. Pas d\'abonnement.',
+    'Pagas una sola vez. Sin suscripción.',
+    'Você paga uma vez só. Sem assinatura.',
+    'Einmal zahlen. Kein Abo.',
+  );
+  static String get buy =>
+      _t('Compra', 'Buy', 'Acheter', 'Comprar', 'Comprar', 'Kaufen');
+  static String buyFor(String price) => _t(
+    'Compra a $price',
+    'Buy for $price',
+    'Acheter pour $price',
+    'Comprar por $price',
+    'Comprar por $price',
+    'Kaufen für $price',
+  );
+  static String get lifetimeOwned => _t(
+    'È tuo per sempre. Grazie!',
+    'It\'s yours forever. Thank you!',
+    'Il est à toi pour toujours. Merci !',
+    'Es tuyo para siempre. ¡Gracias!',
+    'É seu para sempre. Obrigado!',
+    'Gehört dir für immer. Danke!',
+  );
+  static String get lifetimeThanks => _t(
+    'Grazie! Niente più pubblicità e SMASH Tycoon è tuo.',
+    'Thank you! No more ads, and SMASH Tycoon is yours.',
+    'Merci ! Plus de pub, et SMASH Tycoon est à toi.',
+    '¡Gracias! Se acabaron los anuncios y SMASH Tycoon es tuyo.',
+    'Obrigado! Sem anúncios e o SMASH Tycoon é seu.',
+    'Danke! Keine Werbung mehr, und SMASH Tycoon gehört dir.',
+  );
+  static String get purchaseRestored => _t(
+    'Acquisto ripristinato.',
+    'Purchase restored.',
+    'Achat restauré.',
+    'Compra restaurada.',
+    'Compra restaurada.',
+    'Kauf wiederhergestellt.',
+  );
+  static String get nothingToRestore => _t(
+    'Nessun acquisto da ripristinare su questo account.',
+    'No purchases to restore on this account.',
+    'Aucun achat à restaurer sur ce compte.',
+    'No hay compras que restaurar en esta cuenta.',
+    'Nenhuma compra para restaurar nesta conta.',
+    'Keine Käufe zum Wiederherstellen in diesem Konto.',
+  );
+  static String get purchaseError => _t(
+    'Acquisto non riuscito. Riprova tra poco.',
+    'Purchase failed. Please try again shortly.',
+    'L\'achat a échoué. Réessaie dans un instant.',
+    'La compra no se completó. Inténtalo de nuevo en un momento.',
+    'A compra não foi concluída. Tente de novo daqui a pouco.',
+    'Kauf fehlgeschlagen. Versuch es gleich noch einmal.',
+  );
+  static String get buyOnlyInApp => _t(
+    'L\'acquisto si fa dall\'app scaricata da App Store o Google Play.',
+    'You can buy it in the app from the App Store or Google Play.',
+    'L\'achat se fait dans l\'app téléchargée sur l\'App Store ou Google Play.',
+    'La compra se hace desde la app descargada de App Store o Google Play.',
+    'A compra é feita no app baixado da App Store ou do Google Play.',
+    'Kaufen kannst du in der App aus dem App Store oder Google Play.',
+  );
+  static String get lifetimeOfferIntro => _t(
+    'Ti è servita? Tienila per sempre.',
+    'Did it help? Keep it forever.',
+    'Ça t\'a servi ? Garde-la pour toujours.',
+    '¿Te ha servido? Quédatela para siempre.',
+    'Foi útil? Fique com ele para sempre.',
+    'Hat es geholfen? Behalte es für immer.',
+  );
+  static String get unlockWithLifetime => _t(
+    'Sblocca con SmashCrop a vita',
+    'Unlock with SmashCrop for life',
+    'Débloquer avec SmashCrop à vie',
+    'Desbloquear con SmashCrop para siempre',
+    'Desbloquear com SmashCrop vitalício',
+    'Mit SmashCrop für immer freischalten',
+  );
+  static String get notNow => _t(
+    'Non ora',
+    'Not now',
+    'Pas maintenant',
+    'Ahora no',
+    'Agora não',
+    'Nicht jetzt',
+  );
   static String get lockedLifetime => _t(
     'Con SmashCrop a vita',
     'With SmashCrop for life',
