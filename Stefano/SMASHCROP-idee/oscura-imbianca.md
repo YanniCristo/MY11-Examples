@@ -64,8 +64,11 @@ del testo dei documenti.
 
 ## Eliminare un rettangolo
 
-- Si usa il **cestino** che c'è già nella riga delle pagine: tocchi il rettangolo per
-  selezionarlo e poi il cestino lo toglie (prima di "Fatto").
+- Si usa il **cestino** che c'è già nella riga delle pagine.
+- Appena butti dentro un rettangolo, quello è **selezionato** (contorno e maniglie visibili)
+  e il **cestino si illumina**: un tocco e il rettangolo sparisce.
+- Con più rettangoli: si tocca quello da togliere per selezionarlo, poi il cestino.
+- Senza nessun rettangolo selezionato il cestino resta spento.
 
 ## Garanzie
 
