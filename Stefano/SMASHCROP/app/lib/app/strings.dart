@@ -457,6 +457,24 @@ class S {
       _t('Salva', 'Save', 'Enregistrer', 'Guardar', 'Salvar', 'Sichern');
   static const undo = 'Undo';
   static const redo = 'Redo';
+  static String get fineTitle => _t(
+    'Precisione al pixel',
+    'Pixel precision',
+    'Précision au pixel',
+    'Precisión al píxel',
+    'Precisão de pixel',
+    'Pixelgenau',
+  );
+  static String get fineHint => _t(
+    'Tieni premuto questo tasto per spostare le linee A e B di 1 pixel alla volta. Oppure trascinale come sempre.',
+    'Press and hold this button to move lines A and B 1 pixel at a time. Or just drag them as usual.',
+    'Maintiens ce bouton appuyé pour déplacer les lignes A et B d\'1 pixel à la fois. Ou fais-les glisser comme d\'habitude.',
+    'Mantén pulsado este botón para mover las líneas A y B de 1 en 1 píxel. O arrástralas como siempre.',
+    'Toque e segure este botão para mover as linhas A e B 1 pixel por vez. Ou arraste-as como sempre.',
+    'Halte diese Taste gedrückt, um die Linien A und B pixelweise zu verschieben. Oder zieh sie wie gewohnt.',
+  );
+  static String get fineDone =>
+      _t('Fatto', 'Done', 'OK', 'Listo', 'Pronto', 'Fertig');
   static String get removePortion => _t(
     'Rimuovi porzione',
     'Remove section',

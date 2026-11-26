@@ -622,6 +622,40 @@ class EditorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // --- precisione al pixel ---------------------------------------------------
+
+  /// Linea che si sta regolando con le frecce (si illumina la sua maniglia).
+  LineHandle? fineHandle;
+
+  /// Sposta la linea [h] di [step] pixel del documento (+1 giù/destra,
+  /// -1 su/sinistra). `false` se è già al bordo.
+  bool nudgeLine(LineHandle h, int step) {
+    final mode = selection.mode;
+    if (mode == null || isCutting || !selectionVisible) return false;
+    final pair = selection.lines[mode];
+    if (pair == null) return false;
+    final len = doc.lengthFor(mode).toDouble();
+    final cur = h == LineHandle.a ? pair.a : pair.b;
+    final v = (cur.roundToDouble() + step).clamp(0.0, len);
+    fineHandle = h;
+    if (v == cur) {
+      notifyListeners();
+      return false;
+    }
+    selection = selection.withLines(
+      mode,
+      h == LineHandle.a ? pair.withA(v) : pair.withB(v),
+    );
+    notifyListeners();
+    return true;
+  }
+
+  void endNudge() {
+    if (fineHandle == null) return;
+    fineHandle = null;
+    notifyListeners();
+  }
+
   void endLineDrag() {
     final h = draggingHandle;
     if (h == null) return;

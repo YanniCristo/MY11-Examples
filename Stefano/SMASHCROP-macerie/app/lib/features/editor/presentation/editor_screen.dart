@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/widgets/large_file_dialog.dart';
@@ -268,6 +270,81 @@ class _EditorScreenState extends State<EditorScreen>
       }
       if (ask) await Notifications.instance.askPermission();
     });
+  }
+
+  // --- precisione al pixel ---------------------------------------------------
+
+  bool _fine = false;
+
+  void _tapOrientation(CutOrientation o) {
+    c.tapOrientation(o);
+    final prefs = c.preferences;
+    if (prefs.fineHintShown) return;
+    prefs.setFineHintShown();
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text(S.fineTitle),
+        content: Text(S.fineHint, style: const TextStyle(fontSize: 16)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openFine() {
+    HapticFeedback.mediumImpact();
+    setState(() => _fine = true);
+  }
+
+  void _closeFine() {
+    c.endNudge();
+    setState(() => _fine = false);
+  }
+
+  /// Riga di regolazione fine: [A ▲][A ▼]  ✓ Fatto  [B ▲][B ▼]
+  /// (in verticale ◀ ▶). Ogni tocco sposta di 1 pixel; tenendo premuto scorre.
+  Widget _fineRow(CutOrientation mode) {
+    final h = mode == CutOrientation.horizontal;
+    final color = h ? kHorizontalColor : kVerticalColor;
+    Widget arrow(LineHandle line, int step) => _NudgeButton(
+      label: line == LineHandle.a ? 'A' : 'B',
+      icon: h
+          ? (step < 0 ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down)
+          : (step < 0 ? Icons.keyboard_arrow_left : Icons.keyboard_arrow_right),
+      color: color,
+      onStep: () {
+        if (c.nudgeLine(line, step)) HapticFeedback.selectionClick();
+      },
+      onEnd: c.endNudge,
+    );
+    return Row(
+      children: [
+        arrow(LineHandle.a, -1),
+        const SizedBox(width: 4),
+        arrow(LineHandle.a, 1),
+        const SizedBox(width: 6),
+        Expanded(
+          child: AppButton(
+            label: S.fineDone,
+            icon: const Icon(Icons.check),
+            height: 48,
+            fontSize: 16,
+            hideIconBelow: 110,
+            onPressed: _closeFine,
+          ),
+        ),
+        const SizedBox(width: 6),
+        arrow(LineHandle.b, -1),
+        const SizedBox(width: 4),
+        arrow(LineHandle.b, 1),
+      ],
+    );
   }
 
   void _toast(String msg) {
@@ -819,56 +896,72 @@ class _EditorScreenState extends State<EditorScreen>
     }
     final mode = c.selection.mode;
     final selVisible = c.selectionVisible;
+    // senza selezione o durante il taglio la regolazione fine si chiude
+    if (_fine && (mode == null || !selVisible || c.isCutting)) _fine = false;
     return [
       if (c.hasPages || !c.isPdf) ...[_pdfBar(), const SizedBox(height: 8)],
       // undo · orizzontale · RIMUOVI PORZIONE · verticale · redo
-      Row(
-        children: [
-          _square(
-            icon: const Icon(Icons.undo),
-            label: S.undo,
-            onPressed: c.canUndo ? c.undo : null,
-          ),
-          const SizedBox(width: 6),
-          _OrientationSquare(
-            label: S.horizontal,
-            vertical: false,
-            color: kHorizontalColor,
-            active: mode == CutOrientation.horizontal && selVisible,
-            onPressed: c.isCutting || !c.pageReady
-                ? null
-                : () => c.tapOrientation(CutOrientation.horizontal),
-          ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: AppButton(
-              label: S.removePortion,
-              icon: const Icon(Icons.content_cut),
-              style: AppButtonStyle.primary,
-              height: 48,
-              fontSize: 16,
-              hideIconBelow: 170,
-              onPressed: c.canPressCut ? _onRemovePressed : null,
+      // (tenendo premuto l'orientamento attivo: frecce di precisione)
+      if (_fine && mode != null && selVisible && !c.isCutting)
+        _fineRow(mode)
+      else
+        Row(
+          children: [
+            _square(
+              icon: const Icon(Icons.undo),
+              label: S.undo,
+              onPressed: c.canUndo ? c.undo : null,
             ),
-          ),
-          const SizedBox(width: 6),
-          _OrientationSquare(
-            label: S.vertical,
-            vertical: true,
-            color: kVerticalColor,
-            active: mode == CutOrientation.vertical && selVisible,
-            onPressed: c.isCutting || !c.pageReady
-                ? null
-                : () => c.tapOrientation(CutOrientation.vertical),
-          ),
-          const SizedBox(width: 6),
-          _square(
-            icon: const Icon(Icons.redo),
-            label: S.redo,
-            onPressed: c.canRedo ? c.redo : null,
-          ),
-        ],
-      ),
+            const SizedBox(width: 6),
+            _OrientationSquare(
+              label: S.horizontal,
+              vertical: false,
+              color: kHorizontalColor,
+              active: mode == CutOrientation.horizontal && selVisible,
+              onPressed: c.isCutting || !c.pageReady
+                  ? null
+                  : () => _tapOrientation(CutOrientation.horizontal),
+              onLongPress:
+                  mode == CutOrientation.horizontal &&
+                      selVisible &&
+                      !c.isCutting
+                  ? _openFine
+                  : null,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: AppButton(
+                label: S.removePortion,
+                icon: const Icon(Icons.content_cut),
+                style: AppButtonStyle.primary,
+                height: 48,
+                fontSize: 16,
+                hideIconBelow: 170,
+                onPressed: c.canPressCut ? _onRemovePressed : null,
+              ),
+            ),
+            const SizedBox(width: 6),
+            _OrientationSquare(
+              label: S.vertical,
+              vertical: true,
+              color: kVerticalColor,
+              active: mode == CutOrientation.vertical && selVisible,
+              onPressed: c.isCutting || !c.pageReady
+                  ? null
+                  : () => _tapOrientation(CutOrientation.vertical),
+              onLongPress:
+                  mode == CutOrientation.vertical && selVisible && !c.isCutting
+                  ? _openFine
+                  : null,
+            ),
+            const SizedBox(width: 6),
+            _square(
+              icon: const Icon(Icons.redo),
+              label: S.redo,
+              onPressed: c.canRedo ? c.redo : null,
+            ),
+          ],
+        ),
       const SizedBox(height: 8),
       // carica immagini · SMASH · carica PDF
       Row(
@@ -1171,12 +1264,14 @@ class _OrientationSquare extends StatelessWidget {
     required this.color,
     required this.active,
     required this.onPressed,
+    this.onLongPress,
   });
   final String label;
   final bool vertical;
   final Color color;
   final bool active;
   final VoidCallback? onPressed;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -1201,6 +1296,7 @@ class _OrientationSquare extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: onPressed,
+          onLongPress: onLongPress,
           child: SizedBox.square(
             dimension: _kSquare,
             child: Center(
@@ -1252,6 +1348,102 @@ class _FlatThumb extends SliderComponentShape {
         const Radius.circular(3),
       ),
       Paint()..color = color,
+    );
+  }
+}
+
+/// Freccia della regolazione fine: un tocco = 1 pixel; tenendo premuto
+/// scorre, prima piano e poi più veloce.
+class _NudgeButton extends StatefulWidget {
+  const _NudgeButton({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.onStep,
+    required this.onEnd,
+  });
+  final String label;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onStep;
+  final VoidCallback onEnd;
+
+  @override
+  State<_NudgeButton> createState() => _NudgeButtonState();
+}
+
+class _NudgeButtonState extends State<_NudgeButton> {
+  Timer? _timer;
+  int _ticks = 0;
+  bool _down = false;
+
+  void _start() {
+    setState(() => _down = true);
+    _ticks = 0;
+    widget.onStep();
+    _timer = Timer(const Duration(milliseconds: 420), _repeat);
+  }
+
+  void _repeat() {
+    if (!_down) return;
+    widget.onStep();
+    _ticks++;
+    final ms = _ticks < 12 ? 90 : 35;
+    _timer = Timer(Duration(milliseconds: ms), _repeat);
+  }
+
+  void _stop() {
+    _timer?.cancel();
+    if (!_down) return;
+    setState(() => _down = false);
+    widget.onEnd();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: widget.label,
+      child: Listener(
+        onPointerDown: (_) => _start(),
+        onPointerUp: (_) => _stop(),
+        onPointerCancel: (_) => _stop(),
+        child: Container(
+          width: 44,
+          height: _kSquare,
+          decoration: BoxDecoration(
+            color: _down ? widget.color : AppColors.button,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: widget.color, width: 1.4),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                widget.label,
+                style: TextStyle(
+                  fontFamily: kDisplayFont,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 11,
+                  height: 1,
+                  color: _down ? Colors.white : widget.color,
+                ),
+              ),
+              Icon(
+                widget.icon,
+                size: 24,
+                color: _down ? Colors.white : AppColors.text,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

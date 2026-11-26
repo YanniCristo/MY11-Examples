@@ -144,7 +144,7 @@ class _EditorViewportState extends State<EditorViewport> {
               child: _Handle(
                 label: isA ? 'A' : 'B',
                 horizontalMode: horizontal,
-                active: c.draggingHandle == h,
+                active: c.draggingHandle == h || c.fineHandle == h,
               ),
             ),
           ),

@@ -161,6 +161,30 @@ void main() {
     );
   });
 
+  testWidgets('le frecce spostano la linea di 1 pixel', (tester) async {
+    final c = await make(tester, smash: false);
+    c.selection = c.selection.withLines(
+      CutOrientation.horizontal,
+      const LinePair(100, 250),
+    );
+    expect(c.nudgeLine(LineHandle.a, 1), isTrue);
+    expect(c.selection.active!.a, 101);
+    expect(c.fineHandle, LineHandle.a);
+    c.nudgeLine(LineHandle.b, -1);
+    c.nudgeLine(LineHandle.b, -1);
+    expect(c.selection.active!.b, 248);
+    // ai bordi non va oltre
+    c.selection = c.selection.withLines(
+      CutOrientation.horizontal,
+      const LinePair(0, 600),
+    );
+    expect(c.nudgeLine(LineHandle.a, -1), isFalse);
+    expect(c.nudgeLine(LineHandle.b, 1), isFalse);
+    c.endNudge();
+    expect(c.fineHandle, isNull);
+    c.dispose();
+  });
+
   testWidgets('risultato identico con e senza SMASH', (tester) async {
     final a = await make(tester, smash: true);
     final b = await make(tester, smash: false);

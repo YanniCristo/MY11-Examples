@@ -13,6 +13,7 @@ class AppPreferences {
   static const _layoutKey = 'pdf_layout_suggestion';
   static const _workKey = 'saved_work';
   static const _langKey = 'language';
+  static const _fineHintKey = 'fine_hint_shown';
   final SharedPreferences? _prefs;
 
   static Future<AppPreferences> load() async {
@@ -21,6 +22,15 @@ class AppPreferences {
     } catch (_) {
       return AppPreferences._(null);
     }
+  }
+
+  /// Il suggerimento sulla precisione al pixel è già stato mostrato.
+  bool get fineHintShown => _prefs?.getBool(_fineHintKey) ?? false;
+
+  Future<void> setFineHintShown() async {
+    try {
+      await _prefs?.setBool(_fineHintKey, true);
+    } catch (_) {}
   }
 
   /// SMASH è attivo di default.
