@@ -1,5 +1,8 @@
 # SMASHCROP
 
+> ⚠️ **Versione "lite" di emergenza (dal 26 nov 2026).** L'app ufficiale da pubblicare è
+> **`../SMASHCROP-macerie/app`**. Questa resta come riserva, senza macerie, e non va sugli store.
+
 App mobile (iOS e Android, Flutter) per **rimuovere sezioni interne** di immagini, screenshot e PDF, ricongiungendo automaticamente le parti rimaste. Mascotte: **SMASH**, il robot rosso che distrugge la fascia selezionata.
 
 > I documenti in `docs/` sono stati scritti quando l'app si chiamava ancora **MYCROP**. Il nome è cambiato, le specifiche restano valide: dove leggi "MYCROP" intendi "SmashCrop".

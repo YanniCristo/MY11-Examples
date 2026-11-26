@@ -1,7 +1,10 @@
-# SmashCrop — versione con le macerie (copia di lavoro)
+# SmashCrop — versione con le macerie ⭐ APP UFFICIALE DA PUBBLICARE
 
-Copia separata dell'app SmashCrop con l'idea "SMASH mangia-macerie".
-**L'app principale è in `../SMASHCROP/app` e non viene toccata da questa versione.**
+**Dal 26 nov 2026 questa è l'app ufficiale**, quella che va sugli store
+(`com.memeinitaly.smashcrop`): taglio, SMASH mangia-macerie, Collezione, acquisto a vita, notifiche.
+
+La versione senza macerie (`../SMASHCROP/app`) resta come **versione "lite" di emergenza**:
+non va pubblicata, serve solo da riserva. Le funzioni delle macerie non vanno mai portate lì.
 
 Specifica completa: [`../SMASHCROP/docs/idea-macerie.md`](../SMASHCROP/docs/idea-macerie.md).
 
