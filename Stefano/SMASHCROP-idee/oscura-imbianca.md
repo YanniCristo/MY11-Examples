@@ -94,8 +94,11 @@ del testo dei documenti.
 - Quando arriva OctoSmash **cambia tutto in alto**: la barra passa ai **litri di inchiostro**
   e l'interruttore on/off mostra l'OctoSmash al posto di SMASH. Uscendo dalla modalità
   tornano i kg di macerie e SMASH.
-- Stessa dinamica delle macerie: obiettivi da riempire e **evoluzioni** con le loro skin,
-  in due linee separate, **OctoSmash bianco** e **OctoSmash nero**.
+- **Un solo contatore per tutti gli inchiostri** (deciso il 26 nov 2026): nero, bianco e
+  colorato (pipetta e tavolozza) si sommano negli stessi litri, con gli stessi contenitori.
+- Stessa dinamica delle macerie: obiettivi da riempire e **evoluzioni** con le loro skin.
+  Le linee di personaggi (Bianco, Nero, e i nuovi a colori) restano come skin da sbloccare,
+  ma il contatore dei litri è unico.
 
 ## Collezione
 
@@ -119,6 +122,19 @@ del testo dei documenti.
 - **Più rettangoli prima di "Fatto":** sì, un solo "Fatto" e un solo spruzzo per tutti.
 - **Acquisto a vita:** OctoSmash resta gratis; una skin speciale (es. OctoSmash Oro) solo
   con "a vita".
+
+## Rettangoli colorati: pipetta e tavolozza (idea del 26 nov 2026)
+
+- In OctoSmash la riga diventa: **[⬜+] [⬛+] [✓ Fatto] [💧 pipetta] [🎨 tavolozza]**
+  (quattro tasti quadrati come Annulla/Orizzontale, Fatto al centro più stretto).
+- **💧 Pipetta:** punti il dito sull'immagine o sul PDF, lasci andare, prende quel colore e
+  mette il rettangolo di quel colore. Personaggio nuovo con l'ampolla che preleva il colore.
+- **🎨 Tavolozza:** scelta tra tanti colori, fatta bene. Personaggio multicolore, iridescente.
+- Inchiostro colorato: va nello stesso contatore unico dei litri.
+- Da decidere: lente d'ingrandimento sopra il dito per la pipetta; se il tasto pipetta
+  ricorda l'ultimo colore (tocco = usa, tocco lungo = nuovo prelievo); com'è fatta la
+  tavolozza (griglia ~24 colori + colori presi + colore libero?); nomi e forma dei due
+  personaggi (OctoSmash Pipetta / OctoSmash Prisma?); velo al 50% anche per i colorati.
 
 ## Da decidere
 
