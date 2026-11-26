@@ -36,7 +36,9 @@ import '../../pdf_processing/presentation/layout_panel.dart';
 import '../../pdf_processing/services/pdf_loader.dart';
 import '../../pdf_processing/services/pdf_service.dart';
 import '../../settings/preferences.dart';
+import '../../octo/domain/ink_fill.dart';
 import '../../octo/presentation/ink_counter_bar.dart';
+import '../../octo/presentation/octo_palette.dart';
 import '../application/editor_controller.dart';
 import '../application/saved_work.dart';
 import '../domain/cut_operation.dart';
@@ -102,10 +104,8 @@ class _EditorScreenState extends State<EditorScreen>
           );
     if (widget.restore != null) c.restoreWork(widget.restore!);
     // OctoSmash: i litri d'inchiostro vanno nel loro contatore
-    c.onInk = (black, white) => _rubble.flag((s) {
-      s.inkBlackMl += (black * 1000).round();
-      s.inkWhiteMl += (white * 1000).round();
-    });
+    c.onInk = (litres) =>
+        _rubble.flag((s) => s.inkBlackMl += (litres * 1000).round());
     _ticker = createTicker(c.tick);
     c.addListener(_syncTicker);
     _rubble.addListener(_onRubble);
@@ -295,45 +295,84 @@ class _EditorScreenState extends State<EditorScreen>
 
   void _addOcto(bool white) {
     HapticFeedback.selectionClick();
+    c.cancelPicking();
     setState(() => _octoWhite = white);
-    c.addOctoRect(white: white);
+    c.addOctoRect(color: white ? InkFill.whiteInk : InkFill.black);
   }
 
-  /// ⬜+ Bianco · ✓ Fatto (tocco lungo: esci) · ⬛+ Nero
+  void _pick() {
+    HapticFeedback.selectionClick();
+    if (c.octoPicking) {
+      c.cancelPicking();
+    } else {
+      c.startPicking();
+    }
+  }
+
+  Future<void> _palette() async {
+    c.cancelPicking();
+    final color = await showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      showDragHandle: true,
+      builder: (ctx) => OctoPalette(recent: List.of(c.pickedColors)),
+    );
+    if (color != null) {
+      HapticFeedback.selectionClick();
+      c.addOctoRect(color: color);
+    }
+  }
+
+  /// [⬜+] [⬛+] [✓ Fatto] [💧] [🎨] — tocco lungo su Fatto: esci.
   Widget _octoRow() {
-    Widget add(bool white) => Expanded(
+    Widget box({
+      required String label,
+      required Color fill,
+      required Color border,
+      required Widget child,
+      required VoidCallback? onTap,
+      Gradient? gradient,
+    }) => SizedBox(
+      width: 48,
+      height: 48,
       child: Semantics(
         button: true,
-        label: white ? 'Bianco' : 'Nero',
+        label: label,
         child: GestureDetector(
-          onTap: () => _addOcto(white),
+          onTap: onTap,
           child: Container(
-            height: 48,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: white ? Colors.white : Colors.black,
+              color: gradient == null ? fill : null,
+              gradient: gradient,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: white
-                    ? const Color(0xFFB8BEC8)
-                    : const Color(0xFF8A919C),
-                width: 1.4,
-              ),
+              border: Border.all(color: border, width: 1.4),
             ),
-            child: Icon(
-              Icons.add,
-              size: 30,
-              color: white ? Colors.black : Colors.white,
-            ),
+            child: child,
           ),
         ),
       ),
     );
+    final picked = c.pickedColors.isEmpty ? null : Color(c.pickedColors.first);
     return Row(
       children: [
-        add(true),
+        box(
+          label: 'Bianco',
+          fill: Colors.white,
+          border: const Color(0xFFB8BEC8),
+          onTap: () => _addOcto(true),
+          child: const Icon(Icons.add, size: 28, color: Colors.black),
+        ),
+        const SizedBox(width: 6),
+        box(
+          label: 'Nero',
+          fill: Colors.black,
+          border: const Color(0xFF8A919C),
+          onTap: () => _addOcto(false),
+          child: const Icon(Icons.add, size: 28, color: Colors.white),
+        ),
         const SizedBox(width: 6),
         Expanded(
-          flex: 2,
           child: GestureDetector(
             onLongPress: () {
               HapticFeedback.mediumImpact();
@@ -345,6 +384,7 @@ class _EditorScreenState extends State<EditorScreen>
               style: AppButtonStyle.primary,
               height: 48,
               fontSize: 16,
+              hideIconBelow: 120,
               onPressed:
                   c.octoRects.isEmpty || c.octoSplash != null || c.octoAnimating
                   ? null
@@ -356,7 +396,56 @@ class _EditorScreenState extends State<EditorScreen>
           ),
         ),
         const SizedBox(width: 6),
-        add(false),
+        box(
+          label: 'Pipetta',
+          fill: c.octoPicking ? const Color(0xFF22E4F2) : AppColors.button,
+          border: c.octoPicking ? Colors.white : AppColors.border,
+          onTap: _pick,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Icon(
+                Icons.colorize,
+                size: 24,
+                color: c.octoPicking ? Colors.black : AppColors.text,
+              ),
+              if (picked != null)
+                Positioned(
+                  right: 5,
+                  bottom: 5,
+                  child: Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: picked,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1.5),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 6),
+        box(
+          label: 'Tavolozza',
+          fill: AppColors.button,
+          border: AppColors.border,
+          onTap: _palette,
+          child: const Icon(Icons.palette, size: 24, color: Colors.white),
+          gradient: const SweepGradient(
+            colors: [
+              Color(0xFFE5484D),
+              Color(0xFFF5A524),
+              Color(0xFFF7E15A),
+              Color(0xFF3DD68C),
+              Color(0xFF22B8F2),
+              Color(0xFF7C5CFF),
+              Color(0xFFE54DB5),
+              Color(0xFFE5484D),
+            ],
+          ),
+        ),
       ],
     );
   }

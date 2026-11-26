@@ -11,7 +11,7 @@ class OctoRect {
     required this.w,
     required this.h,
     this.angle = 0,
-    required this.white,
+    required this.color,
   });
 
   Offset center;
@@ -20,8 +20,11 @@ class OctoRect {
   /// Radianti, senso orario sullo schermo.
   double angle;
 
-  /// `true` = Imbianca (inchiostro bianco), `false` = Oscura (nero).
-  final bool white;
+  /// Colore dell'inchiostro (ARGB opaco): bianco, nero o un colore preso
+  /// con la pipetta o dalla tavolozza.
+  final int color;
+
+  bool get white => color == InkFill.whiteInk;
 
   static const double minSide = 8;
 
@@ -91,6 +94,6 @@ class OctoRect {
     w: w,
     h: h,
     angle: angle,
-    white: white,
+    color: color,
   );
 }

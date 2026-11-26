@@ -21,7 +21,8 @@ class InkCounterBar extends StatelessWidget {
     return ListenableBuilder(
       listenable: store,
       builder: (context, _) {
-        final l = (white ? store.inkWhiteMl : store.inkBlackMl) / 1000;
+        // un solo contatore: tutti gli inchiostri insieme
+        final l = (store.inkWhiteMl + store.inkBlackMl) / 1000;
         final next = InkMath.nextGoal(l);
         final head = 'assets/octo/testa_${white ? 'nero' : 'bianco'}.webp';
         return Container(
@@ -58,7 +59,7 @@ class InkCounterBar extends StatelessWidget {
                     value: InkMath.progress(l),
                     minHeight: 10,
                     backgroundColor: const Color(0xFF1C1F27),
-                    color: white ? Colors.white : const Color(0xFF8D96A3),
+                    color: const Color(0xFFB9C2CF),
                   ),
                 ),
               ),

@@ -676,7 +676,7 @@ class EditorController extends ChangeNotifier {
   static const octoAnimMs = 18 * octoFrameMs + 200;
 
   /// Chiamata a ogni "Fatto" con i litri spruzzati di ogni colore.
-  void Function(double blackLitres, double whiteLitres)? onInk;
+  void Function(double litres)? onInk;
 
   OctoRect? get octoCurrent =>
       octoSelected == null ? null : octoRects[octoSelected!];
@@ -698,14 +698,16 @@ class EditorController extends ChangeNotifier {
     octoRects.clear();
     octoSelected = null;
     octoRotating = false;
+    octoPicking = false;
+    octoPickAt = null;
     notifyListeners();
   }
 
   /// Un rettangolo nuovo al centro di quello che si vede.
-  void addOctoRect({required bool white}) {
+  void addOctoRect({required int color, Offset? at}) {
     if (!octoMode || !pageReady) return;
     final d = doc;
-    final mid = screenToContent(viewportSize.center(Offset.zero));
+    final mid = at ?? screenToContent(viewportSize.center(Offset.zero));
     final center = Offset(
       mid.dx.clamp(0, d.width.toDouble()),
       mid.dy.clamp(0, d.height.toDouble()),
@@ -714,7 +716,7 @@ class EditorController extends ChangeNotifier {
     final visW = viewportSize.width / transform.scale;
     final w = math.max(OctoRect.minSide, math.min(d.width * .6, visW * .5));
     final h = math.max(OctoRect.minSide, w * .25);
-    octoRects.add(OctoRect(center: center, w: w, h: h, white: white));
+    octoRects.add(OctoRect(center: center, w: w, h: h, color: color));
     octoSelected = octoRects.length - 1;
     notifyListeners();
   }
@@ -780,7 +782,7 @@ class EditorController extends ChangeNotifier {
     octoSplash = null;
     final p = page;
     final d = p.doc;
-    double black = 0, white = 0;
+    double litres = 0;
     final fills = [
       for (final r in rs)
         r.toFill(
@@ -791,15 +793,12 @@ class EditorController extends ChangeNotifier {
         ),
     ];
     for (final r in rs) {
-      if (r.white) {
-        white += r.area;
-      } else {
-        black += r.area;
-      }
+      litres += r.area / 250000;
     }
     p.history.pushFills(fills);
     p.refreshView();
-    onInk?.call(black / 250000, white / 250000);
+    // un solo contatore per tutti gli inchiostri
+    onInk?.call(litres);
     notifyListeners();
   }
 
@@ -808,6 +807,100 @@ class EditorController extends ChangeNotifier {
   static double _toOriginal(IndexRuns runs, double v, int len) {
     final i = v.floor().clamp(0, len - 1);
     return runs.originalIndex(i) + (v - v.floor());
+  }
+
+  // --- pipetta ----------------------------------------------------------------
+
+  /// La pipetta è pronta: il prossimo tocco sulla pagina prende un colore.
+  bool octoPicking = false;
+
+  /// Dove si trova il dito mentre si sceglie il colore (schermo).
+  Offset? octoPickAt;
+
+  /// Ultimi colori presi con la pipetta (il primo è il più recente).
+  final List<int> pickedColors = [];
+
+  void startPicking() {
+    if (!octoMode || !pageReady || octoAnimating) return;
+    octoPicking = true;
+    octoPickAt = null;
+    octoSelected = null;
+    notifyListeners();
+  }
+
+  void cancelPicking() {
+    if (!octoPicking) return;
+    octoPicking = false;
+    octoPickAt = null;
+    notifyListeners();
+  }
+
+  void movePick(Offset screen) {
+    if (!octoPicking) return;
+    octoPickAt = screen;
+    notifyListeners();
+  }
+
+  /// Punto del documento → punto dell'immagine originale della pagina.
+  Offset? contentToOriginal(Offset content) {
+    final d = doc;
+    if (content.dx < 0 ||
+        content.dy < 0 ||
+        content.dx >= d.width ||
+        content.dy >= d.height) {
+      return null;
+    }
+    return Offset(
+      _toOriginal(d.cols, content.dx, d.width),
+      _toOriginal(d.rows, content.dy, d.height),
+    );
+  }
+
+  ui.Image? get pageImage => page.image;
+
+  /// Dito alzato: prende il colore sotto il mirino e mette lì il rettangolo.
+  Future<void> finishPick() async {
+    final at = octoPickAt;
+    octoPicking = false;
+    octoPickAt = null;
+    notifyListeners();
+    if (at == null || !octoMode) return;
+    final content = screenToContent(at);
+    final o = contentToOriginal(content);
+    if (o == null) return;
+    final color = await _colorAt(o);
+    if (color == null || _disposed) return;
+    pickedColors
+      ..remove(color)
+      ..insert(0, color);
+    if (pickedColors.length > 8) pickedColors.removeLast();
+    addOctoRect(color: color, at: content);
+  }
+
+  /// Colore di un pixel dell'originale (compreso l'inchiostro già messo).
+  Future<int?> _colorAt(Offset o) async {
+    for (final f in page.history.fills.reversed) {
+      if (f.contains(o.dx, o.dy)) return f.color;
+    }
+    final img = page.image;
+    if (img == null) return null;
+    final rec = ui.PictureRecorder();
+    ui.Canvas(rec).drawImageRect(
+      img,
+      Rect.fromLTWH(o.dx.floorToDouble(), o.dy.floorToDouble(), 1, 1),
+      const Rect.fromLTWH(0, 0, 1, 1),
+      ui.Paint()..filterQuality = ui.FilterQuality.none,
+    );
+    final pic = rec.endRecording();
+    final one = await pic.toImage(1, 1);
+    pic.dispose();
+    final data = await one.toByteData(format: ui.ImageByteFormat.rawRgba);
+    one.dispose();
+    if (data == null) return null;
+    return 0xFF000000 |
+        (data.getUint8(0) << 16) |
+        (data.getUint8(1) << 8) |
+        data.getUint8(2);
   }
 
   // --- precisione al pixel ---------------------------------------------------

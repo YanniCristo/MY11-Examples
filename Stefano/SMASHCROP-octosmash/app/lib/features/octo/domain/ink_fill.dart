@@ -14,7 +14,7 @@ class InkFill {
     required this.w,
     required this.h,
     required this.angle,
-    required this.white,
+    required this.color,
   });
 
   /// Centro, in pixel dell'originale.
@@ -26,8 +26,12 @@ class InkFill {
   /// Rotazione in radianti (senso orario sullo schermo).
   final double angle;
 
-  /// `true` = inchiostro bianco, `false` = nero.
-  final bool white;
+  /// Colore dell'inchiostro (ARGB, sempre opaco).
+  final int color;
+
+  static const int black = 0xFF000000, whiteInk = 0xFFFFFFFF;
+
+  bool get white => color == whiteInk;
 
   /// I quattro angoli (in alto a sinistra, in alto a destra, in basso a
   /// destra, in basso a sinistra), già ruotati.
@@ -66,11 +70,11 @@ class InkFill {
     w: w * sx,
     h: h * sy,
     angle: angle,
-    white: white,
+    color: color,
   );
 
   /// Per passarlo ai calcoli in background (isolate) e per salvarlo.
-  List<double> toList() => [cx, cy, w, h, angle, white ? 1 : 0];
+  List<double> toList() => [cx, cy, w, h, angle, color.toDouble()];
 
   static InkFill fromList(List<double> l) => InkFill(
     cx: l[0],
@@ -78,7 +82,10 @@ class InkFill {
     w: l[2],
     h: l[3],
     angle: l[4],
-    white: l[5] > .5,
+    // i primi salvataggi avevano 1 = bianco, 0 = nero
+    color: l[5] <= 1
+        ? (l[5] > .5 ? whiteInk : black)
+        : (l[5].round() | 0xFF000000),
   );
 }
 
@@ -94,15 +101,17 @@ void applyInkFills(RasterImage img, List<List<double>> fills) {
         x1 = math.min(img.width, b.right.ceil());
     final y0 = math.max(0, b.top.floor()),
         y1 = math.min(img.height, b.bottom.ceil());
-    final v = f.white ? 255 : 0;
+    final cr = (f.color >> 16) & 0xFF,
+        cg = (f.color >> 8) & 0xFF,
+        cb = f.color & 0xFF;
     for (var y = y0; y < y1; y++) {
       var i = (y * img.width + x0) * 4;
       for (var x = x0; x < x1; x++, i += 4) {
         // centro del pixel
         if (!f.contains(x + .5, y + .5)) continue;
-        px[i] = v;
-        px[i + 1] = v;
-        px[i + 2] = v;
+        px[i] = cr;
+        px[i + 1] = cg;
+        px[i + 2] = cb;
         px[i + 3] = 255;
       }
     }

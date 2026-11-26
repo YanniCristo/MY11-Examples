@@ -17,7 +17,7 @@ void main() {
       w: 40,
       h: 10,
       angle: math.pi / 2,
-      white: false,
+      color: InkFill.black,
     );
     expect(f.contains(50, 65), isTrue); // ruotato di 90°: ora è alto
     expect(f.contains(65, 50), isFalse);
@@ -36,7 +36,7 @@ void main() {
         w: 6,
         h: 4,
         angle: 0,
-        white: false,
+        color: InkFill.black,
       ).toList(),
     ]);
     int px(int x, int y) => img.rgba[(y * 20 + x) * 4];
@@ -51,7 +51,7 @@ void main() {
       center: const Offset(100, 100),
       w: 40,
       h: 20,
-      white: true,
+      color: InkFill.whiteInk,
     );
     final fixed = r.corner(2);
     r.resizeFrom(0, const Offset(60, 70));
@@ -70,7 +70,14 @@ void main() {
   test('la cronologia tiene gli inchiostri e li annulla', () {
     final h = EditHistory(StripDocument.original(100, 100));
     h.pushFills([
-      const InkFill(cx: 1, cy: 1, w: 2, h: 2, angle: 0, white: true),
+      const InkFill(
+        cx: 1,
+        cy: 1,
+        w: 2,
+        h: 2,
+        angle: 0,
+        color: InkFill.whiteInk,
+      ),
     ]);
     expect(h.hasFills, isTrue);
     expect(h.fills.length, 1);
@@ -86,5 +93,22 @@ void main() {
     expect(InkMath.nextGoal(10), 1);
     expect(InkMath.progress(2.5), closeTo(.5, 1e-9));
     expect(InkMath.nextGoal(5000), isNull);
+  });
+
+  test('inchiostro colorato e vecchi salvataggi', () {
+    final img = RasterImage(4, 4, Uint8List(64));
+    applyInkFills(img, [
+      const InkFill(
+        cx: 2,
+        cy: 2,
+        w: 4,
+        h: 4,
+        angle: 0,
+        color: 0xFF336699,
+      ).toList(),
+    ]);
+    expect(img.rgba.sublist(0, 4), [0x33, 0x66, 0x99, 255]);
+    expect(InkFill.fromList([0, 0, 1, 1, 0, 1]).white, isTrue);
+    expect(InkFill.fromList([0, 0, 1, 1, 0, 0]).color, InkFill.black);
   });
 }

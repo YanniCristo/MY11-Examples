@@ -188,12 +188,15 @@ class OctoPainter extends CustomPainter {
     final splash = c.octoSplash;
     if (splash != null) _paintSplash(canvas, splash);
     if (c.octoAnimating) _paintRobot(canvas, size);
+    final pick = c.octoPickAt;
+    if (c.octoPicking && pick != null) _paintLoupe(canvas, size, pick);
+    if (c.octoPicking && pick == null) _hint(canvas, size);
     for (var i = 0; i < c.octoRects.length; i++) {
       final r = c.octoRects[i];
       final pts = _screen(r);
       final path = Path()..addPolygon(pts, true);
       // velato: si vede bene cosa c'è sotto finché non si preme "Fatto"
-      canvas.drawPath(path, Paint()..color = _veil(r.white));
+      canvas.drawPath(path, Paint()..color = _veil(r.color));
       final sel = i == c.octoSelected;
       // contorno solo per vederlo: sta fuori dal rettangolo, non colora
       canvas.drawPath(
@@ -203,7 +206,9 @@ class OctoPainter extends CustomPainter {
           ..strokeWidth = sel ? 2.4 : 1.4
           ..color = sel
               ? _cyan
-              : (r.white ? const Color(0xFF9AA0AA) : const Color(0xFF5A606A)),
+              : (Color(r.color).computeLuminance() > .4
+                    ? const Color(0xFF5A606A)
+                    : const Color(0xFFB8BEC8)),
       );
       if (sel) {
         if (c.octoRotating) _guides(canvas, size, c.contentToScreen(r.center));
@@ -276,9 +281,9 @@ class OctoPainter extends CustomPainter {
       final pts = _screen(r);
       final path = Path()..addPolygon(pts, true);
       // in attesa dello spruzzo resta velato com'era
-      canvas.drawPath(path, Paint()..color = _veil(r.white));
+      canvas.drawPath(path, Paint()..color = _veil(r.color));
       final b = path.getBounds();
-      final paint = Paint()..color = r.white ? Colors.white : Colors.black;
+      final paint = Paint()..color = Color(r.color);
       canvas.save();
       canvas.clipPath(path);
       final rnd = math.Random(r.hashCode);
@@ -296,8 +301,79 @@ class OctoPainter extends CustomPainter {
     }
   }
 
-  static Color _veil(bool white) =>
-      (white ? Colors.white : Colors.black).withValues(alpha: .5);
+  void _hint(Canvas canvas, Size size) {
+    final tp = TextPainter(
+      text: const TextSpan(
+        text: 'Appoggia il dito sul colore e lascia',
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: size.width - 40);
+    final box = Rect.fromCenter(
+      center: Offset(size.width / 2, 30),
+      width: tp.width + 28,
+      height: tp.height + 14,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(box, const Radius.circular(20)),
+      Paint()..color = _cyan,
+    );
+    tp.paint(canvas, box.center - Offset(tp.width / 2, tp.height / 2));
+  }
+
+  static Color _veil(int color) => Color(color).withValues(alpha: .5);
+
+  /// Lente sopra il dito: ingrandisce la pagina sotto il mirino, così il
+  /// dito non copre il colore che si sta prendendo.
+  void _paintLoupe(Canvas canvas, Size size, Offset at) {
+    final img = c.pageImage;
+    final o = c.contentToOriginal(c.screenToContent(at));
+    const r = 54.0, zoom = 5.0;
+    var centre = at - const Offset(0, 96);
+    if (centre.dy < r + 4) centre = at + const Offset(0, 96);
+    final circle = Rect.fromCircle(center: centre, radius: r);
+    canvas.save();
+    canvas.clipPath(Path()..addOval(circle));
+    canvas.drawRect(circle, Paint()..color = const Color(0xFF15171D));
+    if (img != null && o != null) {
+      // pixel dell'originale mostrati in ogni lato della lente
+      final span = 2 * r / (c.transform.scale * zoom);
+      canvas.drawImageRect(
+        img,
+        Rect.fromCenter(center: o, width: span, height: span),
+        circle,
+        Paint()..filterQuality = FilterQuality.none,
+      );
+    }
+    canvas.restore();
+    final ring = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4
+      ..color = Colors.white;
+    canvas.drawCircle(centre, r, ring);
+    canvas.drawCircle(
+      centre,
+      r + 2,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5
+        ..color = Colors.black54,
+    );
+    // mirino
+    final m = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..color = Colors.black;
+    canvas.drawRect(Rect.fromCenter(center: centre, width: 10, height: 10), m);
+    canvas.drawRect(
+      Rect.fromCenter(center: centre, width: 12, height: 12),
+      m..color = Colors.white,
+    );
+  }
 
   /// OctoSmash attraversa la pagina come SMASH: entra, spruzza, esce.
   void _paintRobot(Canvas canvas, Size size) {

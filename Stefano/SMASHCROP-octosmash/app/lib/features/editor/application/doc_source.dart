@@ -31,9 +31,6 @@ class DocSource {
   /// Rettangoli d'inchiostro di OctoSmash (coordinate dell'originale).
   final List<InkFill> fills;
 
-  static final _black = Paint()..color = const Color(0xFF000000);
-  static final _white = Paint()..color = const Color(0xFFFFFFFF);
-
   /// Disegna gli inchiostri sopra un pezzo dell'originale: [src] è il pezzo
   /// nell'originale, [dst] dove finisce sullo schermo o nell'immagine.
   static void paintFills(
@@ -52,7 +49,7 @@ class DocSource {
       if (!f.bounds.overlaps(src)) continue;
       final cs = f.corners;
       final path = Path()..addPolygon(cs, true);
-      canvas.drawPath(path, f.white ? _white : _black);
+      canvas.drawPath(path, Paint()..color = Color(f.color));
     }
     canvas.restore();
   }

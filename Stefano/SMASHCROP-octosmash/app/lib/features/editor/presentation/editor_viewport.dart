@@ -80,11 +80,21 @@ class _EditorViewportState extends State<EditorViewport> {
             // il gesto parte solo dopo qualche pixel di movimento: per capire
             // cosa si è toccato conta il punto dove il dito si è appoggiato
             return Listener(
-              onPointerDown: (e) => _octo.down(e.localPosition),
+              onPointerDown: (e) {
+                _octo.down(e.localPosition);
+                if (c.octoPicking) c.movePick(e.localPosition);
+              },
+              onPointerMove: (e) {
+                if (c.octoPicking) c.movePick(e.localPosition);
+              },
+              onPointerUp: (_) {
+                if (c.octoPicking) c.finishPick();
+              },
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTapUp: c.octoMode ? (d) => _octo.tap(d.localPosition) : null,
                 onScaleStart: (d) {
+                  if (c.octoPicking) return;
                   // OctoSmash: un dito su un rettangolo lo muove, non la pagina
                   if (d.pointerCount == 1 && _octo.start()) {
                     return;
@@ -92,6 +102,7 @@ class _EditorViewportState extends State<EditorViewport> {
                   c.gestureStart(d.localFocalPoint);
                 },
                 onScaleUpdate: (d) {
+                  if (c.octoPicking) return;
                   if (_octo.active) {
                     if (d.pointerCount > 1) {
                       _octo.end();
