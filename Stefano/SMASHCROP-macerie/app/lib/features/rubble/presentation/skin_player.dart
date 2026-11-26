@@ -17,6 +17,7 @@ class SkinPlayer extends StatefulWidget {
     required this.skin,
     this.playId = 0,
     this.locked = false,
+    this.placeholder,
   });
 
   final SkinDef skin;
@@ -26,6 +27,9 @@ class SkinPlayer extends StatefulWidget {
 
   /// Bloccata: sagoma scura, ferma.
   final bool locked;
+
+  /// Immagine da mostrare mentre l'animazione carica, al posto della posa.
+  final String? placeholder;
 
   @override
   State<SkinPlayer> createState() => _SkinPlayerState();
@@ -101,7 +105,7 @@ class _SkinPlayerState extends State<SkinPlayer>
       // mentre l'animazione arriva si vede subito la posa da eroe
       // (un'immagine sola), o la sua sagoma se è ancora bloccato
       final pose = Image.asset(
-        widget.skin.pose,
+        widget.placeholder ?? widget.skin.pose,
         fit: BoxFit.contain,
         gaplessPlayback: true,
         errorBuilder: (_, _, _) => const SizedBox.shrink(),
