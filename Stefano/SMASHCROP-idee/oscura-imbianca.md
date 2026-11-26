@@ -54,7 +54,24 @@ del testo dei documenti.
 - **Uscire:**
   - **tocco lungo su "✓ Fatto"**;
   - oppure dall'**interruttore SMASH on/off**: in modalità OctoSmash mostra la testa del
-    polpo e, se lo si spegne, il polpo **non si addormenta**: si esce e si torna a SMASH.
+    polpo e, se lo si spegne, il polpo **non si addormenta**: si esce e si torna a SMASH;
+  - oppure dalla **riga delle pagine**: in modalità OctoSmash uno dei tasti grandi
+    ("Pag. 1 di 1", "Aggiungi" o "Layout" nei PDF) diventa **"← Torna a SMASH"**.
+    Le frecce ‹ › restano per cambiare pagina.
+- **Un altro tasto grande della riga delle pagine resta libero** in modalità OctoSmash:
+  da decidere a cosa serve (proposte: "Raddrizza", che rimette il rettangolo selezionato
+  a 0° con un tocco, oppure "Duplica").
+
+## Eliminare un rettangolo
+
+- Si usa il **cestino** che c'è già nella riga delle pagine: tocchi il rettangolo per
+  selezionarlo e poi il cestino lo toglie (prima di "Fatto").
+
+## Garanzie
+
+- L'app **non dichiara** che l'oscuramento sia a prova di recupero dei dati: si copre ciò
+  che si vede, senza promesse di sicurezza (decisione di Stefano, 26 nov 2026). Quindi niente
+  frasi tipo "dati protetti" o "redazione sicura" negli store e negli annunci.
 
 ## Contatore e Collezione
 
