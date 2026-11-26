@@ -350,14 +350,27 @@ class OctoPainter extends CustomPainter {
       );
     }
     canvas.restore();
-    final ring = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4
-      ..color = Colors.white;
-    canvas.drawCircle(centre, r, ring);
+    // anello del colore che si sta per prendere
+    final live = c.livePickColor;
     canvas.drawCircle(
       centre,
-      r + 2,
+      r + 3,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 10
+        ..color = live == null ? Colors.white : Color(live),
+    );
+    canvas.drawCircle(
+      centre,
+      r - 2,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5
+        ..color = Colors.white,
+    );
+    canvas.drawCircle(
+      centre,
+      r + 8.5,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5

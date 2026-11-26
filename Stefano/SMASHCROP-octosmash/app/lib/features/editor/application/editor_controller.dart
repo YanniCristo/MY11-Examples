@@ -824,6 +824,7 @@ class EditorController extends ChangeNotifier {
     if (!octoMode || !pageReady || octoAnimating) return;
     octoPicking = true;
     octoPickAt = null;
+    livePickColor = null;
     octoSelected = null;
     notifyListeners();
   }
@@ -835,10 +836,37 @@ class EditorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Colore sotto il mirino in questo momento (si aggiorna mentre ci si
+  /// muove), così si sa che colore si prende lasciando il dito.
+  int? livePickColor;
+  bool _sampling = false;
+
   void movePick(Offset screen) {
     if (!octoPicking) return;
     octoPickAt = screen;
     notifyListeners();
+    _sampleLive();
+  }
+
+  Future<void> _sampleLive() async {
+    if (_sampling) return;
+    _sampling = true;
+    try {
+      Offset? done;
+      // finché il dito si sposta, rileggi l'ultimo punto
+      while (octoPicking && octoPickAt != null && octoPickAt != done) {
+        done = octoPickAt;
+        final o = contentToOriginal(screenToContent(done!));
+        final color = o == null ? null : await _colorAt(o);
+        if (_disposed || !octoPicking) return;
+        if (color != null && color != livePickColor) {
+          livePickColor = color;
+          notifyListeners();
+        }
+      }
+    } finally {
+      _sampling = false;
+    }
   }
 
   /// Punto del documento → punto dell'immagine originale della pagina.

@@ -354,6 +354,11 @@ class _EditorScreenState extends State<EditorScreen>
       ),
     );
     final picked = c.pickedColors.isEmpty ? null : Color(c.pickedColors.first);
+    // mentre si sceglie, il tasto è del colore sotto il mirino
+    final live = c.octoPicking && c.livePickColor != null
+        ? Color(c.livePickColor!)
+        : null;
+    final liveDark = live != null && live.computeLuminance() < .45;
     return Row(
       children: [
         box(
@@ -398,7 +403,9 @@ class _EditorScreenState extends State<EditorScreen>
         const SizedBox(width: 6),
         box(
           label: 'Pipetta',
-          fill: c.octoPicking ? const Color(0xFF22E4F2) : AppColors.button,
+          fill:
+              live ??
+              (c.octoPicking ? const Color(0xFF22E4F2) : AppColors.button),
           border: c.octoPicking ? Colors.white : AppColors.border,
           onTap: _pick,
           child: Stack(
@@ -407,9 +414,11 @@ class _EditorScreenState extends State<EditorScreen>
               Icon(
                 Icons.colorize,
                 size: 24,
-                color: c.octoPicking ? Colors.black : AppColors.text,
+                color: liveDark
+                    ? Colors.white
+                    : (c.octoPicking ? Colors.black : AppColors.text),
               ),
-              if (picked != null)
+              if (picked != null && !c.octoPicking)
                 Positioned(
                   right: 5,
                   bottom: 5,
