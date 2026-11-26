@@ -453,3 +453,14 @@ La card da condividere e le sagome nere della Collezione le genera l'app. **Graf
   18:30, testi di SMASH in 6 lingue, interruttore nel menu, permesso dopo il primo salvataggio) e push
   Firebase predisposte (argomenti `tutti` e `lang_xx`), in attesa dei codici Firebase e della chiave APNs.
 
+## Idea per il primo aggiornamento (non per l'uscita): Oscura e Imbianca
+
+- Stessa selezione A/B; al posto di togliere la fascia la si copre (dati personali su bollette,
+  estratti conto, documenti). Niente modifica del testo dei documenti: solo coprire.
+- Non come tasti principali: secondo livello (tenendo premuto "Rimuovi porzione" o freccia accanto),
+  così la funzione geniale resta la protagonista. Lanciarlo come novità con notifica e annuncio.
+- Due SMASH polpo (8 tentacoli), con contrasto voluto:
+  - **SMASH polpo bianco** → spruzza **inchiostro nero** → *Oscura*;
+  - **SMASH polpo nero** → spruzza **inchiostro bianco** → *Imbianca*.
+  Il polpo nero sullo sfondo scuro dell'app va contornato (bordo chiaro o bagliore) per vedersi.
+
