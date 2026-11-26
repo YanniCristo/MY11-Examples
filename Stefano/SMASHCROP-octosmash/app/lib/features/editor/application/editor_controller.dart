@@ -681,6 +681,13 @@ class EditorController extends ChangeNotifier {
   int octoAnimStart = 0;
   bool get octoAnimating => octoAnimStart != 0;
 
+  /// L'animazione in corso spruzza inchiostro bianco (la fa OctoSmash Nero).
+  bool octoAnimWhiteInk = false;
+
+  /// Centro del rettangolo da colpire (documento): OctoSmash si mette in
+  /// modo che lo spruzzo arrivi lì.
+  Offset? octoAnimTarget;
+
   /// Tempi dell'animazione (10 fotogrammi al secondo come SMASH): lo spruzzo
   /// parte col fotogramma 6 (SPLASH!) e l'inchiostro si posa subito dopo.
   static const octoFrameMs = 100;
@@ -794,6 +801,8 @@ class EditorController extends ChangeNotifier {
       return;
     }
     octoSplashDuration = octoSplashMs;
+    octoAnimWhiteInk = octoSplash!.first.white;
+    octoAnimTarget = octoSplash!.first.center;
     octoAnimStart = now;
     octoSplashStart = now + octoSplashAtMs;
     octoSelected = null;

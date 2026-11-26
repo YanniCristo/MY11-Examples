@@ -147,26 +147,40 @@ class OctoGestures {
 abstract final class OctoFrames {
   static const int count = 18;
   static const double feetY = 335, bodyH = 210;
-  static List<ui.Image>? images;
-  static bool _loading = false;
+
+  /// Dove arriva lo spruzzo nel fotogramma 6 (pixel della tela 730×470).
+  static const Offset splashAt = Offset(490, 215);
+
+  /// Fotogrammi per linea: 'bianco' (inchiostro nero e colori) e 'nero'
+  /// (inchiostro bianco).
+  static final Map<String, List<ui.Image>> lines = {};
+  static final Set<String> _loading = {};
 
   static void load() {
-    if (images != null || _loading) return;
-    _loading = true;
-    () async {
-      final list = <ui.Image>[];
-      for (var i = 1; i <= count; i++) {
-        final data = await rootBundle.load(
-          'assets/octo/bianco/octo_${i.toString().padLeft(2, '0')}.webp',
-        );
-        final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
-        list.add((await codec.getNextFrame()).image);
-        codec.dispose();
-      }
-      images = list;
-    }().catchError((_) {
-      _loading = false;
-    });
+    for (final line in const ['bianco', 'nero']) {
+      if (lines.containsKey(line) || !_loading.add(line)) continue;
+      () async {
+        // tutti i fotogrammi insieme, non uno dopo l'altro
+        final list = await Future.wait([
+          for (var i = 1; i <= count; i++)
+            () async {
+              final data = await rootBundle.load(
+                'assets/octo/$line/octo_${i.toString().padLeft(2, '0')}.webp',
+              );
+              final codec = await ui.instantiateImageCodec(
+                data.buffer.asUint8List(),
+              );
+              final img = (await codec.getNextFrame()).image;
+              codec.dispose();
+              return img;
+            }(),
+        ]);
+        lines[line] = list;
+      }().catchError((Object e) {
+        debugPrint('OctoFrames $line: $e');
+        _loading.remove(line);
+      });
+    }
   }
 }
 
@@ -390,14 +404,25 @@ class OctoPainter extends CustomPainter {
 
   /// OctoSmash attraversa la pagina come SMASH: entra, spruzza, esce.
   void _paintRobot(Canvas canvas, Size size) {
-    final imgs = OctoFrames.images;
+    // inchiostro bianco → OctoSmash Nero; nero e colori → OctoSmash Bianco
+    final imgs = OctoFrames.lines[c.octoAnimWhiteInk ? 'nero' : 'bianco'];
     if (imgs == null) return;
     final ms = DateTime.now().millisecondsSinceEpoch - c.octoAnimStart;
     final i = (ms ~/ EditorController.octoFrameMs).clamp(0, imgs.length - 1);
     final s = size.width * .32 / OctoFrames.bodyH;
     final w = 730 * s, h = 470 * s;
-    final left = (size.width - w) / 2;
-    final top = size.height * .62 - OctoFrames.feetY * s;
+    var left = (size.width - w) / 2;
+    var top = size.height * .62 - OctoFrames.feetY * s;
+    // si sposta perché lo spruzzo arrivi sul rettangolo, restando però
+    // dentro lo schermo (se il rettangolo è sul bordo, ci arriva vicino)
+    final target = c.octoAnimTarget;
+    if (target != null) {
+      final p = c.contentToScreen(target);
+      left = p.dx - OctoFrames.splashAt.dx * s;
+      top = p.dy - OctoFrames.splashAt.dy * s;
+      left = left.clamp(-200 * s, size.width - 520 * s);
+      top = top.clamp(-80 * s, size.height - 345 * s);
+    }
     canvas.drawImageRect(
       imgs[i],
       const Rect.fromLTWH(0, 0, 730, 470),

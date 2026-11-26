@@ -38,6 +38,7 @@ import '../../pdf_processing/services/pdf_service.dart';
 import '../../settings/preferences.dart';
 import '../../octo/domain/ink_fill.dart';
 import '../../octo/presentation/ink_counter_bar.dart';
+import '../../octo/presentation/octo_layer.dart';
 import '../../octo/presentation/octo_palette.dart';
 import '../application/editor_controller.dart';
 import '../application/saved_work.dart';
@@ -103,6 +104,8 @@ class _EditorScreenState extends State<EditorScreen>
             preferences: widget.preferences,
           );
     if (widget.restore != null) c.restoreWork(widget.restore!);
+    // fotogrammi di OctoSmash pronti prima che serva l'animazione
+    OctoFrames.load();
     // OctoSmash: i litri d'inchiostro vanno nel loro contatore
     c.onInk = (litres) =>
         _rubble.flag((s) => s.inkBlackMl += (litres * 1000).round());
