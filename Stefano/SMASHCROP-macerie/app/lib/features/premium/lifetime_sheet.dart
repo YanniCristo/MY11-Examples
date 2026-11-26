@@ -249,35 +249,53 @@ class LifetimeChip extends StatelessWidget {
           child: Semantics(
             button: true,
             label: S.lifetimeName,
-            child: Material(
-              color: kLifetimeColor,
-              borderRadius: BorderRadius.circular(10),
-              child: InkWell(
+            child: DecoratedBox(
+              // oro: sfumatura metallica con testo scuro
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                onTap: () => showLifetimeSheet(context),
-                child: SizedBox(
-                  height: 32,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.workspace_premium,
-                          size: 15,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 3),
-                        Text(
-                          S.lifetimeChip,
-                          style: TextStyle(
-                            fontFamily: kDisplayFont,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 12.5,
-                            color: Colors.white,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFFFFE89A),
+                    Color(0xFFF5C542),
+                    Color(0xFFD99A16),
+                  ],
+                ),
+                boxShadow: const [
+                  BoxShadow(color: Color(0x55F5C542), blurRadius: 10),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(10),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () => showLifetimeSheet(context),
+                  child: SizedBox(
+                    height: 32,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.workspace_premium,
+                            size: 15,
+                            color: Color(0xFF3A2600),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 3),
+                          Text(
+                            S.lifetimeChip,
+                            style: TextStyle(
+                              fontFamily: kDisplayFont,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 12.5,
+                              color: const Color(0xFF3A2600),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

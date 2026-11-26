@@ -1295,7 +1295,6 @@ class S {
     'Ein endloser Screenshot, ein Foto, ein PDF mit einem Stück, das da nicht hingehört. Bisher gab es nur zwei Wege, beide mies: in Teile schneiden und alles von Hand wieder zusammensetzen oder einer KI vertrauen, die etwas erfindet, verzerrt und danebenliegt.\n\nSmashCrop eröffnet den dritten, an den noch nie jemand gedacht hat. Markiere den Streifen mit A und B, waagerecht oder senkrecht. Ein Tipp auf „Bereich entfernen". Fertig. Das Stück verschwindet und der Rest schließt sich von selbst, ohne dass sonst etwas angetastet wird. Sogar bei PDFs mit Dutzenden Seiten. Sekunden, nicht Minuten.\n\nUnd den Schlag führt er aus: SMASH. Der Roboter, der nicht zuschneidet, sondern ZERSCHMETTERT. Jeden Bereich, den du löschst, pulverisiert er mit einem Faustschlag und verschlingt ihn als Schutt. Je mehr du zerstörst, desto stärker wird er: Füll Schubkarre, Mischer, Mulde und Kipper, und er entwickelt sich zu neuen SMASHs, einer verheerender als der andere. Du bringst deine Dateien im Nu in Ordnung, er wird zur Legende.\n\n(Ist SMASH aus, funktioniert das Schneiden genauso, aber Schutt wird nicht gezählt.)',
   );
 
-
   static String get continueCutting => _t(
     'Continua a tagliare',
     'Keep cutting',
