@@ -423,17 +423,30 @@ class OctoPainter extends CustomPainter {
     final i = (ms ~/ EditorController.octoFrameMs).clamp(0, imgs.length - 1);
     final s = size.width * .32 / OctoFrames.bodyH;
     final w = 730 * s, h = 470 * s;
-    var left = (size.width - w) / 2;
+    // posizione di sempre: entra dal bordo sinistro, esce dal destro
+    final left0 = (size.width - w) / 2;
+    var left = left0;
     var top = size.height * .62 - OctoFrames.feetY * s;
-    // si sposta perché lo spruzzo arrivi sul rettangolo, restando però
-    // dentro lo schermo (se il rettangolo è sul bordo, ci arriva vicino)
     final target = c.octoAnimTarget;
     if (target != null) {
+      // per lo spruzzo si mette in modo che il getto arrivi sul rettangolo
+      // (restando dentro lo schermo: sul bordo ci arriva vicino)
       final p = c.contentToScreen(target);
-      left = p.dx - OctoFrames.splashAt.dx * s;
-      top = p.dy - OctoFrames.splashAt.dy * s;
-      left = left.clamp(-200 * s, size.width - 520 * s);
-      top = top.clamp(-80 * s, size.height - 345 * s);
+      final aimLeft = (p.dx - OctoFrames.splashAt.dx * s).clamp(
+        -200 * s,
+        size.width - 520 * s,
+      );
+      top = (p.dy - OctoFrames.splashAt.dy * s).clamp(
+        -80 * s,
+        size.height - 345 * s,
+      );
+      // entrando scivola dal bordo verso quel punto, uscendo torna verso
+      // l'altro bordo: così entra ed esce sempre dai lati dell'immagine
+      final f = ms / EditorController.octoFrameMs;
+      final enter = Curves.easeInOut.transform(((f - .5) / 2.5).clamp(0, 1));
+      final leave = Curves.easeInOut.transform(((f - 15) / 2.5).clamp(0, 1));
+      final k = enter * (1 - leave);
+      left = left0 + (aimLeft - left0) * k;
     }
     canvas.drawImageRect(
       imgs[i],
