@@ -101,6 +101,11 @@ del testo dei documenti.
   quella di **OctoSmash** e viceversa (stessa schermata, stessa grafica: obiettivi, skin,
   evoluzioni, ognuna col suo contatore: kg di macerie o litri di inchiostro).
 - Si apre sulla collezione della modalità in cui si è (da SMASH → SMASH, da OctoSmash → OctoSmash).
+- **Il 🔄 cambia solo la vista, mai la modalità dell'app** (deciso il 26 nov 2026):
+  - l'app si apre **sempre con SMASH**, anche se l'ultima volta si era in OctoSmash;
+  - in OctoSmash si entra **solo** col tocco lungo su "Rimuovi porzione";
+  - nella collezione OctoSmash si sceglie quale OctoSmash usare (come la skin di SMASH):
+    la scelta vale per quando si entrerà in OctoSmash, ma non porta in quella modalità.
 
 ## Consigli ancora da valutare (Claude, 26 nov 2026)
 
