@@ -139,5 +139,5 @@ List<SkinDef> get kEvolutions => [
     if (s.unlock == Unlock.rubble) s,
 ];
 
-/// Tappe senza evoluzione: piccole soddisfazioni prima della prima.
-const List<(double, String)> kMilestones = [(15, 'secchio')];
+/// Tappe senza evoluzione: nessuna (il secchio a 15 kg è stato tolto).
+const List<(double, String)> kMilestones = [];

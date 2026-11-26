@@ -59,7 +59,7 @@ void main() {
       var g = s.add(14.9);
       expect(g.milestones, isEmpty);
       g = s.add(0.2);
-      expect(g.milestones, ['secchio'], reason: 'tappa del secchio a 15 kg');
+      expect(g.milestones, isEmpty, reason: 'niente più secchio a 15 kg');
       g = s.add(140);
       expect(g.evolutions.map((e) => e.id), ['burp']);
       expect(s.skinId, 'burp');

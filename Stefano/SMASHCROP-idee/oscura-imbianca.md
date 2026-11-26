@@ -150,3 +150,18 @@ del testo dei documenti.
 
 - Quando uscire: non all'uscita dell'app, ma come primo aggiornamento lanciato come novità
   (notifica, post e annuncio dedicato alla privacy), per non togliere forza al taglio.
+
+## Evoluzioni: i 4 si fondono (deciso il 27 nov 2026)
+
+- Al posto delle due linee da 6 (bianca e nera): **5 personaggi nuovi**, come SMASH.
+- **I 4 di base** (Bianco, Nero, Pipetta, Multicolor) restano sempre: ognuno fa il suo lavoro.
+- **4 evoluzioni "fuse"**, una per contenitore: **Calamaio → Tanica → Bidone → Autocisterna**
+  (tolto il Bottiglione). Quando un'evoluzione è scelta, spruzza lei per tutti e 4 i tasti;
+  tornando ai 4 di base ognuno riprende il suo.
+- **1 personaggio "a vita"**, anche lui tuttofare.
+- **Scena della fusione** (i 4 che si uniscono) solo alla prima evoluzione; le altre con
+  l'animazione di evoluzione di SMASH.
+- Tecnica: inchiostro delle evoluzioni in **magenta #FF00FF**, l'app lo ricolora (bianco, nero
+  o colore scelto) → un solo set di 18 immagini per evoluzione.
+- Nomi e aspetto: da decidere.
+

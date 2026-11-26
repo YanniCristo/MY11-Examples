@@ -5,16 +5,9 @@ class InkMath {
 
   static double litres(double areaPx) => areaPx / pxPerLitre;
 
-  /// Contenitori da riempire, in litri (calamaio, bottiglione, tanica,
-  /// bidone, autocisterna).
-  static const goals = [5.0, 50.0, 200.0, 600.0, 2000.0];
-  static const goalNames = [
-    'Calamaio',
-    'Bottiglione',
-    'Tanica',
-    'Bidone',
-    'Autocisterna',
-  ];
+  /// I 4 contenitori, uno per evoluzione come per SMASH (litri).
+  static const goals = [5.0, 50.0, 200.0, 1000.0];
+  static const goalNames = ['Calamaio', 'Tanica', 'Bidone', 'Autocisterna'];
 
   /// Indice del prossimo contenitore, o `null` se sono tutti pieni.
   static int? nextGoal(double l) {
