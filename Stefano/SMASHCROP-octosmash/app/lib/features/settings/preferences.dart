@@ -10,6 +10,7 @@ class AppPreferences {
   AppPreferences._(this._prefs);
 
   static const _smashKey = 'smash_enabled';
+  static const _octoKey = 'octo_enabled';
   static const _layoutKey = 'pdf_layout_suggestion';
   static const _workKey = 'saved_work';
   static const _langKey = 'language';
@@ -30,6 +31,15 @@ class AppPreferences {
   Future<void> setFineHintShown() async {
     try {
       await _prefs?.setBool(_fineHintKey, true);
+    } catch (_) {}
+  }
+
+  /// OctoSmash è sveglio di default (spento: inchiostro senza animazione).
+  bool get octoEnabled => _prefs?.getBool(_octoKey) ?? true;
+
+  Future<void> setOctoEnabled(bool v) async {
+    try {
+      await _prefs?.setBool(_octoKey, v);
     } catch (_) {}
   }
 

@@ -53,10 +53,12 @@ del testo dei documenti.
 ## Entrare e uscire dalla modalità OctoSmash
 
 - **Entrare:** tocco lungo su "Rimuovi porzione".
+- **Interruttore on/off in OctoSmash** (cambiato il 26 nov 2026): mostra la testa di
+  OctoSmash e, se lo si spegne, **OctoSmash si addormenta** come SMASH: l'inchiostro si
+  posa subito senza animazione e senza litri. Non fa più uscire verso SMASH. Lo stato è
+  separato da quello di SMASH e resta salvato.
 - **Uscire:**
   - **tocco lungo su "✓ Fatto"**;
-  - oppure dall'**interruttore SMASH on/off**: in modalità OctoSmash mostra la testa di
-    OctoSmash e, se lo si spegne, OctoSmash **non si addormenta**: si esce e si torna a SMASH;
   - oppure dalla **riga delle pagine**: in modalità OctoSmash uno dei tasti grandi
     ("Pag. 1 di 1", "Aggiungi" o "Layout" nei PDF) diventa **"← Torna a SMASH"**.
     Le frecce ‹ › restano per cambiare pagina.

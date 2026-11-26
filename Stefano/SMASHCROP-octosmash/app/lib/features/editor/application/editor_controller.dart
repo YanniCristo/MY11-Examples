@@ -664,6 +664,19 @@ class EditorController extends ChangeNotifier {
   List<OctoRect>? octoSplash;
   int octoSplashStart = 0;
 
+  /// OctoSmash sveglio: spruzza con l'animazione e riempie i litri. Spento
+  /// l'inchiostro si posa subito, senza animazione e senza litri.
+  late bool octoEnabled = preferences.octoEnabled;
+
+  void setOcto(bool on) {
+    octoEnabled = on;
+    preferences.setOctoEnabled(on);
+    notifyListeners();
+  }
+
+  /// Durata dello spruzzo in corso (breve se OctoSmash dorme).
+  int octoSplashDuration = octoSplashMs;
+
   /// Inizio dell'animazione di OctoSmash dopo "Fatto" (0 = ferma).
   int octoAnimStart = 0;
   bool get octoAnimating => octoAnimStart != 0;
@@ -760,6 +773,17 @@ class EditorController extends ChangeNotifier {
     }
     final now = DateTime.now().millisecondsSinceEpoch;
     octoSplash = List.of(octoRects);
+    if (!octoEnabled) {
+      // dorme: l'inchiostro si posa subito, senza OctoSmash
+      octoSplashStart = now;
+      octoSplashDuration = 220;
+      octoSelected = null;
+      octoRects.clear();
+      notifyListeners();
+      Timer(const Duration(milliseconds: 220), () => _applySplash(ink: false));
+      return;
+    }
+    octoSplashDuration = octoSplashMs;
     octoAnimStart = now;
     octoSplashStart = now + octoSplashAtMs;
     octoSelected = null;
@@ -776,7 +800,7 @@ class EditorController extends ChangeNotifier {
     });
   }
 
-  void _applySplash() {
+  void _applySplash({bool ink = true}) {
     final rs = octoSplash;
     if (rs == null || _disposed) return;
     octoSplash = null;
@@ -798,7 +822,7 @@ class EditorController extends ChangeNotifier {
     p.history.pushFills(fills);
     p.refreshView();
     // un solo contatore per tutti gli inchiostri
-    onInk?.call(litres);
+    if (ink) onInk?.call(litres);
     notifyListeners();
   }
 

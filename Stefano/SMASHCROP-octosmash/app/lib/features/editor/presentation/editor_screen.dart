@@ -284,8 +284,18 @@ class _EditorScreenState extends State<EditorScreen>
   /// Ultimo colore usato (per la testa e il contatore dell'inchiostro).
   bool _octoWhite = false;
 
-  String _octoHead() =>
-      'assets/octo/testa_${_octoWhite ? 'nero' : 'bianco'}.webp';
+  String _octoHead({bool sleep = false}) =>
+      'assets/octo/testa${sleep ? '_dorme' : ''}_${_octoWhite ? 'nero' : 'bianco'}.webp';
+
+  bool _octoSleepToast = false;
+
+  void _setOcto(bool on) {
+    c.setOcto(on);
+    if (!on && !_octoSleepToast) {
+      _octoSleepToast = true;
+      _toast(S.octoSleeps);
+    }
+  }
 
   void _enterOcto() {
     if (!c.canEnterOcto) return;
@@ -1019,7 +1029,14 @@ class _EditorScreenState extends State<EditorScreen>
             const SizedBox(width: 8),
             Expanded(
               child: c.octoMode
-                  ? InkCounterBar(store: _rubble, white: _octoWhite)
+                  ? Opacity(
+                      opacity: c.octoEnabled ? 1 : .55,
+                      child: InkCounterBar(
+                        store: _rubble,
+                        white: _octoWhite,
+                        awake: c.octoEnabled,
+                      ),
+                    )
                   : CounterBar(
                       store: _rubble,
                       awake: c.smashEnabled,
@@ -1240,12 +1257,13 @@ class _EditorScreenState extends State<EditorScreen>
           SizedBox(
             width: 104,
             child: c.octoMode
-                // in OctoSmash spegnere non addormenta: si torna a SMASH
+                // in OctoSmash spegnere addormenta OctoSmash (niente
+                // animazione), come per SMASH
                 ? SmashToggle(
-                    value: true,
-                    onChanged: (_) => c.exitOcto(),
+                    value: c.octoEnabled,
+                    onChanged: _setOcto,
                     awakeAsset: _octoHead(),
-                    sleepAsset: _octoHead(),
+                    sleepAsset: _octoHead(sleep: true),
                     height: 42,
                   )
                 : SmashToggle(

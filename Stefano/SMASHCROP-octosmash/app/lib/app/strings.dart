@@ -1265,6 +1265,14 @@ class S {
     'Ative o SMASH',
     'SMASH einschalten',
   );
+  static String get octoSleeps => _t(
+    'OctoSmash dorme: niente animazione e niente litri',
+    'OctoSmash is asleep: no animation, no litres',
+    'OctoSmash dort : pas d’animation ni de litres',
+    'OctoSmash duerme: sin animación ni litros',
+    'OctoSmash está dormindo: sem animação nem litros',
+    'OctoSmash schläft: keine Animation, keine Liter',
+  );
   static String get smashSleeps => _t(
     'SMASH dorme: niente macerie',
     'SMASH is asleep: no rubble',

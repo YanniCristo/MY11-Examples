@@ -275,7 +275,7 @@ class OctoPainter extends CustomPainter {
   void _paintSplash(Canvas canvas, List<OctoRect> rs) {
     final t =
         ((DateTime.now().millisecondsSinceEpoch - c.octoSplashStart) /
-                EditorController.octoSplashMs)
+                c.octoSplashDuration)
             .clamp(0.0, 1.0);
     for (final r in rs) {
       final pts = _screen(r);

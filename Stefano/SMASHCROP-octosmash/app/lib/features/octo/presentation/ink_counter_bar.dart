@@ -9,7 +9,15 @@ import '../domain/ink_math.dart';
 /// in uso (Bianca = inchiostro nero, Nera = inchiostro bianco) e barra verso
 /// il prossimo contenitore. Separato dai kg di macerie.
 class InkCounterBar extends StatelessWidget {
-  const InkCounterBar({super.key, required this.store, required this.white});
+  const InkCounterBar({
+    super.key,
+    required this.store,
+    required this.white,
+    this.awake = true,
+  });
+
+  /// OctoSmash sveglio (spento: testa che dorme, contatore spento).
+  final bool awake;
 
   final RubbleStore store;
 
@@ -24,7 +32,8 @@ class InkCounterBar extends StatelessWidget {
         // un solo contatore: tutti gli inchiostri insieme
         final l = (store.inkWhiteMl + store.inkBlackMl) / 1000;
         final next = InkMath.nextGoal(l);
-        final head = 'assets/octo/testa_${white ? 'nero' : 'bianco'}.webp';
+        final head =
+            'assets/octo/testa${awake ? '' : '_dorme'}_${white ? 'nero' : 'bianco'}.webp';
         return Container(
           height: 40,
           padding: const EdgeInsets.symmetric(horizontal: 10),
