@@ -72,12 +72,12 @@ iscritto agli argomenti `tutti` e `lang_it` / `lang_en` / `lang_fr` / `lang_es` 
 dalla console Firebase → Messaging → nuova campagna → "Argomento" si manda a tutti o per lingua.
 Cosa serve:
 1. codici Firebase in `lib/features/ads/ads_config.dart` (da Fulvio);
-2. **chiave APNs** (.p8) per iPhone: developer.apple.com → Keys → "+" → spunta *Apple Push
-   Notifications service (APNs)* → scarica il file (si scarica **una volta sola**, va conservato).
-   Sul tuo account (Team ID `RFG6LF786B`) al 26 nov non c'era nessuna chiave. Una chiave vale per
-   tutte le app del team (anche MY11);
-3. Firebase → Impostazioni progetto → Cloud Messaging → app iOS → carica la chiave .p8 con Key ID
-   e Team ID.
+2. **chiave APNs: fatta** (26 nov 2026). Nome "Push Notifiche", **Key ID `78298U6JVH`**,
+   **Team ID `RFG6LF7869`**, ambienti Sandbox e Production, valida per tutte le app del team
+   (anche MY11). Il file `AuthKey_78298U6JVH.p8` è stato scaricato **una volta sola** nei Download
+   del PC di Stefano: va conservato al sicuro (Apple non lo fa riscaricare) e **non** va messo su git;
+3. Firebase → Impostazioni progetto → Cloud Messaging → app iOS → carica il file .p8 con
+   Key ID `78298U6JVH` e Team ID `RFG6LF7869`.
 
 Già nel progetto: permessi e ricevitori Android, icona bianca `ic_stat_smash`, compileSdk 37,
 `aps-environment` in `Runner.entitlements` (Xcode attiva "Push Notifications" da solo con la
