@@ -200,20 +200,55 @@ Future<void> askRecoveryCode(BuildContext context, RubbleStore s) async {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Text(
+              S.enterCode,
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            // campo a riquadro, con margine interno e testo al centro: il
+            // cursore non sta attaccato al bordo ed è facile tenerci premuto
             TextField(
               controller: ctl,
               autofocus: true,
               focusNode: focus,
+              textAlign: TextAlign.center,
               textCapitalization: TextCapitalization.characters,
               style: const TextStyle(
                 color: AppColors.text,
-                fontSize: 22,
-                letterSpacing: 2,
+                fontSize: 20,
+                letterSpacing: 1.5,
               ),
               decoration: InputDecoration(
                 hintText: 'XXXX-XXXX-XXXX',
-                labelText: S.enterCode,
                 errorText: error,
+                filled: true,
+                fillColor: AppColors.background,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppColors.border),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(
+                    color: AppColors.red,
+                    width: 2,
+                  ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppColors.red),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(
+                    color: AppColors.red,
+                    width: 2,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -239,7 +274,6 @@ Future<void> askRecoveryCode(BuildContext context, RubbleStore s) async {
                   // il browser non ci fa leggere gli appunti (succede nelle
                   // pagine aperte dentro altre app): si incolla a mano
                   focus.requestFocus();
-                  setState(() => error = S.pasteManually);
                   return;
                 }
                 ctl.text = text;
