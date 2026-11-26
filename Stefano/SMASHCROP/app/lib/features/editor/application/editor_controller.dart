@@ -227,9 +227,8 @@ class EditorController extends ChangeNotifier {
     final pair = selection.active;
     if (mode == null || pair == null) return false;
     final length = doc.lengthFor(mode);
-    final lo = (pair.a < pair.b ? pair.a : pair.b).round();
-    final hi = (pair.a < pair.b ? pair.b : pair.a).round();
-    return lo <= 0 && hi >= length;
+    final b = _cutBounds()!;
+    return b.$1 <= 0 && b.$2 >= length;
   }
 
   /// Il pulsante "Rimuovi porzione" si può toccare.
@@ -850,14 +849,42 @@ class EditorController extends ChangeNotifier {
 
   // --- taglio --------------------------------------------------------------
 
-  CutOperation? _pendingCut() {
+  /// Spessore delle linee rosse A e B sullo schermo (editor_viewport.dart).
+  /// (Nei test che verificano misure esatte tra i centri si mette a 0.)
+  static double selectionLineWidth = 3.0;
+
+  /// La fascia che sparisce, in pixel del documento: tutto ciò che è tra le
+  /// linee rosse **comprese le linee stesse**, cioè quello che l'occhio vede
+  /// coperto. Ogni linea è larga [selectionLineWidth] sullo schermo: si
+  /// allarga di mezza linea verso l'esterno, allo zoom attuale, e si
+  /// arrotonda sempre verso l'esterno.
+  (double, double)? _cutBounds() {
     final mode = selection.mode;
     final pair = selection.active;
     if (mode == null || pair == null) return null;
+    final length = doc.lengthFor(mode).toDouble();
+    final horizontal = mode == CutOrientation.horizontal;
+    double screen(double v) => horizontal
+        ? contentToScreen(Offset(0, v)).dy
+        : contentToScreen(Offset(v, 0)).dx;
+    final perPx = (screen(1) - screen(0)).abs();
+    final half = perPx > 0 ? (selectionLineWidth / 2) / perPx : 0.0;
+    final lo = (pair.a < pair.b ? pair.a : pair.b) - half;
+    final hi = (pair.a < pair.b ? pair.b : pair.a) + half;
+    return (
+      lo.floorToDouble().clamp(0.0, length),
+      hi.ceilToDouble().clamp(0.0, length),
+    );
+  }
+
+  CutOperation? _pendingCut() {
+    final mode = selection.mode;
+    final b = _cutBounds();
+    if (mode == null || b == null) return null;
     return CutOperation.fromLines(
       orientation: mode,
-      a: pair.a,
-      b: pair.b,
+      a: b.$1,
+      b: b.$2,
       length: doc.lengthFor(mode),
     );
   }

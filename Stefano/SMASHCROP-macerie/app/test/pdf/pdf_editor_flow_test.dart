@@ -24,6 +24,11 @@ Future<ui.Image> blank(int w, int h) async {
 }
 
 void main() {
+  // queste prove misurano i tagli tra i centri delle linee: linee senza
+  // spessore (lo spessore ha la sua prova in editor_controller_test)
+  setUp(() => EditorController.selectionLineWidth = 0);
+  tearDown(() => EditorController.selectionLineWidth = 3);
+
   late AppPreferences prefs;
   setUp(() async {
     SharedPreferences.setMockInitialValues({});

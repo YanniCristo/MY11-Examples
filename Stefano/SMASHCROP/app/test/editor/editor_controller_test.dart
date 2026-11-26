@@ -23,6 +23,11 @@ Future<ui.Image> solidImage(int w, int h) async {
 }
 
 void main() {
+  // queste prove misurano i tagli tra i centri delle linee: linee senza
+  // spessore (lo spessore ha la sua prova in editor_controller_test)
+  setUp(() => EditorController.selectionLineWidth = 0);
+  tearDown(() => EditorController.selectionLineWidth = 3);
+
   late AppPreferences prefs;
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -97,6 +102,32 @@ void main() {
       c.dispose();
     });
   }
+
+  testWidgets('sparisce anche ciò che sta sotto le linee rosse', (
+    tester,
+  ) async {
+    EditorController.selectionLineWidth = 3;
+    for (final mode in CutOrientation.values) {
+      final c = await make(tester, smash: false);
+      final horizontal = mode == CutOrientation.horizontal;
+      final length = horizontal ? 600 : 300;
+      final base = horizontal
+          ? c.selection
+          : c.selection.tap(mode, width: 300, height: 600);
+      c.selection = base.withLines(mode, const LinePair(100, 200));
+      // pixel del documento coperti da mezza linea, allo zoom attuale
+      double s(double v) => horizontal
+          ? c.contentToScreen(ui.Offset(0, v)).dy
+          : c.contentToScreen(ui.Offset(v, 0)).dx;
+      final half = 1.5 / (s(1) - s(0)).abs();
+      final lo = (100 - half).floor(), hi = (200 + half).ceil();
+      expect(hi - lo, greaterThan(100), reason: 'più largo dei soli centri');
+      expect(c.removePortion(), isTrue);
+      c.tick(const Duration(seconds: 10));
+      expect(horizontal ? c.doc.height : c.doc.width, length - (hi - lo));
+      c.dispose();
+    }
+  });
 
   testWidgets('risultato identico con e senza SMASH', (tester) async {
     final a = await make(tester, smash: true);

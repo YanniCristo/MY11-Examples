@@ -102,12 +102,14 @@ class _EditorViewportState extends State<EditorViewport> {
         ),
       ),
     ];
+    // stesso spessore usato per calcolare il taglio (linea compresa)
+    final lw = EditorController.selectionLineWidth;
     for (final v in [pa, pb]) {
       out.add(
         Positioned.fromRect(
           rect: horizontal
-              ? Rect.fromLTWH(r.left, v - 1.5, r.width, 3)
-              : Rect.fromLTWH(v - 1.5, r.top, 3, r.height),
+              ? Rect.fromLTWH(r.left, v - lw / 2, r.width, lw)
+              : Rect.fromLTWH(v - lw / 2, r.top, lw, r.height),
           child: const IgnorePointer(child: ColoredBox(color: AppColors.red)),
         ),
       );

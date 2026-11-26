@@ -22,6 +22,11 @@ Uint8List png(int w, int h, int shade) {
 }
 
 void main() {
+  // queste prove misurano i tagli tra i centri delle linee: linee senza
+  // spessore (lo spessore ha la sua prova in editor_controller_test)
+  setUp(() => EditorController.selectionLineWidth = 0);
+  tearDown(() => EditorController.selectionLineWidth = 3);
+
   late AppPreferences prefs;
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
