@@ -5,8 +5,6 @@ import 'package:material_ui/material_ui.dart';
 import '../../app/strings.dart';
 import '../../app/theme.dart';
 import '../../core/widgets/close_square_button.dart';
-import '../rubble/domain/skins.dart';
-import '../rubble/presentation/skin_player.dart';
 import 'premium.dart';
 
 /// Arancione di SMASH Tycoon: il colore dell'acquisto a vita.
@@ -92,11 +90,13 @@ class _LifetimeSheetState extends State<_LifetimeSheet> {
               alignment: Alignment.centerRight,
               child: CloseSquareButton(onTap: () => Navigator.pop(context)),
             ),
+            // posa scelta a mano (elmo dritto), non l'animazione
             SizedBox(
               height: 170,
-              child: AspectRatio(
-                aspectRatio: 730 / 470,
-                child: SkinPlayer(skin: skinById('tycoon')),
+              child: Image.asset(
+                'assets/rubble/tycoon/premium.webp',
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.medium,
               ),
             ),
             const SizedBox(height: 8),

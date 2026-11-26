@@ -157,20 +157,48 @@ Future<void> askRecoveryCode(BuildContext context, RubbleStore s) async {
       builder: (context, setState) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: Text(S.haveCode),
-        content: TextField(
-          controller: ctl,
-          autofocus: true,
-          textCapitalization: TextCapitalization.characters,
-          style: const TextStyle(
-            color: AppColors.text,
-            fontSize: 22,
-            letterSpacing: 2,
-          ),
-          decoration: InputDecoration(
-            hintText: 'XXXX-XXXX-XXXX',
-            labelText: S.enterCode,
-            errorText: error,
-          ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: ctl,
+              autofocus: true,
+              textCapitalization: TextCapitalization.characters,
+              style: const TextStyle(
+                color: AppColors.text,
+                fontSize: 22,
+                letterSpacing: 2,
+              ),
+              decoration: InputDecoration(
+                hintText: 'XXXX-XXXX-XXXX',
+                labelText: S.enterCode,
+                errorText: error,
+              ),
+            ),
+            const SizedBox(height: 12),
+            // incollare a mano in un campo vuoto è scomodo: un tocco e basta
+            OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.text,
+                side: const BorderSide(color: AppColors.border),
+                minimumSize: const Size.fromHeight(46),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              icon: const Icon(Icons.content_paste, size: 20),
+              label: Text(S.paste, style: const TextStyle(fontSize: 16)),
+              onPressed: () async {
+                final data = await Clipboard.getData(Clipboard.kTextPlain);
+                final text = data?.text?.trim() ?? '';
+                if (text.isEmpty) return;
+                ctl.text = text;
+                ctl.selection = TextSelection.collapsed(offset: text.length);
+                setState(() => error = null);
+              },
+            ),
+          ],
         ),
         actions: [
           TextButton(
