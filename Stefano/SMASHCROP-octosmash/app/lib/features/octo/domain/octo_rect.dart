@@ -22,7 +22,7 @@ class OctoRect {
 
   /// Colore dell'inchiostro (ARGB opaco): bianco, nero o un colore preso
   /// con la pipetta o dalla tavolozza.
-  final int color;
+  int color;
 
   bool get white => color == InkFill.whiteInk;
 

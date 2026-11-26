@@ -123,7 +123,8 @@ del testo dei documenti.
 - **Tocco lungo accidentale su Rimuovi porzione:** tempo più lungo (~0,8 s) e vibrazione netta.
 - **Undo dopo "Fatto":** si annulla tornando a SMASH e usando Undo, oppure tocco lungo sul
   cestino in OctoSmash per annullare l'ultimo colpo d'inchiostro.
-- **Più rettangoli prima di "Fatto":** sì, un solo "Fatto" e un solo spruzzo per tutti.
+- **Un solo rettangolo alla volta** (cambiato il 26 nov 2026): se il rettangolo c'è già,
+  ⬜ ⬛ 💧 🎨 ne cambiano solo il colore; per il successivo si preme "Fatto" e se ne crea un altro.
 - **Acquisto a vita:** OctoSmash resta gratis; una skin speciale (es. OctoSmash Oro) solo
   con "a vita".
 
@@ -142,6 +143,5 @@ del testo dei documenti.
 
 ## Da decidere
 
-- Più rettangoli prima di "Fatto": il "+" lo suggerisce (ogni tocco ne aggiunge uno), da confermare.
 - Quando uscire: non all'uscita dell'app, ma come primo aggiornamento lanciato come novità
   (notifica, post e annuncio dedicato alla privacy), per non togliere forza al taglio.

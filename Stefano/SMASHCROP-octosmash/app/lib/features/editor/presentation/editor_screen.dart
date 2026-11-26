@@ -369,6 +369,12 @@ class _EditorScreenState extends State<EditorScreen>
         ? Color(c.livePickColor!)
         : null;
     final liveDark = live != null && live.computeLuminance() < .45;
+    // un solo rettangolo: c'è già → i tasti ne cambiano il colore (✓ su
+    // quello in uso); non c'è → "+" per crearlo
+    final cur = c.octoRects.isEmpty ? null : c.octoRects.first.color;
+    IconData mark(int color) => cur == null
+        ? Icons.add
+        : (cur == color ? Icons.check : Icons.format_color_fill);
     return Row(
       children: [
         box(
@@ -376,7 +382,7 @@ class _EditorScreenState extends State<EditorScreen>
           fill: Colors.white,
           border: const Color(0xFFB8BEC8),
           onTap: () => _addOcto(true),
-          child: const Icon(Icons.add, size: 28, color: Colors.black),
+          child: Icon(mark(InkFill.whiteInk), size: 26, color: Colors.black),
         ),
         const SizedBox(width: 6),
         box(
@@ -384,7 +390,7 @@ class _EditorScreenState extends State<EditorScreen>
           fill: Colors.black,
           border: const Color(0xFF8A919C),
           onTap: () => _addOcto(false),
-          child: const Icon(Icons.add, size: 28, color: Colors.white),
+          child: Icon(mark(InkFill.black), size: 26, color: Colors.white),
         ),
         const SizedBox(width: 6),
         Expanded(

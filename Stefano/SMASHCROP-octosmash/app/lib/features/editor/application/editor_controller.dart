@@ -716,9 +716,19 @@ class EditorController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Un rettangolo nuovo al centro di quello che si vede.
+  /// Un solo rettangolo alla volta: se c'è già, cambia solo colore e resta
+  /// dov'è; altrimenti ne nasce uno al centro di quello che si vede (o
+  /// dove si è preso il colore con la pipetta).
   void addOctoRect({required int color, Offset? at}) {
     if (!octoMode || !pageReady) return;
+    if (octoRects.isNotEmpty) {
+      octoRects
+        ..removeRange(1, octoRects.length)
+        ..first.color = color;
+      octoSelected = 0;
+      notifyListeners();
+      return;
+    }
     final d = doc;
     final mid = at ?? screenToContent(viewportSize.center(Offset.zero));
     final center = Offset(
