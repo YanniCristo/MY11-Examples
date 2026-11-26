@@ -325,6 +325,10 @@ class _EditorScreenState extends State<EditorScreen>
       context: context,
       backgroundColor: AppColors.surface,
       showDragHandle: true,
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * .75,
+      ),
       builder: (ctx) => OctoPalette(recent: List.of(c.pickedColors)),
     );
     if (color != null) {

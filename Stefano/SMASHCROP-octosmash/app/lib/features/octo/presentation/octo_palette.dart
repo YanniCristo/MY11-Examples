@@ -34,8 +34,9 @@ class OctoPalette extends StatelessWidget {
         ),
       ),
     );
+    // sempre tutta visibile: tasselli più bassi e, se non basta, si scorre
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -48,7 +49,7 @@ class OctoPalette extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               SizedBox(
-                height: 40,
+                height: 36,
                 child: Row(
                   children: [
                     for (final c in recent)
@@ -71,6 +72,7 @@ class OctoPalette extends StatelessWidget {
               shrinkWrap: true,
               mainAxisSpacing: 8,
               crossAxisSpacing: 8,
+              childAspectRatio: 1.5,
               physics: const NeverScrollableScrollPhysics(),
               children: [for (final c in colors) dot(c)],
             ),
