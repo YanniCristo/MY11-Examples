@@ -188,6 +188,7 @@ Future<void> showRecoveryCode(BuildContext context, RubbleStore s) {
 
 Future<void> askRecoveryCode(BuildContext context, RubbleStore s) async {
   final ctl = TextEditingController();
+  final focus = FocusNode();
   String? error;
   await showDialog<void>(
     context: context,
@@ -202,6 +203,7 @@ Future<void> askRecoveryCode(BuildContext context, RubbleStore s) async {
             TextField(
               controller: ctl,
               autofocus: true,
+              focusNode: focus,
               textCapitalization: TextCapitalization.characters,
               style: const TextStyle(
                 color: AppColors.text,
@@ -228,9 +230,18 @@ Future<void> askRecoveryCode(BuildContext context, RubbleStore s) async {
               icon: const Icon(Icons.content_paste, size: 20),
               label: Text(S.paste, style: const TextStyle(fontSize: 16)),
               onPressed: () async {
-                final data = await Clipboard.getData(Clipboard.kTextPlain);
-                final text = data?.text?.trim() ?? '';
-                if (text.isEmpty) return;
+                String text = '';
+                try {
+                  final data = await Clipboard.getData(Clipboard.kTextPlain);
+                  text = data?.text?.trim() ?? '';
+                } catch (_) {}
+                if (text.isEmpty) {
+                  // il browser non ci fa leggere gli appunti (succede nelle
+                  // pagine aperte dentro altre app): si incolla a mano
+                  focus.requestFocus();
+                  setState(() => error = S.pasteManually);
+                  return;
+                }
                 ctl.text = text;
                 ctl.selection = TextSelection.collapsed(offset: text.length);
                 setState(() => error = null);

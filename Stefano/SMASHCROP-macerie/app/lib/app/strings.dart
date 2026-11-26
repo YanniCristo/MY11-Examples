@@ -1205,6 +1205,14 @@ class S {
     'Avaliar o SmashCrop',
     'SmashCrop bewerten',
   );
+  static String get pasteManually => _t(
+    'Tieni premuto nel campo e scegli Incolla',
+    'Press and hold in the field and choose Paste',
+    'Appuie longuement dans le champ et choisis Coller',
+    'Mantén pulsado el campo y elige Pegar',
+    'Toque e segure no campo e escolha Colar',
+    'Halte das Feld gedrückt und wähle Einfügen',
+  );
   static String get lockedLifetime => _t(
     'Con SmashCrop a vita',
     'With SmashCrop for life',
