@@ -19,6 +19,7 @@ class SkinPlayer extends StatefulWidget {
     this.locked = false,
     this.placeholder,
     this.restFrames = const (14, 15),
+    this.onImpact,
   });
 
   final SkinDef skin;
@@ -34,6 +35,10 @@ class SkinPlayer extends StatefulWidget {
 
   /// I due fotogrammi che si alternano a riposo, dopo l'animazione.
   final (int, int) restFrames;
+
+  /// Chiamata una volta a ogni animazione, nel momento del colpo (0,5 s
+  /// dopo l'inizio, quando escono gli effetti): serve per il suono.
+  final VoidCallback? onImpact;
 
   @override
   State<SkinPlayer> createState() => _SkinPlayerState();
@@ -62,6 +67,7 @@ class _SkinPlayerState extends State<SkinPlayer>
       _load();
     } else if (old.playId != widget.playId) {
       _startedAt = _ms;
+      _impactDone = false;
     }
   }
 
@@ -73,13 +79,20 @@ class _SkinPlayerState extends State<SkinPlayer>
       setState(() {
         _imgs = imgs;
         _startedAt = _ms;
+        _impactDone = false;
       });
       if (!_ticker.isActive) _ticker.start();
     } catch (_) {}
   }
 
+  bool _impactDone = true;
+
   void _onTick(Duration d) {
     setState(() => _ms = d.inMicroseconds / 1000);
+    if (!_impactDone && !widget.locked && _ms - _startedAt >= 500) {
+      _impactDone = true;
+      widget.onImpact?.call();
+    }
   }
 
   @override

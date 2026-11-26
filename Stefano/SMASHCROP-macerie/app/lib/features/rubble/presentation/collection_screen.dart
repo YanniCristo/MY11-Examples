@@ -6,6 +6,7 @@ import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/close_square_button.dart';
 import '../../premium/lifetime_sheet.dart';
 import '../application/rubble_store.dart';
+import '../application/sound_fx.dart';
 import '../domain/rubble_math.dart';
 import '../domain/skins.dart';
 import 'share_card.dart';
@@ -67,6 +68,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
   void initState() {
     super.initState();
     s.addListener(_changed);
+    if (s.sound && s.isUnlocked(_sel)) SoundFx.instance.prepare(_sel);
     // aprendo la Collezione le novità sono viste
     WidgetsBinding.instance.addPostFrameCallback((_) => s.markSeen());
   }
@@ -81,10 +83,13 @@ class _CollectionScreenState extends State<CollectionScreen> {
     if (mounted) setState(() {});
   }
 
-  void _select(SkinDef k) => setState(() {
-    _sel = k;
-    _play++;
-  });
+  void _select(SkinDef k) {
+    if (s.sound && s.isUnlocked(k)) SoundFx.instance.prepare(k);
+    setState(() {
+      _sel = k;
+      _play++;
+    });
+  }
 
   String _status(SkinDef k) {
     if (k.unlock == Unlock.lifetime) return S.lockedLifetime;
@@ -151,6 +156,10 @@ class _CollectionScreenState extends State<CollectionScreen> {
                             skin: _sel,
                             playId: _play,
                             locked: !unlocked,
+                            // il suo verso nel momento del colpo
+                            onImpact: () {
+                              if (s.sound) SoundFx.instance.hit(_sel);
+                            },
                           ),
                         ),
                       ),
