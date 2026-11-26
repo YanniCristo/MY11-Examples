@@ -42,12 +42,38 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _saved = SavedWork.decode(widget.preferences.savedWork);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _refreshSaved());
   }
 
+  /// Copia del file del lavoro in sospeso, letta in anticipo: così
+  /// "Riprendi" riparte subito, e se la copia non c'è il pulsante apre
+  /// direttamente la scelta delle foto (niente cerchio bianco di Safari).
+  Uint8List? _savedBytes;
+  bool _savedChecked = false;
+
   void _refreshSaved() {
-    if (mounted) {
-      setState(() => _saved = SavedWork.decode(widget.preferences.savedWork));
-    }
+    if (!mounted) return;
+    final w = SavedWork.decode(widget.preferences.savedWork);
+    setState(() {
+      _saved = w;
+      _savedBytes = null;
+      _savedChecked = false;
+    });
+    if (w == null) return;
+    WorkFileStore.instance
+        .load(name: w.name, size: w.size, isPdf: w.isPdf)
+        .then(
+          (bytes) {
+            if (!mounted || _saved != w) return;
+            setState(() {
+              _savedBytes = bytes;
+              _savedChecked = true;
+            });
+          },
+          onError: (_) {
+            if (mounted && _saved == w) setState(() => _savedChecked = true);
+          },
+        );
   }
 
   Future<void> _discard() async {
@@ -59,6 +85,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _resume() async {
     final w = _saved;
     if (w == null || _loading) return;
+    final ready = _savedBytes;
+    if (ready != null) {
+      w.isPdf
+          ? _loadPdf(resume: w, bytes: ready)
+          : _loadImage(resume: w, bytes: ready);
+      return;
+    }
+    if (_savedChecked) {
+      // nessuna copia: si sceglie di nuovo lo stesso file
+      _toast(S.resumeHint);
+      w.isPdf ? _loadPdf(resume: w) : _loadImage(resume: w);
+      return;
+    }
     // c'è la copia del file: si riparte subito, senza sceglierlo di nuovo
     setState(() => _loading = true);
     final bytes = await WorkFileStore.instance.load(
@@ -235,6 +274,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (_saved != null) ...[
                       _ResumeCard(
                         work: _saved!,
+                        // immagine senza copia: il dito tocca la scelta foto
+                        pickImage:
+                            _savedChecked &&
+                            _savedBytes == null &&
+                            !_saved!.isPdf,
                         onResume: _loading ? null : _resume,
                         onDiscard: _loading ? null : _discard,
                       ),
@@ -394,11 +438,13 @@ class _DemoCard extends StatelessWidget {
 class _ResumeCard extends StatelessWidget {
   const _ResumeCard({
     required this.work,
+    this.pickImage = false,
     required this.onResume,
     required this.onDiscard,
   });
 
   final SavedWork work;
+  final bool pickImage;
   final VoidCallback? onResume;
   final VoidCallback? onDiscard;
 
@@ -451,13 +497,24 @@ class _ResumeCard extends StatelessWidget {
             children: [
               SizedBox(
                 width: 100,
-                child: AppButton(
-                  label: S.resume,
-                  style: AppButtonStyle.primary,
-                  height: 38,
-                  fontSize: 15,
-                  onPressed: onResume,
-                ),
+                child: pickImage
+                    ? ImagePickTarget(
+                        onTap: onResume,
+                        child: AppButton(
+                          label: S.resume,
+                          style: AppButtonStyle.primary,
+                          height: 38,
+                          fontSize: 15,
+                          onPressed: onResume,
+                        ),
+                      )
+                    : AppButton(
+                        label: S.resume,
+                        style: AppButtonStyle.primary,
+                        height: 38,
+                        fontSize: 15,
+                        onPressed: onResume,
+                      ),
               ),
               SizedBox(
                 height: 30,
