@@ -159,7 +159,14 @@ abstract final class OctoFrames {
   static void load() {
     // 'pipetta:ink' = solo l'inchiostro magenta della Pipetta, in grigio,
     // da ricolorare col colore preso
-    for (final line in const ['bianco', 'nero', 'pipetta', 'pipetta:ink']) {
+    for (final line in const [
+      'bianco',
+      'nero',
+      'pipetta',
+      'pipetta:ink',
+      'multicolor',
+      'multicolor:ink',
+    ]) {
       if (lines.containsKey(line) || !_loading.add(line)) continue;
       () async {
         // tutti i fotogrammi insieme, non uno dopo l'altro
@@ -168,8 +175,8 @@ abstract final class OctoFrames {
             () async {
               final n = i.toString().padLeft(2, '0');
               final data = await rootBundle.load(
-                line == 'pipetta:ink'
-                    ? 'assets/octo/pipetta/ink_$n.webp'
+                line.endsWith(':ink')
+                    ? 'assets/octo/${line.split(':').first}/ink_$n.webp'
                     : 'assets/octo/$line/octo_$n.webp',
               );
               final codec = await ui.instantiateImageCodec(
@@ -409,15 +416,15 @@ class OctoPainter extends CustomPainter {
 
   /// OctoSmash attraversa la pagina come SMASH: entra, spruzza, esce.
   void _paintRobot(Canvas canvas, Size size) {
-    // chi spruzza lo decide il tasto usato (Multicolor: per ora fotogrammi
-    // del Bianco, finché non arrivano i suoi)
+    // chi spruzza lo decide il tasto usato
     final line = switch (c.octoAnimTool) {
       OctoTool.nero => 'nero',
       OctoTool.pipetta => 'pipetta',
-      _ => 'bianco',
+      OctoTool.multicolor => 'multicolor',
+      OctoTool.bianco => 'bianco',
     };
     final imgs = OctoFrames.lines[line];
-    final ink = line == 'pipetta' ? OctoFrames.lines['pipetta:ink'] : null;
+    final ink = OctoFrames.lines['$line:ink'];
     if (imgs == null) return;
     final ms = DateTime.now().millisecondsSinceEpoch - c.octoAnimStart;
     final i = (ms ~/ EditorController.octoFrameMs).clamp(0, imgs.length - 1);
