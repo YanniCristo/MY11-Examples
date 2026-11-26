@@ -57,6 +57,8 @@ dependencies:
   flutter_local_notifications: ^23.0.4
   timezone: ^0.11.2
   firebase_messaging: ^17.1.0
+  in_app_review: ^2.0.12
+  url_launcher: ^6.3.3
 
 # Galleria di iPhone con i numeri di scelta (1, 2, 3…): vedi
 # third_party/image_picker_ios/SMASHCROP_PATCH.md

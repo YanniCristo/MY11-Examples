@@ -1,4 +1,4 @@
-package com.stefanofancello.smashcrop
+package com.memeinitaly.smashcrop
 
 import com.google.android.gms.auth.blockstore.Blockstore
 import com.google.android.gms.auth.blockstore.RetrieveBytesRequest

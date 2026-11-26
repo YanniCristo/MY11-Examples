@@ -13,7 +13,7 @@ flutter run           # su iPhone/Android collegato o simulatore
 Versione di riferimento: Flutter 3.50.1 stable (Dart 3.14). Da questa versione Material è il pacchetto separato `material_ui`: nel codice si importa `package:material_ui/material_ui.dart` al posto di `package:flutter/material.dart`.
 
 Prima della pubblicazione:
-- **Bundle ID** provvisorio: `com.stefanofancello.smashcrop`. Va sostituito con quello definitivo in Xcode (iOS) e in `android/app/build.gradle.kts`.
+- **ID dell'app** definitivo: `com.memeinitaly.smashcrop` (iOS e Android, deciso il 26 nov 2026).
 - **Icone dell'app** già generate dall'icona 3D (`branding_src/app_icon_1024.png`). Per rigenerarle: `dart run flutter_launcher_icons`.
 
 ## Web app

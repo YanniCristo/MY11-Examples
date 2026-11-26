@@ -82,8 +82,24 @@ Cosa serve:
 Già nel progetto: permessi e ricevitori Android, icona bianca `ic_stat_smash`, compileSdk 37,
 `aps-environment` in `Runner.entitlements` (Xcode attiva "Push Notifications" da solo con la
 firma automatica), modalità in background "remote-notification".
-Nota: l'App ID `com.stefanofancello.smashcrop` sul sito Apple non esiste ancora: lo crea Xcode
-alla prima firma (o si cambia l'ID provvisorio prima).
+Nota: l'App ID `com.memeinitaly.smashcrop` sul sito Apple non esiste ancora: lo crea Xcode
+alla prima firma con la firma automatica.
+
+## Pronto per gli store (26 nov 2026)
+
+- **ID app:** `com.memeinitaly.smashcrop` (iOS e Android).
+- **Apple:** `PrivacyInfo.xcprivacy` (tracciamento con ATT, dati per pubblicità e statistiche, motivi per
+  UserDefaults e date dei file), nessuna crittografia speciale (`ITSAppUsesNonExemptEncryption`),
+  iPad a schermo intero in verticale (`UIRequiresFullScreen`).
+- **Pagine pubbliche** (sul sito MEMEinITALY, non nel menu del negozio, nascoste ai motori di ricerca):
+  privacy https://memeinitaly.store/pages/smashcrop-privacy ·
+  assistenza https://memeinitaly.store/pages/smashcrop-supporto (6 lingue).
+- **Menu → Aiuto:** "Scrivici" (info@memeinitaly.store) e "Valuta SmashCrop". Quando l'app esiste su
+  App Store Connect, mettere il suo ID numerico in `kAppStoreId` (`lib/app/links.dart`).
+- **Firma Android:** chiave di caricamento `smashcrop-upload.jks` + `key.properties` in `android/`
+  (**fuori da git**, li ha Stefano). Senza quei file la build si firma con la chiave di prova.
+  Impronta SHA-256: `C9:7C:85:39:CB:12:9D:EF:07:01:09:5C:13:D7:FC:42:7F:BF:0D:6C:83:FF:80:0F:54:80:E7:C2:43:22:D3:F4`.
+- Da fare ancora: link di "Condividi l'app" verso gli store (oggi porta alla pagina di prova).
 
 ## Ancora da fare
 

@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../app/links.dart';
 import '../../../app/strings.dart';
 import '../../../app/theme.dart';
 import '../../../core/widgets/app_menu.dart';
@@ -105,6 +108,33 @@ List<MenuSection> rubbleMenuSections(BuildContext context, RubbleStore s) {
         label: S.howItWorks,
         onTap: () => info(S.howItWorks, S.howItWorksBody),
       ),
+      MenuEntry(
+        icon: Icons.mail_outline,
+        label: S.writeUs,
+        onTap: () => launchUrl(
+          Uri(
+            scheme: 'mailto',
+            path: kSupportEmail,
+            query: 'subject=SmashCrop',
+          ),
+        ),
+      ),
+      if (!kIsWeb)
+        MenuEntry(
+          icon: Icons.star_outline,
+          label: S.rateApp,
+          onTap: () async {
+            final r = InAppReview.instance;
+            // Android: scheda del Play Store; iPhone: pagina per scrivere la
+            // recensione, o la richiesta di sistema finché manca l'ID
+            if (defaultTargetPlatform == TargetPlatform.android ||
+                kAppStoreId.isNotEmpty) {
+              await r.openStoreListing(appStoreId: kAppStoreId);
+            } else if (await r.isAvailable()) {
+              await r.requestReview();
+            }
+          },
+        ),
     ]),
   ];
 }

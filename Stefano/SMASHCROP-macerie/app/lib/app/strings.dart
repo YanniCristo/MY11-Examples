@@ -1189,6 +1189,22 @@ class S {
     'O entulho não se come sozinho. Volte e deixe ele destruir alguma coisa.',
     'Schutt frisst sich nicht von selbst. Komm zurück und lass ihn was zerlegen.',
   );
+  static String get writeUs => _t(
+    'Scrivici',
+    'Contact us',
+    'Nous écrire',
+    'Escríbenos',
+    'Fale conosco',
+    'Schreib uns',
+  );
+  static String get rateApp => _t(
+    'Valuta SmashCrop',
+    'Rate SmashCrop',
+    'Noter SmashCrop',
+    'Valorar SmashCrop',
+    'Avaliar o SmashCrop',
+    'SmashCrop bewerten',
+  );
   static String get lockedLifetime => _t(
     'Con SmashCrop a vita',
     'With SmashCrop for life',

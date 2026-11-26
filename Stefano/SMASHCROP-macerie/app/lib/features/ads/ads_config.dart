@@ -10,8 +10,8 @@ abstract final class AdsConfig {
   static const metaAppId = '4528815827358406';
 
   // --- TikTok ----------------------------------------------------------------
-  /// App ID dell'app sul Play Store (es. com.stefanofancello.smashcrop).
-  static const tiktokAndroidAppId = 'com.stefanofancello.smashcrop';
+  /// App ID dell'app sul Play Store (com.memeinitaly.smashcrop).
+  static const tiktokAndroidAppId = 'com.memeinitaly.smashcrop';
 
   /// TikTok App ID per Android (Events Manager di TikTok Ads).
   static const tiktokAndroidId = 'METTI_TIKTOK_APP_ID_ANDROID';
