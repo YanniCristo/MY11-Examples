@@ -47,6 +47,10 @@ class RubbleStore extends ChangeNotifier {
   /// L'invito a "SmashCrop a vita" dopo il primo salvataggio è già comparso.
   bool lifetimeOffered = false;
 
+  /// Promemoria di SMASH accesi (interruttore nel menu) e permesso già chiesto.
+  bool notify = true;
+  bool notifyAsked = false;
+
   /// Ultimo guadagno (per il "+0,30 kg" sul contatore) e suo contatore.
   double lastGainKg = 0;
   int gainTick = 0;
@@ -125,6 +129,7 @@ class RubbleStore extends ChangeNotifier {
 
   void setSound(bool v) => _set(() => sound = v);
   void setHaptics(bool v) => _set(() => haptics = v);
+  void setNotify(bool v) => _set(() => notify = v);
   void flag(void Function(RubbleStore s) f) => _set(() => f(this));
 
   void _set(VoidCallback f) {
@@ -152,6 +157,8 @@ class RubbleStore extends ChangeNotifier {
       sleepToastShown = m['st'] as bool? ?? false;
       recoveryOffered = m['ro'] as bool? ?? false;
       lifetimeOffered = m['lo'] as bool? ?? false;
+      notify = m['ntf'] as bool? ?? true;
+      notifyAsked = m['na'] as bool? ?? false;
       // controllo di coerenza: le skin vanno con i chili
       for (final e in kEvolutions) {
         if (kg >= e.thresholdKg) unlocked.add(e.id);
@@ -174,6 +181,8 @@ class RubbleStore extends ChangeNotifier {
     'st': sleepToastShown,
     'ro': recoveryOffered,
     'lo': lifetimeOffered,
+    'ntf': notify,
+    'na': notifyAsked,
   });
 
   void _save() {
@@ -203,11 +212,13 @@ class RubbleStore extends ChangeNotifier {
     sleepToastShown = sleepToastShown || o.sleepToastShown;
     recoveryOffered = recoveryOffered || o.recoveryOffered;
     lifetimeOffered = lifetimeOffered || o.lifetimeOffered;
+    notifyAsked = notifyAsked || o.notifyAsked;
     // su un'app appena installata si riprendono anche skin e impostazioni
     if (wasEmpty) {
       skinId = o.skinId;
       sound = o.sound;
       haptics = o.haptics;
+      notify = o.notify;
     }
     for (final e in kEvolutions) {
       if (kg >= e.thresholdKg) unlocked.add(e.id);

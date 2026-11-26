@@ -57,6 +57,34 @@ Nel web il pulsante spiega che si compra dall'app.
 Il prezzo mostrato in app arriva dallo store, nella valuta di chi compra.
 Prova: TestFlight con un account Sandbox (iPhone) e "tester delle licenze" (Android).
 
+## Notifiche
+
+Codice: `lib/features/notifications/notifications.dart`. Interruttore nel menu ☰ → SMASH → Notifiche.
+Il permesso si chiede **una volta**, dopo il primo file salvato (dopo l'invito "SmashCrop a vita").
+
+**Locali (già funzionanti, senza server):** tre promemoria alle 18:30 dopo 2, 6 e 14 giorni senza
+aprire l'app ("SMASH ha fame 🍽️ Ti mancano X kg per sbloccare…", "Un pugno e via 👊",
+"SMASH si annoia… 😴"), in 6 lingue. Ogni volta che l'app va in secondo piano ripartono da capo:
+chi usa l'app non li vede mai.
+
+**Push (pronte, si accendono con i codici Firebase):** Firebase Cloud Messaging. Ogni telefono è
+iscritto agli argomenti `tutti` e `lang_it` / `lang_en` / `lang_fr` / `lang_es` / `lang_pt` / `lang_de`:
+dalla console Firebase → Messaging → nuova campagna → "Argomento" si manda a tutti o per lingua.
+Cosa serve:
+1. codici Firebase in `lib/features/ads/ads_config.dart` (da Fulvio);
+2. **chiave APNs** (.p8) per iPhone: developer.apple.com → Keys → "+" → spunta *Apple Push
+   Notifications service (APNs)* → scarica il file (si scarica **una volta sola**, va conservato).
+   Sul tuo account (Team ID `RFG6LF786B`) al 26 nov non c'era nessuna chiave. Una chiave vale per
+   tutte le app del team (anche MY11);
+3. Firebase → Impostazioni progetto → Cloud Messaging → app iOS → carica la chiave .p8 con Key ID
+   e Team ID.
+
+Già nel progetto: permessi e ricevitori Android, icona bianca `ic_stat_smash`, compileSdk 37,
+`aps-environment` in `Runner.entitlements` (Xcode attiva "Push Notifications" da solo con la
+firma automatica), modalità in background "remote-notification".
+Nota: l'App ID `com.stefanofancello.smashcrop` sul sito Apple non esiste ancora: lo crea Xcode
+alla prima firma (o si cambia l'ID provvisorio prima).
+
 ## Ancora da fare
 
 - I banner pubblicitari della versione gratis (con, sotto, "Togli la pubblicità per sempre").

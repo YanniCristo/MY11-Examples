@@ -1117,6 +1117,78 @@ class S {
   );
   static String get paste =>
       _t('Incolla', 'Paste', 'Coller', 'Pegar', 'Colar', 'Einfügen');
+  static String get notifications => _t(
+    'Notifiche',
+    'Notifications',
+    'Notifications',
+    'Notificaciones',
+    'Notificações',
+    'Benachrichtigungen',
+  );
+  static String get notifChannel => _t(
+    'Promemoria di SMASH',
+    'SMASH reminders',
+    'Rappels de SMASH',
+    'Recordatorios de SMASH',
+    'Lembretes do SMASH',
+    'SMASH-Erinnerungen',
+  );
+  static String get notifHungryTitle => _t(
+    'SMASH ha fame 🍽️',
+    'SMASH is hungry 🍽️',
+    'SMASH a faim 🍽️',
+    'SMASH tiene hambre 🍽️',
+    'O SMASH está com fome 🍽️',
+    'SMASH hat Hunger 🍽️',
+  );
+  static String notifHungryNext(String kg, String name) => _t(
+    'Ti mancano $kg kg per sbloccare $name. Qualcosa da demolire?',
+    'Only $kg kg to unlock $name. Got something to smash?',
+    'Plus que $kg kg pour débloquer $name. Quelque chose à démolir ?',
+    'Te faltan $kg kg para desbloquear a $name. ¿Algo que demoler?',
+    'Faltam $kg kg para desbloquear o $name. Algo para demolir?',
+    'Nur noch $kg kg bis $name. Hast du was zum Zerschmettern?',
+  );
+  static String get notifHungryBody => _t(
+    'Screenshot o PDF da sistemare? È pronto a demolire.',
+    'Screenshots or PDFs to fix? He\'s ready to demolish.',
+    'Des captures ou des PDF à arranger ? Il est prêt à démolir.',
+    '¿Capturas o PDF que arreglar? Está listo para demoler.',
+    'Capturas ou PDFs para arrumar? Ele está pronto para demolir.',
+    'Screenshots oder PDFs zum Aufräumen? Er ist bereit.',
+  );
+  static String get notifPunchTitle => _t(
+    'Un pugno e via 👊',
+    'One punch and done 👊',
+    'Un coup de poing et c\'est fait 👊',
+    'Un puñetazo y listo 👊',
+    'Um soco e pronto 👊',
+    'Ein Schlag und fertig 👊',
+  );
+  static String get notifPunchBody => _t(
+    'Screenshot troppo lunghi, PDF con pagine di troppo? SMASH li sistema in un secondo.',
+    'Screenshots too long, PDFs with extra pages? SMASH fixes them in a second.',
+    'Captures trop longues, PDF avec des pages en trop ? SMASH les règle en une seconde.',
+    '¿Capturas demasiado largas, PDF con páginas de más? SMASH los arregla en un segundo.',
+    'Capturas longas demais, PDFs com páginas sobrando? O SMASH resolve num segundo.',
+    'Zu lange Screenshots, PDFs mit überflüssigen Seiten? SMASH erledigt das in einer Sekunde.',
+  );
+  static String get notifBoredTitle => _t(
+    'SMASH si annoia… 😴',
+    'SMASH is bored… 😴',
+    'SMASH s\'ennuie… 😴',
+    'SMASH se aburre… 😴',
+    'O SMASH está entediado… 😴',
+    'SMASH langweilt sich… 😴',
+  );
+  static String get notifBoredBody => _t(
+    'Le macerie non si mangiano da sole. Torna a fargli fare un po\' di danni.',
+    'Rubble doesn\'t eat itself. Come back and let him wreck something.',
+    'Les gravats ne se mangent pas tout seuls. Reviens lui faire casser quelque chose.',
+    'Los escombros no se comen solos. Vuelve y déjale destrozar algo.',
+    'O entulho não se come sozinho. Volte e deixe ele destruir alguma coisa.',
+    'Schutt frisst sich nicht von selbst. Komm zurück und lass ihn was zerlegen.',
+  );
   static String get lockedLifetime => _t(
     'Con SmashCrop a vita',
     'With SmashCrop for life',

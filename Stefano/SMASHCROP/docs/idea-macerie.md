@@ -449,4 +449,7 @@ La card da condividere e le sagome nere della Collezione le genera l'app. **Graf
   versioni. Acquisto **"SmashCrop a vita"** collegato (in_app_purchase, prodotto non consumabile
   `smashcrop_lifetime` da creare negli store): bottoncino arancione "A vita" nella home, Tycoon nella
   Collezione, menu Premium, invito una sola volta dopo il primo salvataggio. Prezzo da decidere.
+- **26 nov 2026 (notte):** bottone "A vita" color oro. Notifiche: promemoria locali (2, 6, 14 giorni,
+  18:30, testi di SMASH in 6 lingue, interruttore nel menu, permesso dopo il primo salvataggio) e push
+  Firebase predisposte (argomenti `tutti` e `lang_xx`), in attesa dei codici Firebase e della chiave APNs.
 

@@ -34,6 +34,10 @@ class AdsTracker {
   FirebaseAnalytics? _ga;
   FacebookAppEvents? _fb;
 
+  /// Firebase è partito (servono i codici veri in AdsConfig): serve anche
+  /// alle notifiche push.
+  bool get firebaseReady => _ga != null;
+
   /// All'avvio, dopo che la prima schermata è comparsa.
   Future<void> start() async {
     if (!_native || _started) return;

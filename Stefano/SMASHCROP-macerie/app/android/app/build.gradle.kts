@@ -6,10 +6,13 @@ plugins {
 
 android {
     namespace = "com.stefanofancello.smashcrop"
-    compileSdk = flutter.compileSdkVersion
+    // 37: richiesto dalle notifiche (flutter_local_notifications)
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        // richiesto dalle notifiche programmate
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -49,6 +52,7 @@ flutter {
 }
 
 dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     // salvataggio automatico del contatore delle macerie (senza login)
     implementation("com.google.android.gms:play-services-auth-blockstore:16.4.0")
 }

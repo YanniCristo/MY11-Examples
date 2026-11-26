@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -56,6 +57,13 @@ List<MenuSection> rubbleMenuSections(BuildContext context, RubbleStore s) {
         toggle: s.haptics,
         onToggle: s.setHaptics,
       ),
+      if (!kIsWeb)
+        MenuEntry(
+          icon: Icons.notifications_none,
+          label: S.notifications,
+          toggle: s.notify,
+          onToggle: s.setNotify,
+        ),
     ]),
     MenuSection(title: S.premium, [
       MenuEntry(

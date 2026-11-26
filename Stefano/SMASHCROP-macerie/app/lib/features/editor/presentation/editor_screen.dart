@@ -10,6 +10,7 @@ import '../../../core/widgets/password_dialog.dart';
 
 import '../../../app/strings.dart';
 import '../../ads/ads_tracker.dart';
+import '../../notifications/notifications.dart';
 import '../../premium/lifetime_sheet.dart';
 import '../../../app/theme.dart';
 import '../../../core/widgets/app_button.dart';
@@ -254,10 +255,18 @@ class _EditorScreenState extends State<EditorScreen>
   void _savedOk() {
     AdsTracker.instance.firstSave();
     final s = RubbleStore.instance;
-    if (kIsWeb || s.lifetime || s.lifetimeOffered) return;
-    s.flag((s) => s.lifetimeOffered = true);
-    Future<void>.delayed(const Duration(milliseconds: 1400), () {
-      if (mounted) showLifetimeSheet(context, intro: S.lifetimeOfferIntro);
+    if (kIsWeb) return;
+    final offer = !s.lifetime && !s.lifetimeOffered;
+    final ask = !s.notifyAsked;
+    if (!offer && !ask) return;
+    if (offer) s.flag((s) => s.lifetimeOffered = true);
+    Future<void>.delayed(const Duration(milliseconds: 1400), () async {
+      if (!mounted) return;
+      // prima l'invito a "SmashCrop a vita", poi il permesso per le notifiche
+      if (offer) {
+        await showLifetimeSheet(context, intro: S.lifetimeOfferIntro);
+      }
+      if (ask) await Notifications.instance.askPermission();
     });
   }
 

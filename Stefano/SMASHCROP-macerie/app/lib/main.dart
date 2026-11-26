@@ -6,6 +6,7 @@ import 'package:pdfrx/pdfrx.dart';
 
 import 'app/app.dart';
 import 'features/ads/ads_tracker.dart';
+import 'features/notifications/notifications.dart';
 import 'features/premium/premium.dart';
 import 'features/rubble/application/rubble_store.dart';
 import 'features/rubble/application/skin_assets.dart';
@@ -32,7 +33,8 @@ Future<void> main() async {
     if (next != null) SkinImages.preload(next);
     // pubblicità: richiesta di tracciamento (iPhone) e SDK, dopo la prima
     // schermata
-    AdsTracker.instance.start();
+    // dopo Firebase (serve alle push) partono le notifiche
+    AdsTracker.instance.start().then((_) => Notifications.instance.start());
     // l'acquisto a vita: prezzo e acquisti in sospeso
     Premium.instance.start();
   });
