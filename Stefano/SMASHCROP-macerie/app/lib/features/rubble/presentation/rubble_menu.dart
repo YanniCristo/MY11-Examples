@@ -233,10 +233,7 @@ Future<void> askRecoveryCode(BuildContext context, RubbleStore s) async {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.red,
-                    width: 2,
-                  ),
+                  borderSide: const BorderSide(color: AppColors.red, width: 2),
                 ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -244,10 +241,7 @@ Future<void> askRecoveryCode(BuildContext context, RubbleStore s) async {
                 ),
                 focusedErrorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.red,
-                    width: 2,
-                  ),
+                  borderSide: const BorderSide(color: AppColors.red, width: 2),
                 ),
               ),
             ),

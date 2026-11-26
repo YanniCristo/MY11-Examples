@@ -660,6 +660,30 @@ class S {
 
   // --- più immagini ---------------------------------------------------------
 
+  static String get switchToOcto => _t(
+    'Passa a OctoSmash',
+    'Switch to OctoSmash',
+    'Passer à OctoSmash',
+    'Cambiar a OctoSmash',
+    'Mudar para OctoSmash',
+    'Zu OctoSmash wechseln',
+  );
+  static String get switchToSmash => _t(
+    'Passa a SMASH',
+    'Switch to SMASH',
+    'Passer à SMASH',
+    'Cambiar a SMASH',
+    'Mudar para SMASH',
+    'Zu SMASH wechseln',
+  );
+  static String get shareAsTitle => _t(
+    'Come vuoi condividerlo?',
+    'How do you want to share it?',
+    'Comment le partager ?',
+    '¿Cómo quieres compartirlo?',
+    'Como você quer compartilhar?',
+    'Wie möchtest du teilen?',
+  );
   static String get saveAsTitle => _t(
     'Come vuoi salvarlo?',
     'How do you want to save it?',

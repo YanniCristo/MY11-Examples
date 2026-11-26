@@ -660,6 +660,14 @@ class S {
 
   // --- più immagini ---------------------------------------------------------
 
+  static String get shareAsTitle => _t(
+    'Come vuoi condividerlo?',
+    'How do you want to share it?',
+    'Comment le partager ?',
+    '¿Cómo quieres compartirlo?',
+    'Como você quer compartilhar?',
+    'Wie möchtest du teilen?',
+  );
   static String get saveAsTitle => _t(
     'Come vuoi salvarlo?',
     'How do you want to save it?',

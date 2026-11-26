@@ -15,7 +15,11 @@ import 'collection_screen.dart';
 
 /// Le voci del menu ☰ della versione con le macerie, prima di lingua e
 /// "Condividi l'app".
-List<MenuSection> rubbleMenuSections(BuildContext context, RubbleStore s) {
+List<MenuSection> rubbleMenuSections(
+  BuildContext context,
+  RubbleStore s, {
+  MenuEntry? modeSwitch,
+}) {
   void info(String title, String body) {
     showDialog<void>(
       context: context,
@@ -48,6 +52,8 @@ List<MenuSection> rubbleMenuSections(BuildContext context, RubbleStore s) {
           CollectionScreen.open(context, s);
         },
       ),
+      // nell'editor: passa a OctoSmash / passa a SMASH
+      ?modeSwitch,
       MenuEntry(
         icon: Icons.volume_up_outlined,
         label: S.sounds,

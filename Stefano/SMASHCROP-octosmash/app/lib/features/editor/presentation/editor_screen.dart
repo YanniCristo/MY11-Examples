@@ -718,7 +718,7 @@ class _EditorScreenState extends State<EditorScreen>
 
   /// Per le immagini si chiede ogni volta come salvare: con una sola parte
   /// già scelto "Immagine", con più di una "PDF". `null` = annullato.
-  Future<_Output?> _askOutput() async {
+  Future<_Output?> _askOutput({bool share = false}) async {
     if (c.isPdf) return _Output.pdf;
     final many = c.images.length;
     final def = many > 1 ? _Output.pdf : _Output.images;
@@ -751,7 +751,7 @@ class _EditorScreenState extends State<EditorScreen>
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: Text(S.saveAsTitle),
+        title: Text(share ? S.shareAsTitle : S.saveAsTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -926,7 +926,7 @@ class _EditorScreenState extends State<EditorScreen>
 
   Future<void> _share() async {
     if (c.isCutting) return;
-    final out = await _askOutput();
+    final out = await _askOutput(share: true);
     if (out == null) return;
     try {
       bool ok;
@@ -1023,7 +1023,22 @@ class _EditorScreenState extends State<EditorScreen>
                   : () => showAppMenu(
                       context,
                       preferences: widget.preferences,
-                      sections: rubbleMenuSections(context, _rubble),
+                      sections: rubbleMenuSections(
+                        context,
+                        _rubble,
+                        modeSwitch: c.octoMode || c.canEnterOcto
+                            ? MenuEntry(
+                                icon: Icons.swap_horiz,
+                                label: c.octoMode
+                                    ? S.switchToSmash
+                                    : S.switchToOcto,
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  c.octoMode ? c.exitOcto() : _enterOcto();
+                                },
+                              )
+                            : null,
+                      ),
                     ),
             ),
             const SizedBox(width: 8),

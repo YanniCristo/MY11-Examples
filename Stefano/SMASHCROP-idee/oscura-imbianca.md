@@ -52,7 +52,9 @@ del testo dei documenti.
 
 ## Entrare e uscire dalla modalità OctoSmash
 
-- **Entrare:** tocco lungo su "Rimuovi porzione".
+- **Entrare:** tocco lungo su "Rimuovi porzione", oppure dal **menu ☰**, sotto
+  "Collezione": voce **"Passa a OctoSmash"** (in OctoSmash diventa **"Passa a SMASH"**).
+  La voce c'è solo nell'editor con un file caricato (deciso il 26 nov 2026).
 - **Interruttore on/off in OctoSmash** (cambiato il 26 nov 2026): mostra la testa di
   OctoSmash e, se lo si spegne, **OctoSmash si addormenta** come SMASH: l'inchiostro si
   posa subito senza animazione e senza litri. Non fa più uscire verso SMASH. Lo stato è
