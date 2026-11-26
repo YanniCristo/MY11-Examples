@@ -95,6 +95,24 @@ del testo dei documenti.
 - Stessa dinamica delle macerie: obiettivi da riempire e **evoluzioni** con le loro skin,
   in due linee separate, **OctoSmash bianco** e **OctoSmash nero**.
 
+## Collezione
+
+- Nella schermata Collezione un tasto **🔄 cambia** passa dalla collezione di **SMASH** a
+  quella di **OctoSmash** e viceversa (stessa schermata, stessa grafica: obiettivi, skin,
+  evoluzioni, ognuna col suo contatore: kg di macerie o litri di inchiostro).
+- Si apre sulla collezione della modalità in cui si è (da SMASH → SMASH, da OctoSmash → OctoSmash).
+
+## Consigli ancora da valutare (Claude, 26 nov 2026)
+
+- **Farla scoprire:** popup di novità una volta sola all'aggiornamento ("Tieni premuto
+  Rimuovi porzione per coprire di bianco o nero") + paragrafo in "Come funziona".
+- **Tocco lungo accidentale su Rimuovi porzione:** tempo più lungo (~0,8 s) e vibrazione netta.
+- **Undo dopo "Fatto":** si annulla tornando a SMASH e usando Undo, oppure tocco lungo sul
+  cestino in OctoSmash per annullare l'ultimo colpo d'inchiostro.
+- **Più rettangoli prima di "Fatto":** sì, un solo "Fatto" e un solo spruzzo per tutti.
+- **Acquisto a vita:** OctoSmash resta gratis; una skin speciale (es. OctoSmash Oro) solo
+  con "a vita".
+
 ## Da decidere
 
 - Più rettangoli prima di "Fatto": il "+" lo suggerisce (ogni tocco ne aggiunge uno), da confermare.
