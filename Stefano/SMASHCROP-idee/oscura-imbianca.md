@@ -18,6 +18,8 @@ del testo dei documenti.
   - **"Rimuovi porzione" diventa "✓ Fatto"** al centro;
   - **a sinistra**, al posto di Undo + Orizzontale, un unico tasto **⬜ Bianco**;
   - **a destra**, al posto di Verticale + Redo, un unico tasto **⬛ Nero**.
+  - i due tasti sono un quadrato del loro colore con un **"+" del colore opposto** al centro
+    (⬜ con + nero, ⬛ con + bianco): si capisce subito che da lì si **aggiungono** rettangoli.
 - Toccando ⬜ o ⬛ un **rettangolo** di quel colore compare **al centro** dell'immagine.
   L'utente lo **sposta** dove serve (e, da decidere, lo ridimensiona dagli angoli).
 - **✓ Fatto** → l'OctoSmash giusto spruzza l'inchiostro e la zona diventa bianca o nera
@@ -41,7 +43,7 @@ del testo dei documenti.
 ## Da decidere
 
 - Il rettangolo si ridimensiona (maniglie agli angoli) o ha misura fissa?
-- Si possono mettere più rettangoli prima di "Fatto"?
+- Più rettangoli prima di "Fatto": il "+" lo suggerisce (ogni tocco ne aggiunge uno), da confermare.
 - Contatore dei litri separato da quello dei kg, o due barre nella stessa schermata?
 - Quando uscire: non all'uscita dell'app, ma come primo aggiornamento lanciato come novità
   (notifica, post e annuncio dedicato alla privacy), per non togliere forza al taglio.
