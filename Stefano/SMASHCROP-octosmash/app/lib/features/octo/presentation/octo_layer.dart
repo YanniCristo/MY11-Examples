@@ -157,15 +157,20 @@ abstract final class OctoFrames {
   static final Set<String> _loading = {};
 
   static void load() {
-    for (final line in const ['bianco', 'nero']) {
+    // 'pipetta:ink' = solo l'inchiostro magenta della Pipetta, in grigio,
+    // da ricolorare col colore preso
+    for (final line in const ['bianco', 'nero', 'pipetta', 'pipetta:ink']) {
       if (lines.containsKey(line) || !_loading.add(line)) continue;
       () async {
         // tutti i fotogrammi insieme, non uno dopo l'altro
         final list = await Future.wait([
           for (var i = 1; i <= count; i++)
             () async {
+              final n = i.toString().padLeft(2, '0');
               final data = await rootBundle.load(
-                'assets/octo/$line/octo_${i.toString().padLeft(2, '0')}.webp',
+                line == 'pipetta:ink'
+                    ? 'assets/octo/pipetta/ink_$n.webp'
+                    : 'assets/octo/$line/octo_$n.webp',
               );
               final codec = await ui.instantiateImageCodec(
                 data.buffer.asUint8List(),
@@ -404,10 +409,15 @@ class OctoPainter extends CustomPainter {
 
   /// OctoSmash attraversa la pagina come SMASH: entra, spruzza, esce.
   void _paintRobot(Canvas canvas, Size size) {
-    // chi spruzza lo decide il tasto usato (Pipetta e Multicolor: per ora
-    // fotogrammi del Bianco, finché non arrivano i loro)
-    final imgs =
-        OctoFrames.lines[c.octoAnimTool == OctoTool.nero ? 'nero' : 'bianco'];
+    // chi spruzza lo decide il tasto usato (Multicolor: per ora fotogrammi
+    // del Bianco, finché non arrivano i suoi)
+    final line = switch (c.octoAnimTool) {
+      OctoTool.nero => 'nero',
+      OctoTool.pipetta => 'pipetta',
+      _ => 'bianco',
+    };
+    final imgs = OctoFrames.lines[line];
+    final ink = line == 'pipetta' ? OctoFrames.lines['pipetta:ink'] : null;
     if (imgs == null) return;
     final ms = DateTime.now().millisecondsSinceEpoch - c.octoAnimStart;
     final i = (ms ~/ EditorController.octoFrameMs).clamp(0, imgs.length - 1);
@@ -431,6 +441,20 @@ class OctoPainter extends CustomPainter {
       Rect.fromLTWH(left, top, w, h),
       Paint()..filterQuality = FilterQuality.medium,
     );
+    // l'inchiostro magenta diventa del colore scelto
+    if (ink != null) {
+      canvas.drawImageRect(
+        ink[i],
+        const Rect.fromLTWH(0, 0, 730, 470),
+        Rect.fromLTWH(left, top, w, h),
+        Paint()
+          ..filterQuality = FilterQuality.medium
+          ..colorFilter = ColorFilter.mode(
+            Color(c.octoAnimColor),
+            BlendMode.modulate,
+          ),
+      );
+    }
   }
 
   @override

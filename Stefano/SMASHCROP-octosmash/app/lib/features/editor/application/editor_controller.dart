@@ -684,6 +684,9 @@ class EditorController extends ChangeNotifier {
   /// Chi spruzza nell'animazione in corso.
   OctoTool octoAnimTool = OctoTool.bianco;
 
+  /// Colore dell'inchiostro dell'animazione (ricolora Pipetta e Multicolor).
+  int octoAnimColor = 0xFF000000;
+
   /// Centro del rettangolo da colpire (documento): OctoSmash si mette in
   /// modo che lo spruzzo arrivi lì.
   Offset? octoAnimTarget;
@@ -805,6 +808,7 @@ class EditorController extends ChangeNotifier {
     }
     octoSplashDuration = octoSplashMs;
     octoAnimTool = octoSplash!.first.tool;
+    octoAnimColor = octoSplash!.first.color;
     octoAnimTarget = octoSplash!.first.center;
     octoAnimStart = now;
     octoSplashStart = now + octoSplashAtMs;
