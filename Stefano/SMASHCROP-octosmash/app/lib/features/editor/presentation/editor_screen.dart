@@ -1851,16 +1851,17 @@ class _NudgeButtonState extends State<_NudgeButton> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                widget.label,
-                style: TextStyle(
-                  fontFamily: kDisplayFont,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 11,
-                  height: 1,
-                  color: _down ? Colors.white : widget.color,
+              if (widget.label.isNotEmpty)
+                Text(
+                  widget.label,
+                  style: TextStyle(
+                    fontFamily: kDisplayFont,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 11,
+                    height: 1,
+                    color: _down ? Colors.white : widget.color,
+                  ),
                 ),
-              ),
               Icon(
                 widget.icon,
                 size: 24,
