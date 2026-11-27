@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -46,8 +44,7 @@ class _OctoCollectionScreenState extends State<OctoCollectionScreen> {
   @override
   void initState() {
     super.initState();
-    OctoFrames.load();
-    if (s.sound) SoundFx.instance.prepareOcto();
+    OctoFrames.ensure(_sel.isSquad ? 'bianco' : _sel.id);
     s.addListener(_changed);
   }
 
@@ -462,54 +459,52 @@ class _OctoPreviewState extends State<_OctoPreview>
       line = widget.char.id;
       ink = _inks[round % _inks.length];
     }
-    if (frame >= 5) _sound(round, line);
+    final l = OctoFrames.line(line);
+    if (l == null) {
+      OctoFrames.ensure(line);
+      SoundFx.instance.prepareOctoLine(line);
+    } else if (frame >= 5) {
+      _sound(round, line);
+    }
     return CustomPaint(
-      painter: _PreviewPainter(
-        body: OctoFrames.lines[line]?[frame],
-        ink: OctoFrames.lines['$line:ink']?[frame],
-        color: Color(ink),
-      ),
+      painter: _PreviewPainter(line: l, frame: frame, color: Color(ink)),
     );
   }
 }
 
 class _PreviewPainter extends CustomPainter {
-  _PreviewPainter({required this.body, required this.ink, required this.color});
-  final ui.Image? body, ink;
+  _PreviewPainter({
+    required this.line,
+    required this.frame,
+    required this.color,
+  });
+  final OctoLine? line;
+  final int frame;
   final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final b = body;
-    if (b == null) return;
+    final l = line;
+    if (l == null) return;
     // personaggio grande (come SMASH nella sua Collezione): il corpo occupa
     // gran parte dell'altezza, entrata e uscita escono dai bordi
     canvas.clipRect(Offset.zero & size);
     final s = size.height * .72 / OctoFrames.bodyH;
     final w = 730 * s, h = 470 * s;
-    final dst = Rect.fromLTWH(
-      (size.width - w) / 2,
-      size.height * .92 - OctoFrames.feetY * s,
-      w,
-      h,
+    l.draw(
+      canvas,
+      frame,
+      Rect.fromLTWH(
+        (size.width - w) / 2,
+        size.height * .92 - OctoFrames.feetY * s,
+        w,
+        h,
+      ),
+      color,
     );
-    const src = Rect.fromLTWH(0, 0, 730, 470);
-    final p = Paint()..filterQuality = FilterQuality.medium;
-    canvas.drawImageRect(b, src, dst, p);
-    final k = ink;
-    if (k != null) {
-      canvas.drawImageRect(
-        k,
-        src,
-        dst,
-        Paint()
-          ..filterQuality = FilterQuality.medium
-          ..colorFilter = ColorFilter.mode(color, BlendMode.modulate),
-      );
-    }
   }
 
   @override
   bool shouldRepaint(_PreviewPainter old) =>
-      old.body != body || old.ink != ink || old.color != color;
+      old.line != line || old.frame != frame || old.color != color;
 }

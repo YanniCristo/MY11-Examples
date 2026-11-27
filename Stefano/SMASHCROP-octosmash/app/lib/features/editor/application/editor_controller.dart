@@ -685,6 +685,10 @@ class EditorController extends ChangeNotifier {
   /// ognuno col suo tasto).
   String? octoEvolution;
 
+  /// L'ultimo inchiostro da far volare al contatore (vedi InkFlightOverlay).
+  OctoFlight? octoFlight;
+  int octoFlightId = 0;
+
   /// Chi spruzza nell'animazione in corso.
   OctoTool octoAnimTool = OctoTool.bianco;
 
@@ -708,6 +712,17 @@ class EditorController extends ChangeNotifier {
   /// Suono dello spruzzo: chiamato quando parte lo "SPLASH!" con la linea di
   /// chi spruzza ('bianco', 'pipetta', 'stampa'...).
   void Function(String line)? onOctoSound;
+
+  /// Chi spruzzerà il rettangolo in lavorazione (per preparare animazione e
+  /// suoni prima di "Fatto").
+  String get octoNextLine =>
+      octoEvolution ??
+      switch (octoRects.isNotEmpty ? octoRects.first.tool : octoAnimTool) {
+        OctoTool.nero => 'nero',
+        OctoTool.pipetta => 'pipetta',
+        OctoTool.multicolor => 'multicolor',
+        OctoTool.bianco => 'bianco',
+      };
 
   /// Chi spruzza: l'evoluzione scelta, altrimenti il personaggio del tasto.
   String get octoLine =>
@@ -869,8 +884,19 @@ class EditorController extends ChangeNotifier {
     }
     p.history.pushFills(fills);
     p.refreshView();
-    // un solo contatore per tutti gli inchiostri
-    if (ink) onInk?.call(litres);
+    // l'inchiostro vola al contatore (i litri si contano quando arriva)
+    if (ink) {
+      final r = rs.first;
+      final rot = r.angle;
+      octoFlight = OctoFlight(
+        center: r.center,
+        width: (r.w * math.cos(rot)).abs() + (r.h * math.sin(rot)).abs(),
+        height: (r.w * math.sin(rot)).abs() + (r.h * math.cos(rot)).abs(),
+        color: r.color,
+        litres: litres,
+      );
+      octoFlightId++;
+    }
     notifyListeners();
   }
 
@@ -1802,4 +1828,21 @@ class ZoomPatch {
       p.$2.dispose();
     }
   }
+}
+
+/// Inchiostro appena posato che vola verso il contatore dei litri.
+class OctoFlight {
+  const OctoFlight({
+    required this.center,
+    required this.width,
+    required this.height,
+    required this.color,
+    required this.litres,
+  });
+
+  /// Centro e ingombro del rettangolo (coordinate del documento).
+  final Offset center;
+  final double width, height;
+  final int color;
+  final double litres;
 }

@@ -142,8 +142,46 @@ class OctoGestures {
 /// Disegna i rettangoli di OctoSmash (pieni del loro colore: il contorno e le
 /// maniglie non coprono niente), le guide tratteggiate mentre si ruota e lo
 /// spruzzo d'inchiostro dopo "Fatto".
-/// I 18 fotogrammi di OctoSmash (per ora solo la linea Bianca), con i piedi
-/// già allineati a y = 335 sulla tela 730×470.
+/// Un OctoSmash pronto da disegnare: il suo atlante (18 fotogrammi 730×470 in
+/// una griglia 5×4, come SMASH) e, se ce l'ha, l'atlante dell'inchiostro da
+/// ricolorare, ritagliato sulla zona dove c'è davvero.
+class OctoLine {
+  OctoLine(this.body, this.ink, this.inkBox);
+  final ui.Image body;
+  final ui.Image? ink;
+  final Rect? inkBox;
+
+  void dispose() {
+    body.dispose();
+    ink?.dispose();
+  }
+
+  /// Disegna il fotogramma [i] (0–17) dentro [dst] (la tela 730×470 intera),
+  /// con l'inchiostro del colore [inkColor].
+  void draw(Canvas canvas, int i, Rect dst, Color inkColor) {
+    const w = 730.0, h = 470.0;
+    final col = i % 5, row = i ~/ 5;
+    final p = Paint()..filterQuality = FilterQuality.medium;
+    canvas.drawImageRect(body, Rect.fromLTWH(col * w, row * h, w, h), dst, p);
+    final k = ink, b = inkBox;
+    if (k == null || b == null) return;
+    final sx = dst.width / w, sy = dst.height / h;
+    canvas.drawImageRect(
+      k,
+      Rect.fromLTWH(col * b.width, row * b.height, b.width, b.height),
+      Rect.fromLTWH(
+        dst.left + b.left * sx,
+        dst.top + b.top * sy,
+        b.width * sx,
+        b.height * sy,
+      ),
+      p..colorFilter = ColorFilter.mode(inkColor, BlendMode.modulate),
+    );
+  }
+}
+
+/// Carica gli OctoSmash solo quando servono e ne tiene in memoria pochi: su
+/// iPhone tenerli tutti (oltre 300 MB) faceva tacere l'audio e rallentare.
 abstract final class OctoFrames {
   static const int count = 18;
   static const double feetY = 335, bodyH = 210;
@@ -151,100 +189,97 @@ abstract final class OctoFrames {
   /// Dove arriva lo spruzzo nel fotogramma 6 (pixel della tela 730×470).
   static const Offset splashAt = Offset(490, 215);
 
-  /// Fotogrammi per linea: 'bianco' (inchiostro nero e colori) e 'nero'
-  /// (inchiostro bianco).
-  static final Map<String, List<ui.Image>> lines = {};
-  static final Set<String> _loading = {};
+  /// Zona dell'inchiostro in ogni fotogramma (chi non ce l'ha non si ricolora).
+  static const Map<String, Rect> _inkBox = {
+    'pipetta': Rect.fromLTWH(0, 97, 665, 240),
+    'multicolor': Rect.fromLTWH(400, 90, 198, 246),
+    'fusione': Rect.fromLTWH(0, 107, 666, 231),
+    'stampa': Rect.fromLTWH(0, 127, 618, 210),
+    'abisso': Rect.fromLTWH(210, 187, 376, 150),
+    'diluvio': Rect.fromLTWH(0, 126, 614, 211),
+    'imperatore': Rect.fromLTWH(0, 148, 628, 194),
+  };
 
-  /// Effetti speciali delle evoluzioni: 6 elementi che volano allo spruzzo.
-  static final Map<String, List<ui.Image>> effects = {};
+  static const int _keep = 2;
+  static final Map<String, OctoLine> _lines = {};
+  static final List<String> _recent = [];
+  static final Map<String, Future<void>> _loading = {};
 
-  static void _loadEffects() {
-    for (final evo in const [
-      'fusione',
-      'stampa',
-      'abisso',
-      'diluvio',
-      'imperatore',
-    ]) {
-      if (effects.containsKey(evo) || !_loading.add('fx:$evo')) continue;
-      Future.wait([
-        for (var i = 1; i <= 6; i++)
-          () async {
-            final data = await rootBundle.load(
-              'assets/octo/effetti/${evo}_$i.webp',
-            );
-            final codec = await ui.instantiateImageCodec(
-              data.buffer.asUint8List(),
-            );
-            final img = (await codec.getNextFrame()).image;
-            codec.dispose();
-            return img;
-          }(),
-      ]).then(
-        (l) => effects[evo] = l,
-        onError: (_) {
-          _loading.remove('fx:$evo');
-        },
-      );
+  /// Il personaggio, se è già pronto (e lo segna come appena usato).
+  static OctoLine? line(String id) {
+    final l = _lines[id];
+    if (l != null) _touch(id);
+    return l;
+  }
+
+  static void _touch(String id) {
+    _recent
+      ..remove(id)
+      ..add(id);
+  }
+
+  /// Prepara un personaggio (in sottofondo). Chiamarlo appena si sa chi
+  /// spruzzerà, così l'animazione è pronta prima di "Fatto".
+  static Future<void> ensure(String id) {
+    if (_lines.containsKey(id)) {
+      _touch(id);
+      return Future.value();
+    }
+    return _loading[id] ??= _load(id).whenComplete(() => _loading.remove(id));
+  }
+
+  static Future<ui.Image> _image(String asset) async {
+    final data = await rootBundle.load(asset);
+    final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+    final img = (await codec.getNextFrame()).image;
+    codec.dispose();
+    return img;
+  }
+
+  static Future<void> _load(String id) async {
+    try {
+      final box = _inkBox[id];
+      final body = await _image('assets/octo/$id/atlas.webp');
+      final ink = box == null
+          ? null
+          : await _image('assets/octo/$id/ink_atlas.webp');
+      _lines[id] = OctoLine(body, ink, box);
+      _touch(id);
+      // ne restano in memoria solo gli ultimi usati
+      while (_recent.length > _keep) {
+        _lines.remove(_recent.removeAt(0))?.dispose();
+      }
+      _loadEffects(id);
+    } catch (e) {
+      debugPrint('OctoFrames $id: $e');
     }
   }
 
-  static void load() {
-    _loadEffects();
-    // 'pipetta:ink' = solo l'inchiostro magenta della Pipetta, in grigio,
-    // da ricolorare col colore preso
-    for (final line in const [
-      'bianco',
-      'nero',
-      'pipetta',
-      'pipetta:ink',
-      'multicolor',
-      'multicolor:ink',
-      'fusione',
-      'fusione:ink',
-      'stampa',
-      'stampa:ink',
-      'abisso',
-      'abisso:ink',
-      'diluvio',
-      'diluvio:ink',
-      'imperatore',
-      'imperatore:ink',
-    ]) {
-      if (lines.containsKey(line) || !_loading.add(line)) continue;
-      () async {
-        // tutti i fotogrammi insieme, non uno dopo l'altro
-        final list = await Future.wait([
-          for (var i = 1; i <= count; i++)
-            () async {
-              final n = i.toString().padLeft(2, '0');
-              final data = await rootBundle.load(
-                line.endsWith(':ink')
-                    ? 'assets/octo/${line.split(':').first}/ink_$n.webp'
-                    : 'assets/octo/$line/octo_$n.webp',
-              );
-              final codec = await ui.instantiateImageCodec(
-                data.buffer.asUint8List(),
-              );
-              final img = (await codec.getNextFrame()).image;
-              codec.dispose();
-              return img;
-            }(),
-        ]);
-        lines[line] = list;
-      }().catchError((Object e) {
-        debugPrint('OctoFrames $line: $e');
-        _loading.remove(line);
-      });
+  /// Effetti speciali delle evoluzioni: 6 elementi che volano allo spruzzo.
+  static final Map<String, List<ui.Image>> effects = {};
+  static final Set<String> _fxLoading = {};
+
+  static void _loadEffects(String evo) {
+    const evos = {'fusione', 'stampa', 'abisso', 'diluvio', 'imperatore'};
+    if (!evos.contains(evo) ||
+        effects.containsKey(evo) ||
+        !_fxLoading.add(evo)) {
+      return;
     }
+    Future.wait([
+      for (var i = 1; i <= 6; i++) _image('assets/octo/effetti/${evo}_$i.webp'),
+    ]).then(
+      (l) => effects[evo] = l,
+      onError: (Object _) {
+        _fxLoading.remove(evo);
+        return const <ui.Image>[];
+      },
+    );
   }
 }
 
 class OctoPainter extends CustomPainter {
-  OctoPainter(this.c) : super(repaint: c) {
-    OctoFrames.load();
-  }
+  OctoPainter(this.c) : super(repaint: c);
   final EditorController c;
 
   static const _cyan = Color(0xFF22E4F2);
@@ -506,11 +541,16 @@ class OctoPainter extends CustomPainter {
   void _paintRobot(Canvas canvas, Size size) {
     // chi spruzza: l'evoluzione scelta, altrimenti il personaggio del tasto
     final line = c.octoLine;
-    final imgs = OctoFrames.lines[line];
-    final ink = OctoFrames.lines['$line:ink'];
-    if (imgs == null) return;
+    final l = OctoFrames.line(line);
+    if (l == null) {
+      OctoFrames.ensure(line);
+      return;
+    }
     final ms = DateTime.now().millisecondsSinceEpoch - c.octoAnimStart;
-    final i = (ms ~/ EditorController.octoFrameMs).clamp(0, imgs.length - 1);
+    final i = (ms ~/ EditorController.octoFrameMs).clamp(
+      0,
+      OctoFrames.count - 1,
+    );
     final s = size.width * .32 / OctoFrames.bodyH;
     final w = 730 * s, h = 470 * s;
     // posizione di sempre: entra dal bordo sinistro, esce dal destro
@@ -538,26 +578,7 @@ class OctoPainter extends CustomPainter {
       final k = enter * (1 - leave);
       left = left0 + (aimLeft - left0) * k;
     }
-    canvas.drawImageRect(
-      imgs[i],
-      const Rect.fromLTWH(0, 0, 730, 470),
-      Rect.fromLTWH(left, top, w, h),
-      Paint()..filterQuality = FilterQuality.medium,
-    );
-    // l'inchiostro magenta diventa del colore scelto
-    if (ink != null) {
-      canvas.drawImageRect(
-        ink[i],
-        const Rect.fromLTWH(0, 0, 730, 470),
-        Rect.fromLTWH(left, top, w, h),
-        Paint()
-          ..filterQuality = FilterQuality.medium
-          ..colorFilter = ColorFilter.mode(
-            Color(c.octoAnimColor),
-            BlendMode.modulate,
-          ),
-      );
-    }
+    l.draw(canvas, i, Rect.fromLTWH(left, top, w, h), Color(c.octoAnimColor));
   }
 
   @override

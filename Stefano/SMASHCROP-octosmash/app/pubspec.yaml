@@ -102,6 +102,7 @@ flutter:
     - assets/octo/imperatore/
     - assets/octo/scena/
     - assets/octo/effetti/
+    - assets/octo/gocce/
     - assets/octo/contenitori/
     - assets/rubble/burp/
     - assets/rubble/popcorn/

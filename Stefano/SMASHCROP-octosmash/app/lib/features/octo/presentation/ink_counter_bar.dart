@@ -15,7 +15,15 @@ class InkCounterBar extends StatelessWidget {
     required this.head,
     this.awake = true,
     this.onTap,
+    this.headKey,
+    this.bump = 0,
   });
+
+  /// Sulla testa: lì arrivano le gocce d'inchiostro.
+  final GlobalKey? headKey;
+
+  /// Cambia a ogni goccia arrivata: la testa fa un piccolo saltello.
+  final int bump;
 
   /// Tocco: apre la Collezione di OctoSmash.
   final VoidCallback? onTap;
@@ -64,7 +72,15 @@ class InkCounterBar extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 6),
-                Image.asset(head, width: 28, height: 28),
+                TweenAnimationBuilder<double>(
+                  key: ValueKey(bump),
+                  tween: Tween(begin: bump == 0 ? 1 : 1.35, end: 1),
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutBack,
+                  builder: (_, s, child) =>
+                      Transform.scale(scale: s, child: child),
+                  child: Image.asset(head, key: headKey, width: 28, height: 28),
+                ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: ClipRRect(

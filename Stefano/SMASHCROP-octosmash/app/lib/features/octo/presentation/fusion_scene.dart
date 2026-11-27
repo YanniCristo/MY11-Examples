@@ -12,12 +12,14 @@ import '../../rubble/application/sound_fx.dart';
 class FusionScene extends StatefulWidget {
   const FusionScene({super.key});
 
-  static Future<void> show(BuildContext context) {
+  static Future<void> show(BuildContext context) async {
+    await SoundFx.instance.prepareFusionScene();
+    if (!context.mounted) return;
     // le immagini pronte prima di partire, così la scena non scatta
     for (var i = 1; i <= 12; i++) {
       precacheImage(AssetImage(_asset(i)), context);
     }
-    return showGeneralDialog(
+    await showGeneralDialog(
       context: context,
       barrierDismissible: false,
       barrierColor: const Color(0xF20A0B10),

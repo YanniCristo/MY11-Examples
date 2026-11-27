@@ -39,6 +39,8 @@ import '../../settings/preferences.dart';
 import '../../octo/domain/ink_fill.dart';
 import '../../octo/domain/octo_rect.dart';
 import '../../octo/presentation/ink_counter_bar.dart';
+import '../../octo/presentation/ink_flight_overlay.dart';
+import '../../octo/presentation/ink_splash_transition.dart';
 import '../../octo/domain/octo_chars.dart';
 import '../../octo/presentation/octo_collection_screen.dart';
 import '../../octo/presentation/octo_layer.dart';
@@ -107,15 +109,14 @@ class _EditorScreenState extends State<EditorScreen>
             preferences: widget.preferences,
           );
     if (widget.restore != null) c.restoreWork(widget.restore!);
-    // fotogrammi e suoni di OctoSmash pronti prima che servano
-    OctoFrames.load();
-    if (_rubble.sound) SoundFx.instance.prepareOcto();
+    // OctoSmash: animazione e suoni di chi spruzzerà, pronti prima di "Fatto"
+    // (solo quelli: tutti insieme su iPhone sono troppo pesanti)
+    c.addListener(_prepareOcto);
     c.onOctoSound = (line) {
       if (_rubble.sound) SoundFx.instance.octo(line);
     };
     // OctoSmash: i litri d'inchiostro vanno nel loro contatore
-    c.onInk = (litres) =>
-        _rubble.flag((s) => s.inkBlackMl += (litres * 1000).round());
+
     _ticker = createTicker(c.tick);
     c.addListener(_syncTicker);
     _rubble.addListener(_onRubble);
@@ -264,6 +265,7 @@ class _EditorScreenState extends State<EditorScreen>
   void dispose() {
     _rubble.removeListener(_onRubble);
     c.removeListener(_syncTicker);
+    c.removeListener(_prepareOcto);
     _ticker.dispose();
     c.dispose();
     super.dispose();
@@ -307,6 +309,26 @@ class _EditorScreenState extends State<EditorScreen>
   }
 
   bool _octoSleepToast = false;
+  final _inkHeadKey = GlobalKey();
+  int _inkBump = 0;
+
+  /// L'inchiostro è arrivato al contatore: litri, "pling" e vibrazione.
+  void _onInkArrive(double litres) {
+    _rubble.flag((s) => s.inkBlackMl += (litres * 1000).round());
+    if (_rubble.sound) SoundFx.instance.pling();
+    if (_rubble.haptics) SoundFx.tick();
+  }
+
+  String? _preparedOcto;
+
+  void _prepareOcto() {
+    if (!c.octoMode) return;
+    final line = c.octoNextLine;
+    if (line == _preparedOcto) return;
+    _preparedOcto = line;
+    OctoFrames.ensure(line);
+    if (_rubble.sound) SoundFx.instance.prepareOctoLine(line);
+  }
 
   void _setOcto(bool on) {
     c.setOcto(on);
@@ -318,10 +340,11 @@ class _EditorScreenState extends State<EditorScreen>
 
   void _enterOcto() {
     if (!c.canEnterOcto) return;
-    HapticFeedback.heavyImpact();
-    // i suoni pronti anche se l'audio è stato acceso dopo l'apertura
-    if (_rubble.sound) SoundFx.instance.prepareOcto();
-    c.enterOcto();
+    // un grande schizzo copre lo schermo e, colando via, scopre OctoSmash
+    OctoFrames.ensure(c.octoNextLine);
+    InkSplashTransition.play(context, () {
+      if (mounted && c.canEnterOcto) c.enterOcto();
+    });
   }
 
   void _addOcto(bool white) {
@@ -1001,6 +1024,17 @@ class _EditorScreenState extends State<EditorScreen>
               ),
             ),
             Positioned.fill(
+              child: InkFlightOverlay(
+                controller: c,
+                viewportKey: _viewportKey,
+                targetKey: _inkHeadKey,
+                onDrop: () {
+                  if (mounted) setState(() => _inkBump++);
+                },
+                onArrive: _onInkArrive,
+              ),
+            ),
+            Positioned.fill(
               child: RubbleOverlay(
                 controller: c,
                 images: _skinImgs,
@@ -1085,6 +1119,8 @@ class _EditorScreenState extends State<EditorScreen>
                   ? Opacity(
                       opacity: c.octoEnabled ? 1 : .55,
                       child: InkCounterBar(
+                        headKey: _inkHeadKey,
+                        bump: _inkBump,
                         onTap: () =>
                             OctoCollectionScreen.open(context, _rubble),
                         store: _rubble,

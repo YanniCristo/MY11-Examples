@@ -159,10 +159,24 @@ class SoundFx {
     'sounds/octo/scena_fusione_4.mp3',
   ];
 
-  Future<void> _load(List<String> assets) async {
-    for (final a in assets) {
-      kIsWeb ? await WebAudio.instance.load(a) : await _player(a);
+  Future<void> _load(List<String> assets) => Future.wait([
+    for (final a in assets)
+      kIsWeb ? WebAudio.instance.load(a) : _player(a).then((_) {}),
+  ]);
+
+  /// Come [_play], ma se il suono non è ancora caricato lo aspetta (fino a
+  /// poco più di un secondo: dopo sarebbe fuori tempo) invece di restare muto.
+  Future<void> _playReady(String asset) async {
+    if (kIsWeb) {
+      if (WebAudio.instance.play(asset)) return;
+      final t = DateTime.now();
+      await WebAudio.instance.load(asset);
+      if (DateTime.now().difference(t).inMilliseconds < 1200) {
+        WebAudio.instance.play(asset);
+      }
+      return;
     }
+    await _play(asset);
   }
 
   void _pick(String key, List<String> assets) {
@@ -171,16 +185,15 @@ class SoundFx {
     var i = _rnd.nextInt(n);
     if (n > 1 && i == _last[key]) i = (i + 1) % n;
     _last[key] = i;
-    _play(assets[i]);
+    _playReady(assets[i]);
   }
 
-  /// Carica in anticipo i suoni di OctoSmash.
-  Future<void> prepareOcto() async {
-    for (final l in _octo.values) {
-      await _load(l);
-    }
-    await _load(_fusionScene);
-  }
+  /// Carica in anticipo i suoni di un OctoSmash (solo i suoi 4: tenerli
+  /// tutti in memoria su iPhone pesa).
+  Future<void> prepareOctoLine(String line) => _load(_octo[line] ?? const []);
+
+  /// Carica in anticipo il sottofondo della scena della fusione.
+  Future<void> prepareFusionScene() => _load(_fusionScene);
 
   /// Lo spruzzo di un OctoSmash ('bianco', 'stampa'...).
   void octo(String line) => _pick('octo:$line', _octo[line] ?? const []);
