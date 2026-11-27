@@ -109,6 +109,7 @@ flutter:
     - assets/rubble/tycoon/
     - assets/rubble/obiettivi/
     - assets/sounds/
+    - assets/sounds/octo/
   fonts:
     - family: Poppins
       fonts:

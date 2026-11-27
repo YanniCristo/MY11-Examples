@@ -426,16 +426,8 @@ class OctoPainter extends CustomPainter {
 
   /// OctoSmash attraversa la pagina come SMASH: entra, spruzza, esce.
   void _paintRobot(Canvas canvas, Size size) {
-    // chi spruzza lo decide il tasto usato
-    // un'evoluzione scelta nella Collezione spruzza lei per tutti i tasti
-    final line =
-        c.octoEvolution ??
-        switch (c.octoAnimTool) {
-          OctoTool.nero => 'nero',
-          OctoTool.pipetta => 'pipetta',
-          OctoTool.multicolor => 'multicolor',
-          OctoTool.bianco => 'bianco',
-        };
+    // chi spruzza: l'evoluzione scelta, altrimenti il personaggio del tasto
+    final line = c.octoLine;
     final imgs = OctoFrames.lines[line];
     final ink = OctoFrames.lines['$line:ink'];
     if (imgs == null) return;

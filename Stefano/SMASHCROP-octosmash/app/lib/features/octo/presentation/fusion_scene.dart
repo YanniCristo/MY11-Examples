@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../rubble/application/rubble_store.dart';
+import '../../rubble/application/sound_fx.dart';
+
 /// La scena in cui i 4 OctoSmash di base si fondono in OctoSmash Fusione:
 /// 12 immagini a tutto schermo, l'ultima ("FUSIONE!") resta un attimo.
 /// Un tocco la chiude.
@@ -40,6 +43,7 @@ class _FusionSceneState extends State<FusionScene> {
   @override
   void initState() {
     super.initState();
+    if (RubbleStore.instance.sound) SoundFx.instance.fusionScene();
     _next();
   }
 

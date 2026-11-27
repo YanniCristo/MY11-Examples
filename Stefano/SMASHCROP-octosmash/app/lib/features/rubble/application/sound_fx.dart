@@ -91,6 +91,73 @@ class SoundFx {
     _play(skin.sounds[i]);
   }
 
+  // --- OctoSmash ------------------------------------------------------------
+
+  /// Suoni dello spruzzo per ogni OctoSmash (4 varianti ciascuno, come per
+  /// SMASH). Chi non li ha ancora resta muto.
+  static const Map<String, List<String>> _octo = {
+    'stampa': [
+      'sounds/octo/octo_stampa_1.mp3',
+      'sounds/octo/octo_stampa_2.mp3',
+      'sounds/octo/octo_stampa_3.mp3',
+      'sounds/octo/octo_stampa_4.mp3',
+    ],
+    'abisso': [
+      'sounds/octo/octo_abisso_1.mp3',
+      'sounds/octo/octo_abisso_2.mp3',
+      'sounds/octo/octo_abisso_3.mp3',
+      'sounds/octo/octo_abisso_4.mp3',
+    ],
+    'diluvio': [
+      'sounds/octo/octo_diluvio_1.mp3',
+      'sounds/octo/octo_diluvio_2.mp3',
+      'sounds/octo/octo_diluvio_3.mp3',
+      'sounds/octo/octo_diluvio_4.mp3',
+    ],
+    'imperatore': [
+      'sounds/octo/octo_imperatore_1.mp3',
+      'sounds/octo/octo_imperatore_2.mp3',
+      'sounds/octo/octo_imperatore_3.mp3',
+      'sounds/octo/octo_imperatore_4.mp3',
+    ],
+  };
+
+  static const List<String> _fusionScene = [
+    'sounds/octo/scena_fusione_1.mp3',
+    'sounds/octo/scena_fusione_2.mp3',
+    'sounds/octo/scena_fusione_3.mp3',
+    'sounds/octo/scena_fusione_4.mp3',
+  ];
+
+  Future<void> _load(List<String> assets) async {
+    for (final a in assets) {
+      kIsWeb ? await WebAudio.instance.load(a) : await _player(a);
+    }
+  }
+
+  void _pick(String key, List<String> assets) {
+    final n = assets.length;
+    if (n == 0) return;
+    var i = _rnd.nextInt(n);
+    if (n > 1 && i == _last[key]) i = (i + 1) % n;
+    _last[key] = i;
+    _play(assets[i]);
+  }
+
+  /// Carica in anticipo i suoni di OctoSmash.
+  Future<void> prepareOcto() async {
+    for (final l in _octo.values) {
+      await _load(l);
+    }
+    await _load(_fusionScene);
+  }
+
+  /// Lo spruzzo di un OctoSmash ('bianco', 'stampa'...).
+  void octo(String line) => _pick('octo:$line', _octo[line] ?? const []);
+
+  /// La scena dei 4 che si fondono.
+  void fusionScene() => _pick('scena', _fusionScene);
+
   /// I pezzi arrivano alla barra: un "pling" chiaro e breve.
   void pling() => _play(_pling, volume: .55);
 

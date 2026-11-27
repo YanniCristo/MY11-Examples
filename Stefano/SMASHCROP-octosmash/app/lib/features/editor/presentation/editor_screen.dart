@@ -107,8 +107,12 @@ class _EditorScreenState extends State<EditorScreen>
             preferences: widget.preferences,
           );
     if (widget.restore != null) c.restoreWork(widget.restore!);
-    // fotogrammi di OctoSmash pronti prima che serva l'animazione
+    // fotogrammi e suoni di OctoSmash pronti prima che servano
     OctoFrames.load();
+    if (_rubble.sound) SoundFx.instance.prepareOcto();
+    c.onOctoSound = (line) {
+      if (_rubble.sound) SoundFx.instance.octo(line);
+    };
     // OctoSmash: i litri d'inchiostro vanno nel loro contatore
     c.onInk = (litres) =>
         _rubble.flag((s) => s.inkBlackMl += (litres * 1000).round());

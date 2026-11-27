@@ -705,6 +705,20 @@ class EditorController extends ChangeNotifier {
   /// Chiamata a ogni "Fatto" con i litri spruzzati di ogni colore.
   void Function(double litres)? onInk;
 
+  /// Suono dello spruzzo: chiamato quando parte lo "SPLASH!" con la linea di
+  /// chi spruzza ('bianco', 'pipetta', 'stampa'...).
+  void Function(String line)? onOctoSound;
+
+  /// Chi spruzza: l'evoluzione scelta, altrimenti il personaggio del tasto.
+  String get octoLine =>
+      octoEvolution ??
+      switch (octoAnimTool) {
+        OctoTool.nero => 'nero',
+        OctoTool.pipetta => 'pipetta',
+        OctoTool.multicolor => 'multicolor',
+        OctoTool.bianco => 'bianco',
+      };
+
   OctoRect? get octoCurrent =>
       octoSelected == null ? null : octoRects[octoSelected!];
 
@@ -823,6 +837,10 @@ class EditorController extends ChangeNotifier {
       const Duration(milliseconds: octoSplashAtMs + octoSplashMs),
       _applySplash,
     );
+    // il suono parte un attimo prima dello "SPLASH!"
+    Timer(const Duration(milliseconds: octoSplashAtMs - 60), () {
+      if (!_disposed) onOctoSound?.call(octoLine);
+    });
     Timer(const Duration(milliseconds: octoAnimMs), () {
       if (_disposed) return;
       octoAnimStart = 0;
