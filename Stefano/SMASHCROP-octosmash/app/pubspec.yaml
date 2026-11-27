@@ -102,7 +102,12 @@ flutter:
     - assets/octo/imperatore/
     - assets/octo/scena/
     - assets/octo/effetti/
-    - assets/octo/gocce/
+    - assets/octo/fx/nero/
+    - assets/octo/fx/bianco/
+    - assets/octo/fx/colore/
+    - assets/octo/fx/scritte/
+    - assets/octo/fx/scritte_colore/
+    - assets/octo/fx/festa/
     - assets/octo/contenitori/
     - assets/rubble/burp/
     - assets/rubble/popcorn/

@@ -1280,6 +1280,14 @@ class S {
     'Com SmashCrop vitalício',
     'Mit SmashCrop für immer',
   );
+  static String get octoEvolvedTitle => _t(
+    'OctoSmash si è evoluto!',
+    'OctoSmash has evolved!',
+    'OctoSmash a évolué !',
+    '¡OctoSmash ha evolucionado!',
+    'O OctoSmash evoluiu!',
+    'OctoSmash hat sich entwickelt!',
+  );
   static String get evolvedTitle => _t(
     'SMASH si è evoluto!',
     'SMASH has evolved!',

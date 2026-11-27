@@ -1,15 +1,17 @@
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../editor/application/editor_controller.dart';
+import 'ink_fx.dart';
 
-/// Dopo lo spruzzo, gocce d'inchiostro (del colore usato) schizzano fuori dal
-/// rettangolo e volano verso la testa nel contatore dei litri, come le
-/// macerie di SMASH verso i kg. Quando arriva l'ultima: [onArrive].
+/// Tutto quello che succede dopo lo spruzzo, come le macerie di SMASH:
+/// - macchie d'inchiostro che esplodono sul rettangolo (B);
+/// - una scritta fumetto, SPLASH! SPLAT! PLIC! SLURP! (F);
+/// - colature che scendono dal bordo e finiscono in una pozza (C, E);
+/// - gocce che schizzano fuori e volano fino alla testa nel contatore (A).
+/// Quando arriva l'ultima goccia: [onArrive] con i litri.
 class InkFlightOverlay extends StatefulWidget {
   const InkFlightOverlay({
     super.key,
@@ -29,7 +31,7 @@ class InkFlightOverlay extends StatefulWidget {
   /// Tutto l'inchiostro è arrivato: si contano i litri.
   final void Function(double litres) onArrive;
 
-  /// Una goccia è arrivata (per il "tic" e il saltello del contatore).
+  /// Una goccia è arrivata (per il saltello del contatore).
   final VoidCallback onDrop;
 
   @override
@@ -44,20 +46,41 @@ class _Drop {
   bool arrived = false;
 }
 
+class _Blob {
+  _Blob(this.at, this.size, this.angle, this.image, this.delay);
+  final Offset at;
+  final double size, angle, delay;
+  final int image;
+}
+
+class _Drip {
+  _Drip(this.x, this.width, this.length, this.image, this.delay);
+  final double x, width, length, delay;
+  final int image;
+}
+
+class _Scene {
+  _Scene(this.rect, this.color, this.litres);
+  final Rect rect; // sullo schermo
+  final Color color;
+  final double litres;
+  final drops = <_Drop>[];
+  final blobs = <_Blob>[];
+  final drips = <_Drip>[];
+  int word = 0;
+  double wordTilt = 0;
+}
+
 class _InkFlightOverlayState extends State<InkFlightOverlay>
     with SingleTickerProviderStateMixin {
-  static List<ui.Image>? _imgs;
-  static bool _loading = false;
-
   late final Ticker _ticker;
-  final List<_Drop> _drops = [];
+  _Scene? _s;
   int _seen = 0;
   double _t = 0;
-  double _litres = 0;
-  Color _color = Colors.black;
   bool _done = true;
 
   static const _fly = 1.15; // secondi fino all'ultima goccia
+  static const _end = 1.9; // fine di colature e pozza
 
   EditorController get c => widget.controller;
 
@@ -67,27 +90,9 @@ class _InkFlightOverlayState extends State<InkFlightOverlay>
     _ticker = createTicker(_tick);
     c.addListener(_check);
     _seen = c.octoFlightId;
-    _loadImages();
-  }
-
-  static Future<void> _loadImages() async {
-    if (_imgs != null || _loading) return;
-    _loading = true;
-    try {
-      _imgs = await Future.wait([
-        for (var i = 1; i <= 6; i++)
-          () async {
-            final d = await rootBundle.load('assets/octo/gocce/goccia_$i.webp');
-            final codec = await ui.instantiateImageCodec(
-              d.buffer.asUint8List(),
-            );
-            final img = (await codec.getNextFrame()).image;
-            codec.dispose();
-            return img;
-          }(),
-      ]);
-    } catch (_) {
-      _loading = false;
+    // i tre set sono leggeri: si caricano subito
+    for (final k in const [Colors.black, Colors.white, Colors.red]) {
+      InkFx.load(k);
     }
   }
 
@@ -105,41 +110,92 @@ class _InkFlightOverlayState extends State<InkFlightOverlay>
     return me.globalToLocal(box.localToGlobal(p));
   }
 
+  void _finish() {
+    if (_done) return;
+    _done = true;
+    widget.onArrive(_s?.litres ?? 0);
+  }
+
   void _check() {
     final f = c.octoFlight;
     if (c.octoFlightId == _seen || f == null) return;
     _seen = c.octoFlightId;
-    if (!_done) widget.onArrive(_litres); // volo precedente non finito
-    final from = _local(widget.viewportKey, c.contentToScreen(f.center));
-    if (from == null) {
+    _finish(); // volo precedente non ancora finito
+    final hw = f.width / 2, hh = f.height / 2;
+    final a = _local(
+      widget.viewportKey,
+      c.contentToScreen(f.center - Offset(hw, hh)),
+    );
+    final b = _local(
+      widget.viewportKey,
+      c.contentToScreen(f.center + Offset(hw, hh)),
+    );
+    if (a == null || b == null) {
       widget.onArrive(f.litres);
       return;
     }
+    final r = Rect.fromPoints(a, b);
+    final s = _Scene(r, Color(f.color), f.litres);
     final rnd = math.Random(c.octoFlightId);
-    // più inchiostro, più gocce (da 8 a 18)
+    final side = math.min(r.width, r.height);
+
+    // gocce: più inchiostro, più gocce (da 8 a 18)
     final n = (8 + f.litres * 20).clamp(8, 18).round();
-    _drops
-      ..clear()
-      ..addAll([
-        for (var k = 0; k < n; k++)
-          _Drop(
-            from +
-                Offset(
-                  (rnd.nextDouble() - .5) * f.width * .7,
-                  (rnd.nextDouble() - .5) * f.height * .7,
-                ),
-            Offset.fromDirection(
-              -math.pi / 2 + (rnd.nextDouble() - .5) * math.pi * 1.4,
-              90 + rnd.nextDouble() * 120,
-            ),
-            16 + rnd.nextDouble() * 14,
-            (rnd.nextDouble() - .5) * 8,
-            rnd.nextInt(6),
-            rnd.nextDouble() * .25,
+    for (var k = 0; k < n; k++) {
+      s.drops.add(
+        _Drop(
+          r.center +
+              Offset(
+                (rnd.nextDouble() - .5) * r.width * .7,
+                (rnd.nextDouble() - .5) * r.height * .7,
+              ),
+          Offset.fromDirection(
+            -math.pi / 2 + (rnd.nextDouble() - .5) * math.pi * 1.4,
+            90 + rnd.nextDouble() * 120,
           ),
-      ]);
-    _litres = f.litres;
-    _color = Color(f.color);
+          18 + rnd.nextDouble() * 16,
+          (rnd.nextDouble() - .5) * 8,
+          rnd.nextInt(6),
+          rnd.nextDouble() * .25,
+        ),
+      );
+    }
+
+    // macchie: 1 sui rettangoli piccoli, fino a 3 su quelli larghi
+    final nb = (r.width / math.max(side, 1) / 1.6).clamp(1, 3).round();
+    for (var k = 0; k < nb; k++) {
+      final x = nb == 1 ? .5 : (k + .5) / nb;
+      s.blobs.add(
+        _Blob(
+          Offset(
+            r.left + r.width * x + (rnd.nextDouble() - .5) * 10,
+            r.center.dy + (rnd.nextDouble() - .5) * r.height * .3,
+          ),
+          (side * 1.5).clamp(70, 230) * (.85 + rnd.nextDouble() * .3),
+          rnd.nextDouble() * math.pi * 2,
+          rnd.nextInt(3),
+          k * .05,
+        ),
+      );
+    }
+
+    // colature dal bordo sotto: 2–4
+    final nd = (r.width / 70).clamp(2, 4).round();
+    for (var k = 0; k < nd; k++) {
+      s.drips.add(
+        _Drip(
+          r.left + r.width * ((k + .3 + rnd.nextDouble() * .4) / nd),
+          14 + rnd.nextDouble() * 10,
+          50 + rnd.nextDouble() * 70,
+          rnd.nextInt(3),
+          .15 + rnd.nextDouble() * .2,
+        ),
+      );
+    }
+    s.word = rnd.nextInt(4);
+    s.wordTilt = (rnd.nextDouble() - .5) * .35;
+
+    _s = s;
     _done = false;
     _t = 0;
     _ticker
@@ -149,22 +205,19 @@ class _InkFlightOverlayState extends State<InkFlightOverlay>
 
   void _tick(Duration d) {
     _t = d.inMicroseconds / 1e6;
-    final target = _local(widget.targetKey, const Offset(14, 14));
-    if (target != null) {
-      for (final p in _drops) {
+    final s = _s;
+    if (s != null) {
+      for (final p in s.drops) {
         if (!p.arrived && _progress(p) >= 1) {
           p.arrived = true;
           widget.onDrop();
         }
       }
+      if (_t >= _fly + .1) _finish();
     }
-    if (_t >= _fly + .1) {
+    if (_t >= _end) {
       _ticker.stop();
-      _drops.clear();
-      if (!_done) {
-        _done = true;
-        widget.onArrive(_litres);
-      }
+      _s = null;
     }
     setState(() {});
   }
@@ -177,17 +230,17 @@ class _InkFlightOverlayState extends State<InkFlightOverlay>
 
   @override
   Widget build(BuildContext context) {
-    if (_drops.isEmpty || _imgs == null) return const SizedBox.shrink();
-    final target = _local(widget.targetKey, const Offset(14, 14));
+    final s = _s;
+    final fx = s == null ? null : InkFx.ready(s.color);
+    if (s == null || fx == null) return const SizedBox.shrink();
     return IgnorePointer(
       child: CustomPaint(
         size: Size.infinite,
-        painter: _FlightPainter(
-          drops: _drops,
+        painter: _FxPainter(
+          s: s,
+          fx: fx,
           t: _t,
-          target: target,
-          imgs: _imgs!,
-          color: _color,
+          target: _local(widget.targetKey, const Offset(14, 14)),
           progress: _progress,
         ),
       ),
@@ -195,53 +248,129 @@ class _InkFlightOverlayState extends State<InkFlightOverlay>
   }
 }
 
-class _FlightPainter extends CustomPainter {
-  _FlightPainter({
-    required this.drops,
+class _FxPainter extends CustomPainter {
+  _FxPainter({
+    required this.s,
+    required this.fx,
     required this.t,
     required this.target,
-    required this.imgs,
-    required this.color,
     required this.progress,
   });
 
-  final List<_Drop> drops;
+  final _Scene s;
+  final InkFx fx;
   final double t;
   final Offset? target;
-  final List<ui.Image> imgs;
-  final Color color;
   final double Function(_Drop) progress;
+
+  Color? get tint => fx.tint ? s.color : null;
+
+  static double _fade(double t, double from, double to) =>
+      (1 - (t - from) / (to - from)).clamp(0.0, 1.0);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..filterQuality = FilterQuality.medium
-      ..colorFilter = ColorFilter.mode(color, BlendMode.modulate);
-    for (final p in drops) {
+    final r = s.rect;
+
+    // colature: scendono dal bordo sotto e finiscono in una pozza
+    var deepest = 0.0, deepX = r.center.dx;
+    for (final d in s.drips) {
+      final k = Curves.easeOutCubic.transform(
+        ((t - d.delay) / .8).clamp(0.0, 1.0),
+      );
+      if (k <= 0) continue;
+      final h = d.length * k;
+      if (h > deepest) {
+        deepest = h;
+        deepX = d.x;
+      }
+      // l'immagine è alta 3 volte la larghezza: si allunga col tempo
+      drawInk(
+        canvas,
+        fx.drips[d.image],
+        Rect.fromLTWH(d.x - d.width / 2, r.bottom - 4, d.width, h + d.width),
+        tint: tint,
+        opacity: _fade(t, 1.4, _InkFlightOverlayState._end),
+      );
+    }
+    if (deepest > 30 && t > .75) {
+      final k = Curves.easeOutBack.transform(((t - .75) / .3).clamp(0.0, 1.0));
+      final w = 90 * k;
+      drawInk(
+        canvas,
+        fx.puddle,
+        Rect.fromCenter(
+          center: Offset(deepX, r.bottom + deepest + 10),
+          width: w,
+          height: w * .375,
+        ),
+        tint: tint,
+        opacity: _fade(t, 1.4, _InkFlightOverlayState._end),
+      );
+    }
+
+    // macchie: esplodono sul rettangolo e svaniscono
+    for (final b in s.blobs) {
+      final tt = t - b.delay;
+      if (tt <= 0) continue;
+      final k = Curves.easeOutBack.transform((tt / .18).clamp(0.0, 1.0));
+      canvas.save();
+      canvas.translate(b.at.dx, b.at.dy);
+      canvas.rotate(b.angle);
+      drawInk(
+        canvas,
+        fx.blobs[b.image],
+        Rect.fromCenter(
+          center: Offset.zero,
+          width: b.size * k,
+          height: b.size * k,
+        ),
+        tint: tint,
+        opacity: _fade(tt, .3, .65),
+      );
+      canvas.restore();
+    }
+
+    // la scritta fumetto, sopra il rettangolo
+    if (t < 1.15) {
+      final k = Curves.elasticOut.transform((t / .5).clamp(0.0, 1.0));
+      final w = 150.0 * k;
+      final top = math.max(r.top - 46, 40.0);
+      canvas.save();
+      canvas.translate(r.center.dx.clamp(80, size.width - 80), top);
+      canvas.rotate(s.wordTilt);
+      drawInk(
+        canvas,
+        fx.words[s.word],
+        Rect.fromCenter(center: Offset.zero, width: w, height: w / 2),
+        opacity: _fade(t, .85, 1.15),
+      );
+      canvas.restore();
+    }
+
+    // gocce: schizzano fuori, poi volano a parabola verso il contatore
+    for (final p in s.drops) {
       if (p.arrived) continue;
-      // schizzo: esce dal rettangolo e rallenta
       final b = math.min(t, .32 + p.delay);
       final out = p.from + p.burst * b + Offset(0, 260 * b * b);
       final k = Curves.easeInCubic.transform(progress(p));
       final to = target ?? out;
-      // volo a parabola verso il contatore
       final pos =
           Offset.lerp(out, to, k)! + Offset(0, -math.sin(k * math.pi) * 60);
-      final s = p.size * (1 - .45 * k);
-      final img = imgs[p.image];
+      final sz = p.size * (1 - .45 * k);
       canvas.save();
       canvas.translate(pos.dx, pos.dy);
       canvas.rotate(p.spin * t);
-      canvas.drawImageRect(
-        img,
-        Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
-        Rect.fromCenter(center: Offset.zero, width: s, height: s),
-        paint,
+      drawInk(
+        canvas,
+        fx.drops[p.image],
+        Rect.fromCenter(center: Offset.zero, width: sz, height: sz),
+        tint: tint,
       );
       canvas.restore();
     }
   }
 
   @override
-  bool shouldRepaint(_FlightPainter old) => true;
+  bool shouldRepaint(_FxPainter old) => true;
 }

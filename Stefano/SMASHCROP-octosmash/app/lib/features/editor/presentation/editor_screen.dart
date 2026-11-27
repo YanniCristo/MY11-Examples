@@ -41,6 +41,8 @@ import '../../octo/domain/octo_rect.dart';
 import '../../octo/presentation/ink_counter_bar.dart';
 import '../../octo/presentation/ink_flight_overlay.dart';
 import '../../octo/presentation/ink_splash_transition.dart';
+import '../../octo/presentation/octo_evolution_overlay.dart';
+import '../../octo/domain/ink_math.dart';
 import '../../octo/domain/octo_chars.dart';
 import '../../octo/presentation/octo_collection_screen.dart';
 import '../../octo/presentation/octo_layer.dart';
@@ -314,9 +316,37 @@ class _EditorScreenState extends State<EditorScreen>
 
   /// L'inchiostro è arrivato al contatore: litri, "pling" e vibrazione.
   void _onInkArrive(double litres) {
+    final before = (_rubble.inkBlackMl + _rubble.inkWhiteMl) / 1000;
     _rubble.flag((s) => s.inkBlackMl += (litres * 1000).round());
+    final after = (_rubble.inkBlackMl + _rubble.inkWhiteMl) / 1000;
     if (_rubble.sound) SoundFx.instance.pling();
     if (_rubble.haptics) SoundFx.tick();
+    // contenitore pieno: festa per la nuova evoluzione
+    for (final ch in kOctoChars) {
+      final g = ch.goal;
+      if (g == null) continue;
+      final l = InkMath.goals[g];
+      if (before < l && after >= l) _octoEvolutions.add(ch);
+    }
+    _showOctoEvolutions();
+  }
+
+  final List<OctoChar> _octoEvolutions = [];
+  bool _showingOctoEvo = false;
+
+  Future<void> _showOctoEvolutions() async {
+    if (_showingOctoEvo) return;
+    _showingOctoEvo = true;
+    while (_octoEvolutions.isNotEmpty && mounted) {
+      final ch = _octoEvolutions.removeAt(0);
+      if (_rubble.sound) {
+        SoundFx.instance.prepareOctoLine(ch.id).then((_) {
+          SoundFx.instance.octo(ch.id);
+        });
+      }
+      await showOctoEvolution(context, ch);
+    }
+    _showingOctoEvo = false;
   }
 
   String? _preparedOcto;

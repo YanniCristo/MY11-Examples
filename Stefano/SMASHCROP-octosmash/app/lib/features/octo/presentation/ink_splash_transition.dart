@@ -8,8 +8,8 @@ import 'package:material_ui/material_ui.dart';
 /// OctoSmash pronto. In tutto poco più di un secondo.
 abstract final class InkSplashTransition {
   static Future<void> play(BuildContext context, VoidCallback onCovered) {
-    precacheImage(const AssetImage('assets/octo/schizzo_d1.webp'), context);
-    precacheImage(const AssetImage('assets/octo/schizzo_d2.webp'), context);
+    precacheImage(const AssetImage('assets/octo/fx/nero/D1.webp'), context);
+    precacheImage(const AssetImage('assets/octo/fx/nero/D2.webp'), context);
     final done = Completer<void>();
     late OverlayEntry entry;
     entry = OverlayEntry(
@@ -74,7 +74,7 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
             img = Transform.scale(
               scale: .2 + .95 * k,
               child: Image.asset(
-                'assets/octo/schizzo_d1.webp',
+                'assets/octo/fx/nero/D1.webp',
                 fit: BoxFit.cover,
                 gaplessPlayback: true,
               ),
@@ -87,7 +87,7 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
               child: Transform.translate(
                 offset: Offset(0, h * .55 * k),
                 child: Image.asset(
-                  'assets/octo/schizzo_d2.webp',
+                  'assets/octo/fx/nero/D2.webp',
                   fit: BoxFit.cover,
                   gaplessPlayback: true,
                 ),
