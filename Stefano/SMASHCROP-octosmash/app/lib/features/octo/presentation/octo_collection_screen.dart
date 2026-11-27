@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -12,6 +14,7 @@ import '../../rubble/presentation/collection_screen.dart';
 import '../domain/ink_math.dart';
 import '../domain/octo_chars.dart';
 import 'fusion_scene.dart';
+import 'ink_fx.dart';
 import 'octo_layer.dart';
 
 /// La Collezione di OctoSmash: stessa idea di quella di SMASH (anteprima
@@ -414,26 +417,35 @@ class _OctoPreview extends StatefulWidget {
 class _OctoPreviewState extends State<_OctoPreview>
     with SingleTickerProviderStateMixin {
   late final Ticker _ticker;
-  int _ms = 0;
-  int _startedAt = 0;
+  double _t = 0; // secondi
+  double _startedAt = 0;
 
   @override
   void initState() {
     super.initState();
-    _ticker = createTicker((e) => setState(() => _ms = e.inMilliseconds))
+    _ticker = createTicker((e) => setState(() => _t = e.inMicroseconds / 1e6))
       ..start();
+    for (final (line, ink) in _cast) {
+      InkFx.load(Color(ink));
+      SoundFx.instance.prepareOctoLine(line);
+    }
   }
 
-  // come SMASH: fa una volta tutta l'animazione, poi resta a riposo
-  // dondolando tra due fotogrammi (il 14 e il 15) ogni 0,6 secondi
-  static const _fd = 100; // 10 fotogrammi al secondo
-  static const _restA = 13, _restB = 14;
+  // la Squadra: i 4 spruzzano uno dopo l'altro e poi resta la foto di gruppo;
+  // un'evoluzione: lei sola, col suo colore
   static const _squad = [
     ('bianco', 0xFF000000),
     ('nero', 0xFFFFFFFF),
     ('pipetta', 0xFF22B8F2),
     ('multicolor', 0xFFF7E15A),
   ];
+
+  List<(String, int)> get _cast => widget.char.isSquad
+      ? _squad
+      : [(widget.char.id, widget.char.color.toARGB32())];
+
+  // tempi di ogni personaggio: entra, spruzza, (esce se non è l'ultimo)
+  static const _in = .35, _spray = .45, _sprayEnd = 1.35, _turn = 1.7;
 
   int _soundDone = -1;
 
@@ -443,113 +455,243 @@ class _OctoPreviewState extends State<_OctoPreview>
     super.dispose();
   }
 
-  /// Un tocco: l'animazione riparte da capo.
+  /// Un tocco: si rivede da capo.
   void _replay() => setState(() {
-    _startedAt = _ms;
+    _startedAt = _t;
     _soundDone = -1;
   });
 
-  // il suono dello spruzzo, una volta per ogni personaggio che spruzza
-  void _sound(int k, String line) {
-    if (k <= _soundDone) return;
-    _soundDone = k;
-    if (RubbleStore.instance.sound) SoundFx.instance.octo(line);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final t = _ms - _startedAt;
-    // la Squadra: i 4 spruzzano uno dopo l'altro (i primi 3 escono di
-    // scena, l'ultimo resta); un'evoluzione: lei sola, col suo colore
-    final cast = widget.char.isSquad
-        ? _squad
-        : [(widget.char.id, widget.char.color.toARGB32())];
-    const full = OctoFrames.count * _fd; // con l'uscita
-    const toRest = (_restA) * _fd; // fino al riposo
-    var k = cast.length - 1;
-    var local = t - (cast.length - 1) * full;
-    if (t < (cast.length - 1) * full) {
-      k = t ~/ full;
-      local = t % full;
+    final cast = _cast;
+    final t = _t - _startedAt;
+    final n = cast.length;
+    // quale personaggio è in scena, e da quanto
+    var k = (t / _turn).floor().clamp(0, n);
+    var local = t - k * _turn;
+    final resting = k >= n || (n == 1 && local > _sprayEnd + .25);
+    if (k >= n) {
+      k = n - 1;
+      local = t - (n - 1) * _turn;
     }
     final (line, ink) = cast[k];
-    final last = k == cast.length - 1;
-    final int frame;
-    if (!last || local < toRest) {
-      frame = (local ~/ _fd).clamp(0, OctoFrames.count - 1);
-    } else {
-      frame = ((local - toRest) ~/ 600).isEven ? _restA : _restB;
+    if (!resting && local >= _spray && k > _soundDone) {
+      _soundDone = k;
+      if (RubbleStore.instance.sound) SoundFx.instance.octo(line);
     }
 
-    // il prossimo della Squadra si prepara mentre spruzza questo
-    if (!last) {
-      final next = cast[k + 1].$1;
-      if (OctoFrames.line(next) == null) OctoFrames.ensure(next);
+    // a riposo la Squadra torna in foto di gruppo
+    final pose = resting && widget.char.isSquad
+        ? 'assets/octo/teste/squadra_posa.webp'
+        : 'assets/octo/teste/${line}_posa.webp';
+
+    // movimento del corpo
+    double dx = 0, dy = 0, rot = 0, sx = 1, sy = 1, alpha = 1;
+    if (resting) {
+      // riposo come SMASH: due "posizioni" che si alternano ogni 0,6 s,
+      // più un respiro leggero
+      final r = t - (n * _turn - (n == 1 ? _turn - _sprayEnd - .25 : 0));
+      final two = (r / .6).floor().isEven;
+      rot = two ? -.025 : .025;
+      dy = two ? 0 : -4;
+      final b = math.sin(r * 3) * .015;
+      sx = 1 + b;
+      sy = 1 - b;
+    } else if (local < _in) {
+      // entra da sinistra con un rimbalzo
+      final e = Curves.easeOutBack.transform(local / _in);
+      dx = -1.1 * (1 - e);
+      final sq = math.sin(local / _in * math.pi) * .12;
+      sx = 1 + sq;
+      sy = 1 - sq;
+    } else if (local < _sprayEnd) {
+      // spruzza: si carica all'indietro, poi rinculo e assestamento
+      final s = (local - _in) / (_sprayEnd - _in);
+      final charge = local < _spray ? (local - _in) / (_spray - _in) : 0.0;
+      final kick = local >= _spray
+          ? math.exp(-(local - _spray) * 7) * math.sin((local - _spray) * 30)
+          : 0.0;
+      rot = -.08 * charge + .06 * kick;
+      sx = 1 - .06 * charge + .05 * kick.abs();
+      sy = 1 + .06 * charge - .05 * kick.abs();
+      dx = -.02 * charge;
+      dy = -6 * math.sin(s * math.pi).abs() * (1 - charge);
+    } else if (k < n - 1) {
+      // esce a destra (tutti tranne l'ultimo)
+      final e = Curves.easeIn.transform(
+        ((local - _sprayEnd) / (_turn - _sprayEnd)).clamp(0, 1),
+      );
+      dx = 1.2 * e;
+      alpha = 1 - e * .3;
     }
-    final l = OctoFrames.line(line);
-    if (l == null) {
-      OctoFrames.ensure(line);
-      SoundFx.instance.prepareOctoLine(line);
-      // si aspetta che arrivi prima di partire
-      _startedAt = _ms - (t < 0 ? 0 : (k * full));
-      // intanto, come SMASH, si vede subito la posa da eroe
-      if (k == 0) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Image.asset(
-            'assets/octo/teste/${widget.char.isSquad ? 'squadra' : line}'
-            '_posa.webp',
-            fit: BoxFit.contain,
-            gaplessPlayback: true,
-          ),
-        );
-      }
-    } else if (frame >= 5 && local < toRest) {
-      _sound(k, line);
-    }
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: _replay,
-      child: CustomPaint(
-        painter: _PreviewPainter(line: l, frame: frame, color: Color(ink)),
+      child: LayoutBuilder(
+        builder: (context, c) {
+          final side = math.min(c.maxWidth, c.maxHeight) * .86;
+          final w = resting && widget.char.isSquad ? side * 1.5 : side;
+          final poseBox = Rect.fromCenter(
+            center: Offset(c.maxWidth / 2, c.maxHeight / 2 + side * .02),
+            width: math.min(w, c.maxWidth * .98),
+            height: side,
+          );
+          final tool = _tool[line] ?? const Offset(.8, .15);
+          return ClipRect(
+            child: Stack(
+              children: [
+                Positioned.fromRect(
+                  rect: poseBox.shift(Offset(dx * c.maxWidth, dy)),
+                  child: Opacity(
+                    opacity: alpha,
+                    child: Transform(
+                      alignment: Alignment.bottomCenter,
+                      transform: Matrix4.identity()
+                        ..rotateZ(rot)
+                        ..scaleByDouble(sx, sy, 1, 1),
+                      child: Image.asset(
+                        pose,
+                        fit: BoxFit.contain,
+                        filterQuality: FilterQuality.high,
+                        gaplessPlayback: true,
+                      ),
+                    ),
+                  ),
+                ),
+                if (!resting)
+                  Positioned.fill(
+                    child: CustomPaint(
+                      painter: _SprayPainter(
+                        t: local - _spray,
+                        from:
+                            poseBox.topLeft +
+                            Offset(
+                              tool.dx * poseBox.width,
+                              tool.dy * poseBox.height,
+                            ),
+                        color: Color(ink),
+                        seed: k,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
+
+  /// Da dove esce l'inchiostro in ogni posa (in proporzione all'immagine).
+  static const Map<String, Offset> _tool = {
+    'bianco': Offset(.76, .16),
+    'nero': Offset(.78, .14),
+    'pipetta': Offset(.76, .1),
+    'multicolor': Offset(.78, .14),
+    'fusione': Offset(.8, .1),
+    'stampa': Offset(.88, .5),
+    'abisso': Offset(.92, .14),
+    'diluvio': Offset(.86, .4),
+    'imperatore': Offset(.84, .26),
+  };
 }
 
-class _PreviewPainter extends CustomPainter {
-  _PreviewPainter({
-    required this.line,
-    required this.frame,
+/// Lo spruzzo nella Collezione: un getto di gocce che parte dallo strumento
+/// verso destra, una macchia che esplode e la scritta fumetto.
+class _SprayPainter extends CustomPainter {
+  _SprayPainter({
+    required this.t,
+    required this.from,
     required this.color,
+    required this.seed,
   });
-  final OctoLine? line;
-  final int frame;
+
+  /// Secondi dall'inizio dello spruzzo (negativo: non ancora partito).
+  final double t;
+  final Offset from;
   final Color color;
+  final int seed;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final l = line;
-    if (l == null) return;
-    // personaggio grande (come SMASH nella sua Collezione): il corpo occupa
-    // gran parte dell'altezza, entrata e uscita escono dai bordi
-    canvas.clipRect(Offset.zero & size);
-    final s = size.height * .72 / OctoFrames.bodyH;
-    final w = 730 * s, h = 470 * s;
-    l.draw(
-      canvas,
-      frame,
-      Rect.fromLTWH(
-        (size.width - w) / 2,
-        size.height * .92 - OctoFrames.feetY * s,
-        w,
-        h,
-      ),
-      color,
+    if (t < 0 || t > .95) return;
+    final fx = InkFx.ready(color);
+    if (fx == null) return;
+    final tint = fx.tint ? color : null;
+    final r = math.Random(seed * 31 + 7);
+    // la macchia resta dentro il riquadro, con spazio per la scritta sopra
+    final sh = size.shortestSide;
+    final splat = Offset(
+      math.min(from.dx + size.width * .2, size.width - sh * .2),
+      math.max(from.dy + size.height * .1, sh * .36),
     );
+    final fade = (1 - (t - .6) / .35).clamp(0.0, 1.0);
+
+    // la macchia che esplode dove arriva il getto
+    if (t > .08) {
+      final k = Curves.easeOutBack.transform(((t - .08) / .18).clamp(0, 1));
+      final s = size.shortestSide * .32 * k;
+      canvas.save();
+      canvas.translate(splat.dx, splat.dy);
+      canvas.rotate(seed * 1.3);
+      drawInk(
+        canvas,
+        fx.blobs[seed % 3],
+        Rect.fromCenter(center: Offset.zero, width: s, height: s),
+        tint: tint,
+        opacity: fade,
+      );
+      canvas.restore();
+    }
+
+    // il getto: gocce in fila dallo strumento alla macchia, poi schizzi
+    for (var i = 0; i < 22; i++) {
+      final d = r.nextDouble() * .25;
+      final tt = t - d;
+      if (tt < 0) continue;
+      final k = (tt / .14).clamp(0.0, 1.0);
+      final spread = Offset(
+        (r.nextDouble() - .3) * size.width * .35,
+        (r.nextDouble() - .6) * size.height * .35,
+      );
+      final after = math.max(0.0, tt - .14);
+      final p =
+          Offset.lerp(from, splat, k)! +
+          spread * after * 1.6 +
+          Offset(0, 260 * after * after);
+      final s = size.shortestSide * (.035 + r.nextDouble() * .04);
+      canvas.save();
+      canvas.translate(p.dx, p.dy);
+      canvas.rotate(tt * 8 * (i.isEven ? 1 : -1));
+      drawInk(
+        canvas,
+        fx.drops[r.nextInt(6)],
+        Rect.fromCenter(center: Offset.zero, width: s, height: s),
+        tint: tint,
+        opacity: fade,
+      );
+      canvas.restore();
+    }
+
+    // la scritta fumetto
+    final k = Curves.elasticOut.transform((t / .45).clamp(0, 1));
+    final w = sh * .4 * k;
+    canvas.save();
+    canvas.translate(
+      math.min(splat.dx, size.width - sh * .23),
+      splat.dy - sh * .2,
+    );
+    canvas.rotate(-.12);
+    drawInk(
+      canvas,
+      fx.words[seed % 4],
+      Rect.fromCenter(center: Offset.zero, width: w, height: w / 2),
+      opacity: fade,
+    );
+    canvas.restore();
   }
 
   @override
-  bool shouldRepaint(_PreviewPainter old) =>
-      old.line != line || old.frame != frame || old.color != color;
+  bool shouldRepaint(_SprayPainter old) => true;
 }
