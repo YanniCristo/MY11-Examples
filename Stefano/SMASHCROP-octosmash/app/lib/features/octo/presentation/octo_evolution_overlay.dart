@@ -73,6 +73,7 @@ class _OctoEvolutionState extends State<_OctoEvolution>
           if (mounted) setState(() => _d2 = v);
         })
         .catchError((_) {});
+    InkFx.load(widget.ch.color);
     _ticker.start();
   }
 
@@ -107,6 +108,7 @@ class _OctoEvolutionState extends State<_OctoEvolution>
                   party: _party,
                   d1: _d1,
                   d2: _d2,
+                  ink: InkFx.ready(ch.color),
                 ),
               ),
             ),
@@ -128,29 +130,42 @@ class _OctoEvolutionState extends State<_OctoEvolution>
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Transform.scale(
-                      scale: .2 + .8 * pop,
-                      child: Container(
-                        width: 270,
-                        height: 270,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: ch.color.withValues(alpha: .55),
-                              blurRadius: 90,
-                              spreadRadius: 10,
+                    // vivo: rimbalza, respira e ondeggia mentre spruzza
+                    Transform.translate(
+                      offset: Offset(0, -10 * math.sin(_t * 5).abs()),
+                      child: Transform.rotate(
+                        angle: .06 * math.sin(_t * 3.2),
+                        child: Transform(
+                          alignment: Alignment.bottomCenter,
+                          transform: Matrix4.diagonal3Values(
+                            (.2 + .8 * pop) * (1 + .04 * math.sin(_t * 10)),
+                            (.2 + .8 * pop) * (1 - .04 * math.sin(_t * 10)),
+                            1,
+                          ),
+                          child: Container(
+                            width: 230,
+                            height: 230,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ch.color.withValues(alpha: .55),
+                                  blurRadius: 90,
+                                  spreadRadius: 10,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        // nelle pose il personaggio occupa poco più di un
-                        // quarto della larghezza: si ingrandisce l'immagine
-                        child: OverflowBox(
-                          maxWidth: 860,
-                          maxHeight: 554,
-                          child: Image.asset(
-                            'assets/octo/teste/${ch.id}_posa.webp',
-                            width: 860,
+                            // nelle pose il personaggio occupa poco più di un
+                            // quarto della larghezza: si ingrandisce l'immagine
+                            child: OverflowBox(
+                              maxWidth: 700,
+                              maxHeight: 451,
+                              child: Image.asset(
+                                'assets/octo/teste/${ch.id}_posa.webp',
+                                width: 700,
+                                filterQuality: FilterQuality.high,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -214,7 +229,10 @@ class _Party extends CustomPainter {
     required this.party,
     required this.d1,
     required this.d2,
+    required this.ink,
   });
+
+  final InkFx? ink;
 
   final double t, len;
   final Color color;
@@ -223,7 +241,15 @@ class _Party extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final full = Offset.zero & size;
+    Rect cover(ui.Image im) {
+      final s = math.max(size.width / im.width, size.height / im.height);
+      return Rect.fromCenter(
+        center: size.center(Offset.zero),
+        width: im.width * s,
+        height: im.height * s,
+      );
+    }
+
     // lo schizzo: esplode, resta dietro (un po' trasparente), poi cola via
     final end = len - .7;
     if (t < end && d1 != null) {
@@ -233,17 +259,49 @@ class _Party extends CustomPainter {
       canvas.translate(size.width / 2, size.height / 2);
       canvas.scale(.25 + .9 * k);
       canvas.translate(-size.width / 2, -size.height / 2);
-      drawInk(canvas, d1!, full, tint: color, opacity: o);
+      drawInk(canvas, d1!, cover(d1!), tint: color, opacity: o);
       canvas.restore();
     } else if (t >= end && d2 != null) {
       final k = Curves.easeIn.transform(((t - end) / .7).clamp(0.0, 1.0));
       drawInk(
         canvas,
         d2!,
-        full.shift(Offset(0, size.height * .5 * k)),
+        cover(d2!).shift(Offset(0, size.height * .5 * k)),
         tint: color,
         opacity: .38 * (1 - k),
       );
+    }
+
+    // fontana d'inchiostro del suo colore: gocce che schizzano su dal
+    // personaggio e ricadono, per tutta la festa
+    final fx = ink;
+    if (fx != null) {
+      final c0 = Offset(size.width / 2, size.height * .47);
+      final rr = math.Random(5);
+      for (var i = 0; i < 70; i++) {
+        final born = .3 + rr.nextDouble() * (len - 1.1);
+        final dir = -math.pi / 2 + (rr.nextDouble() - .5) * 2.2;
+        final v = 300 + rr.nextDouble() * 380;
+        final s = 10 + rr.nextDouble() * 18;
+        final img = rr.nextInt(6);
+        final tt = t - born;
+        if (tt < 0 || tt > 1.4) continue;
+        final p =
+            c0 +
+            Offset(math.cos(dir), math.sin(dir)) * v * tt +
+            Offset(0, 700 * tt * tt);
+        canvas.save();
+        canvas.translate(p.dx, p.dy);
+        canvas.rotate(tt * 6 * (i.isEven ? 1 : -1));
+        drawInk(
+          canvas,
+          fx.drops[img],
+          Rect.fromCenter(center: Offset.zero, width: s, height: s),
+          tint: fx.tint ? color : null,
+          opacity: (1 - (tt - 1) / .4).clamp(0.0, 1.0),
+        );
+        canvas.restore();
+      }
     }
 
     // coriandoli e scintille: due esplosioni dal centro
