@@ -681,6 +681,10 @@ class EditorController extends ChangeNotifier {
   int octoAnimStart = 0;
   bool get octoAnimating => octoAnimStart != 0;
 
+  /// Evoluzione di OctoSmash scelta nella Collezione (`null` = i 4 di base,
+  /// ognuno col suo tasto).
+  String? octoEvolution;
+
   /// Chi spruzza nell'animazione in corso.
   OctoTool octoAnimTool = OctoTool.bianco;
 

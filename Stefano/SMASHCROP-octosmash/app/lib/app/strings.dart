@@ -660,6 +660,14 @@ class S {
 
   // --- più immagini ---------------------------------------------------------
 
+  static String get useOcto => _t(
+    'Usa questo OctoSmash',
+    'Use this OctoSmash',
+    'Utiliser cet OctoSmash',
+    'Usar este OctoSmash',
+    'Usar este OctoSmash',
+    'Diesen OctoSmash nutzen',
+  );
   static String get switchToOcto => _t(
     'Passa a OctoSmash',
     'Switch to OctoSmash',

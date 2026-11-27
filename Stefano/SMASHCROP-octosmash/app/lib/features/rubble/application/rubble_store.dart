@@ -33,6 +33,18 @@ class RubbleStore extends ChangeNotifier {
   /// bianco (linea Nera). Contatori separati dalle macerie.
   int inkBlackMl = 0;
   int inkWhiteMl = 0;
+
+  /// OctoSmash scelto nella Collezione: 'squadra' = i 4 di base, ognuno col
+  /// suo tasto; altrimenti un'evoluzione che fa tutto lei.
+  String octoSkin = 'squadra';
+
+  void chooseOcto(String id) {
+    if (id == octoSkin) return;
+    octoSkin = id;
+    _save();
+    notifyListeners();
+  }
+
   final Set<String> unlocked = {'smash'};
 
   /// Skin già viste nella Collezione (le altre sbloccate hanno il pallino).
@@ -152,6 +164,7 @@ class RubbleStore extends ChangeNotifier {
       grams = (m['g'] as num).toInt();
       inkBlackMl = (m['ib'] as num?)?.toInt() ?? 0;
       inkWhiteMl = (m['iw'] as num?)?.toInt() ?? 0;
+      octoSkin = m['os'] as String? ?? 'squadra';
       unlocked.addAll((m['u'] as List).cast<String>());
       seen.addAll((m['seen'] as List? ?? const []).cast<String>());
       milestonesDone.addAll((m['ms'] as List? ?? const []).cast<String>());
@@ -178,6 +191,7 @@ class RubbleStore extends ChangeNotifier {
     'g': grams,
     'ib': inkBlackMl,
     'iw': inkWhiteMl,
+    'os': octoSkin,
     'u': unlocked.toList(),
     'seen': seen.toList(),
     'ms': milestonesDone.toList(),

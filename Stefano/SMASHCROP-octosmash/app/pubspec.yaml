@@ -96,6 +96,9 @@ flutter:
     - assets/octo/multicolor/
     - assets/octo/teste/
     - assets/octo/fusione/
+    - assets/octo/stampa/
+    - assets/octo/abisso/
+    - assets/octo/contenitori/
     - assets/rubble/burp/
     - assets/rubble/popcorn/
     - assets/rubble/muahaha/

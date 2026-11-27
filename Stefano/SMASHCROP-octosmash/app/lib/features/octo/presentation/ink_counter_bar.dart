@@ -14,7 +14,11 @@ class InkCounterBar extends StatelessWidget {
     required this.store,
     required this.head,
     this.awake = true,
+    this.onTap,
   });
+
+  /// Tocco: apre la Collezione di OctoSmash.
+  final VoidCallback? onTap;
 
   /// OctoSmash sveglio (spento: testa che dorme, contatore spento).
   final bool awake;
@@ -33,53 +37,56 @@ class InkCounterBar extends StatelessWidget {
         final l = (store.inkWhiteMl + store.inkBlackMl) / 1000;
         final next = InkMath.nextGoal(l);
 
-        return Container(
-          height: 40,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            color: AppColors.button,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Row(
-            children: [
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    '${InkMath.format(l, comma: S.decimalComma)} L',
-                    style: TextStyle(
-                      fontFamily: kDisplayFont,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                      color: AppColors.text,
+        return GestureDetector(
+          onTap: onTap,
+          child: Container(
+            height: 40,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              color: AppColors.button,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Row(
+              children: [
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      '${InkMath.format(l, comma: S.decimalComma)} L',
+                      style: TextStyle(
+                        fontFamily: kDisplayFont,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: AppColors.text,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 6),
-              Image.asset(head, width: 28, height: 28),
-              const SizedBox(width: 6),
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: LinearProgressIndicator(
-                    value: InkMath.progress(l),
-                    minHeight: 10,
-                    backgroundColor: const Color(0xFF1C1F27),
-                    color: const Color(0xFFB9C2CF),
+                const SizedBox(width: 6),
+                Image.asset(head, width: 28, height: 28),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: InkMath.progress(l),
+                      minHeight: 10,
+                      backgroundColor: const Color(0xFF1C1F27),
+                      color: const Color(0xFFB9C2CF),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                next == null ? '★' : InkMath.goalNames[next],
-                style: const TextStyle(
-                  color: AppColors.textMuted,
-                  fontSize: 11,
+                const SizedBox(width: 6),
+                Text(
+                  next == null ? '★' : InkMath.goalNames[next],
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 11,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

@@ -39,6 +39,8 @@ import '../../settings/preferences.dart';
 import '../../octo/domain/ink_fill.dart';
 import '../../octo/domain/octo_rect.dart';
 import '../../octo/presentation/ink_counter_bar.dart';
+import '../../octo/domain/octo_chars.dart';
+import '../../octo/presentation/octo_collection_screen.dart';
 import '../../octo/presentation/octo_layer.dart';
 import '../../octo/presentation/octo_palette.dart';
 import '../application/editor_controller.dart';
@@ -291,7 +293,14 @@ class _EditorScreenState extends State<EditorScreen>
   OctoTool get _octoTool =>
       c.octoRects.isNotEmpty ? c.octoRects.first.tool : c.octoAnimTool;
 
-  String _octoHead({bool sleep = false}) => octoHead(_octoTool, sleep: sleep);
+  String _octoHead({bool sleep = false}) {
+    final evo = c.octoEvolution;
+    if (evo != null) {
+      final ch = octoCharById(evo);
+      return sleep ? ch.headSleep : ch.head;
+    }
+    return octoHead(_octoTool, sleep: sleep);
+  }
 
   bool _octoSleepToast = false;
 
@@ -972,6 +981,8 @@ class _EditorScreenState extends State<EditorScreen>
 
   @override
   Widget build(BuildContext context) {
+    final evo = _rubble.octoSkin;
+    c.octoEvolution = evo != 'squadra' && octoCharById(evo).ready ? evo : null;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -1044,6 +1055,9 @@ class _EditorScreenState extends State<EditorScreen>
                       sections: rubbleMenuSections(
                         context,
                         _rubble,
+                        onCollection: c.octoMode
+                            ? () => OctoCollectionScreen.open(context, _rubble)
+                            : null,
                         modeSwitch: c.octoMode || c.canEnterOcto
                             ? MenuEntry(
                                 icon: Icons.swap_horiz,
@@ -1065,6 +1079,8 @@ class _EditorScreenState extends State<EditorScreen>
                   ? Opacity(
                       opacity: c.octoEnabled ? 1 : .55,
                       child: InkCounterBar(
+                        onTap: () =>
+                            OctoCollectionScreen.open(context, _rubble),
                         store: _rubble,
                         head: _octoHead(sleep: !c.octoEnabled),
                         awake: c.octoEnabled,

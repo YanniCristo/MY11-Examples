@@ -166,6 +166,12 @@ abstract final class OctoFrames {
       'pipetta:ink',
       'multicolor',
       'multicolor:ink',
+      'fusione',
+      'fusione:ink',
+      'stampa',
+      'stampa:ink',
+      'abisso',
+      'abisso:ink',
     ]) {
       if (lines.containsKey(line) || !_loading.add(line)) continue;
       () async {
@@ -417,12 +423,15 @@ class OctoPainter extends CustomPainter {
   /// OctoSmash attraversa la pagina come SMASH: entra, spruzza, esce.
   void _paintRobot(Canvas canvas, Size size) {
     // chi spruzza lo decide il tasto usato
-    final line = switch (c.octoAnimTool) {
-      OctoTool.nero => 'nero',
-      OctoTool.pipetta => 'pipetta',
-      OctoTool.multicolor => 'multicolor',
-      OctoTool.bianco => 'bianco',
-    };
+    // un'evoluzione scelta nella Collezione spruzza lei per tutti i tasti
+    final line =
+        c.octoEvolution ??
+        switch (c.octoAnimTool) {
+          OctoTool.nero => 'nero',
+          OctoTool.pipetta => 'pipetta',
+          OctoTool.multicolor => 'multicolor',
+          OctoTool.bianco => 'bianco',
+        };
     final imgs = OctoFrames.lines[line];
     final ink = OctoFrames.lines['$line:ink'];
     if (imgs == null) return;

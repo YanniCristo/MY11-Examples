@@ -19,6 +19,7 @@ List<MenuSection> rubbleMenuSections(
   BuildContext context,
   RubbleStore s, {
   MenuEntry? modeSwitch,
+  VoidCallback? onCollection,
 }) {
   void info(String title, String body) {
     showDialog<void>(
@@ -49,7 +50,9 @@ List<MenuSection> rubbleMenuSections(
         label: S.collection,
         onTap: () {
           Navigator.pop(context);
-          CollectionScreen.open(context, s);
+          onCollection != null
+              ? onCollection()
+              : CollectionScreen.open(context, s);
         },
       ),
       // nell'editor: passa a OctoSmash / passa a SMASH

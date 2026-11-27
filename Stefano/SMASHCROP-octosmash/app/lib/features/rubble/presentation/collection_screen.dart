@@ -9,6 +9,7 @@ import '../application/rubble_store.dart';
 import '../application/sound_fx.dart';
 import '../domain/rubble_math.dart';
 import '../domain/skins.dart';
+import '../../octo/presentation/octo_collection_screen.dart';
 import 'share_card.dart';
 import 'skin_player.dart';
 
@@ -117,6 +118,23 @@ class _CollectionScreenState extends State<CollectionScreen> {
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
                       color: AppColors.text,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // 🔄 SMASH ↔ OctoSmash (cambia solo la vista)
+                  SizedBox(
+                    height: 36,
+                    child: AppButton(
+                      label: 'Octo',
+                      icon: const Icon(Icons.sync),
+                      height: 36,
+                      fontSize: 13,
+                      onPressed: () => Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          fullscreenDialog: true,
+                          builder: (_) => OctoCollectionScreen(store: s),
+                        ),
+                      ),
                     ),
                   ),
                   const Spacer(),
