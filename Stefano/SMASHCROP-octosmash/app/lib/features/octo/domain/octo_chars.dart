@@ -49,8 +49,9 @@ class OctoChar {
       : 'assets/octo/contenitori/${InkMath.goalNames[goal!].toLowerCase()}.webp';
 }
 
-/// Prototipo: tutte le evoluzioni pronte sono sbloccate per provarle.
-const bool kOctoUnlockAllForTesting = true;
+/// Solo per le prove: `true` sblocca tutte le evoluzioni senza i litri.
+/// Per gli store deve restare `false`.
+const bool kOctoUnlockAllForTesting = false;
 
 const List<OctoChar> kOctoChars = [
   OctoChar(id: 'squadra', name: 'La Squadra', color: Color(0xFF22E4F2)),
