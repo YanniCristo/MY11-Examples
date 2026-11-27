@@ -713,6 +713,9 @@ class EditorController extends ChangeNotifier {
   /// chi spruzza ('bianco', 'pipetta', 'stampa'...).
   void Function(String line)? onOctoSound;
 
+  /// Un colore preso con la pipetta (per salvarlo tra "I tuoi colori").
+  void Function(int color)? onColorPicked;
+
   /// Chi spruzzerà il rettangolo in lavorazione (per preparare animazione e
   /// suoni prima di "Fatto").
   String get octoNextLine =>
@@ -1000,6 +1003,7 @@ class EditorController extends ChangeNotifier {
       ..remove(color)
       ..insert(0, color);
     if (pickedColors.length > 8) pickedColors.removeLast();
+    onColorPicked?.call(color);
     addOctoRect(color: color, tool: OctoTool.pipetta, at: content);
   }
 

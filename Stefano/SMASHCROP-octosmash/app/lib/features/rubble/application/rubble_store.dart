@@ -38,6 +38,38 @@ class RubbleStore extends ChangeNotifier {
   /// suo tasto; altrimenti un'evoluzione che fa tutto lei.
   String octoSkin = 'squadra';
 
+  /// Colori presi con la pipetta: gli ultimi (il primo è il più recente) e
+  /// quelli fissati con la puntina, che non scivolano via.
+  final List<int> octoRecent = [];
+  final List<int> octoPinned = [];
+  static const maxRecent = 6, maxPinned = 6;
+
+  /// Un colore preso con la pipetta: va in testa ai recenti (senza doppioni).
+  void addPickedColor(int c) {
+    if (octoPinned.contains(c)) return;
+    octoRecent
+      ..remove(c)
+      ..insert(0, c);
+    if (octoRecent.length > maxRecent) octoRecent.removeLast();
+    _save();
+    notifyListeners();
+  }
+
+  /// Fissa o toglie la puntina a un colore. `false` se i fissati sono pieni.
+  bool togglePin(int c) {
+    if (octoPinned.remove(c)) {
+      octoRecent.insert(0, c);
+      if (octoRecent.length > maxRecent) octoRecent.removeLast();
+    } else {
+      if (octoPinned.length >= maxPinned) return false;
+      octoRecent.remove(c);
+      octoPinned.add(c);
+    }
+    _save();
+    notifyListeners();
+    return true;
+  }
+
   /// Il popup "Novità: OctoSmash" è già stato visto.
   bool octoNewsSeen = false;
 
@@ -185,6 +217,8 @@ class RubbleStore extends ChangeNotifier {
       octoSkin = m['os'] as String? ?? 'squadra';
       fusionSeen = m['fs'] == true;
       octoNewsSeen = m['nv'] == true;
+      octoRecent.addAll((m['oc'] as List? ?? const []).cast<int>());
+      octoPinned.addAll((m['op'] as List? ?? const []).cast<int>());
       unlocked.addAll((m['u'] as List).cast<String>());
       seen.addAll((m['seen'] as List? ?? const []).cast<String>());
       milestonesDone.addAll((m['ms'] as List? ?? const []).cast<String>());
@@ -214,6 +248,8 @@ class RubbleStore extends ChangeNotifier {
     'os': octoSkin,
     'fs': fusionSeen,
     'nv': octoNewsSeen,
+    'oc': octoRecent,
+    'op': octoPinned,
     'u': unlocked.toList(),
     'seen': seen.toList(),
     'ms': milestonesDone.toList(),
@@ -260,6 +296,15 @@ class RubbleStore extends ChangeNotifier {
     recoveryOffered = recoveryOffered || o.recoveryOffered;
     lifetimeOffered = lifetimeOffered || o.lifetimeOffered;
     notifyAsked = notifyAsked || o.notifyAsked;
+    for (final c in o.octoPinned) {
+      if (!octoPinned.contains(c) && octoPinned.length < maxPinned) {
+        octoPinned.add(c);
+        octoRecent.remove(c);
+      }
+    }
+    if (octoRecent.isEmpty) {
+      octoRecent.addAll(o.octoRecent.where((c) => !octoPinned.contains(c)));
+    }
     // su un'app appena installata si riprendono anche skin e impostazioni
     if (wasEmpty) {
       skinId = o.skinId;

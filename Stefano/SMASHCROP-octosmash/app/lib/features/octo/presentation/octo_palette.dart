@@ -1,14 +1,21 @@
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../app/strings.dart';
 import '../../../app/theme.dart';
+import '../../rubble/application/rubble_store.dart';
 
-/// Tavolozza di OctoSmash: i colori presi con la pipetta in alto, poi una
-/// griglia di colori scelti bene (toni pieni, chiari e scuri, e i grigi).
-class OctoPalette extends StatelessWidget {
-  const OctoPalette({super.key, required this.recent});
+/// Il colore scelto nella tavolozza e da dove viene: quelli presi con la
+/// pipetta li spruzza l'OctoSmash Pipetta, gli altri il Multicolor.
+typedef PaletteChoice = ({int color, bool picked});
 
-  /// Colori presi con la pipetta (il primo è il più recente).
-  final List<int> recent;
+/// Tavolozza di OctoSmash: in alto "I tuoi colori" (prima i fissati con la
+/// puntina, poi gli ultimi presi con la pipetta; restano anche chiudendo
+/// l'app), poi una griglia di colori scelti bene.
+class OctoPalette extends StatefulWidget {
+  const OctoPalette({super.key, required this.store});
+
+  final RubbleStore store;
 
   static const List<int> colors = [
     // pieni
@@ -23,61 +30,136 @@ class OctoPalette extends StatelessWidget {
   ];
 
   @override
+  State<OctoPalette> createState() => _OctoPaletteState();
+}
+
+class _OctoPaletteState extends State<OctoPalette> {
+  RubbleStore get store => widget.store;
+  static const colors = OctoPalette.colors;
+
+  /// "Puoi fissare al massimo 6 colori" al posto del suggerimento, per poco.
+  bool _full = false;
+
+  void _showFull() {
+    HapticFeedback.heavyImpact();
+    setState(() => _full = true);
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) setState(() => _full = false);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Widget dot(int c) => GestureDetector(
-      onTap: () => Navigator.of(context).pop(c),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Color(c),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0x33FFFFFF)),
-        ),
-      ),
-    );
-    // sempre tutta visibile: tasselli più bassi e, se non basta, si scorre
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (recent.isNotEmpty) ...[
-              const Text(
-                'Presi con la pipetta',
-                style: TextStyle(color: AppColors.textMuted, fontSize: 13),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                height: 36,
-                child: Row(
-                  children: [
-                    for (final c in recent)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: SizedBox(width: 40, child: dot(c)),
-                      ),
-                  ],
+    Widget tile(int c, {bool picked = false, bool pinned = false}) =>
+        GestureDetector(
+          onTap: () =>
+              Navigator.of(context)
+                  .pop<PaletteChoice>((color: c, picked: picked)),
+          onLongPress: !picked
+              ? null
+              : () {
+                  if (store.togglePin(c)) {
+                    HapticFeedback.mediumImpact();
+                  } else {
+                    _showFull();
+                  }
+                },
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color(c),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: pinned
+                          ? const Color(0xCCFFFFFF)
+                          : const Color(0x33FFFFFF),
+                      width: pinned ? 2 : 1,
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 14),
+              if (pinned)
+                const Positioned(
+                  right: -5,
+                  top: -7,
+                  child: Text('📌', style: TextStyle(fontSize: 14)),
+                ),
             ],
-            const Text(
-              'Tavolozza',
-              style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+          ),
+        );
+
+    // sempre tutta visibile: tasselli più bassi e, se non basta, si scorre
+    return SafeArea(
+      child: ListenableBuilder(
+        listenable: store,
+        builder: (context, _) {
+          final mine = [
+            for (final c in store.octoPinned) (c, true),
+            for (final c in store.octoRecent) (c, false),
+          ];
+          return SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (mine.isNotEmpty) ...[
+                  Text(
+                    S.myColors,
+                    style: const TextStyle(
+                      color: AppColors.text,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _full ? S.pinFull : S.pinHint,
+                    style: TextStyle(
+                      color: _full ? AppColors.red : AppColors.textMuted,
+                      fontSize: 12,
+                      fontWeight: _full ? FontWeight.w700 : FontWeight.w400,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  GridView.count(
+                    crossAxisCount: 6,
+                    shrinkWrap: true,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 8,
+                    childAspectRatio: 1.5,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      for (final (c, pin) in mine)
+                        tile(c, picked: true, pinned: pin),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                Text(
+                  S.paletteTitle,
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                GridView.count(
+                  crossAxisCount: 6,
+                  shrinkWrap: true,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  childAspectRatio: 1.5,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [for (final c in colors) tile(c)],
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            GridView.count(
-              crossAxisCount: 6,
-              shrinkWrap: true,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 1.5,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [for (final c in colors) dot(c)],
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

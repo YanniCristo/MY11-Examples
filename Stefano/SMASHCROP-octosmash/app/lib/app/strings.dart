@@ -660,6 +660,32 @@ class S {
 
   // --- più immagini ---------------------------------------------------------
 
+  static String get myColors => _t(
+    'I tuoi colori',
+    'Your colours',
+    'Tes couleurs',
+    'Tus colores',
+    'As tuas cores',
+    'Deine Farben',
+  );
+  static String get pinHint => _t(
+    'Presi con la pipetta. Tieni premuto per fissarne uno 📌',
+    'Picked with the dropper. Press and hold to pin one 📌',
+    'Pris avec la pipette. Maintiens appuyé pour en épingler un 📌',
+    'Tomados con el cuentagotas. Mantén pulsado para fijar uno 📌',
+    'Tiradas com o conta-gotas. Mantém premido para fixar uma 📌',
+    'Mit der Pipette genommen. Gedrückt halten zum Anheften 📌',
+  );
+  static String get pinFull => _t(
+    'Puoi fissare al massimo 6 colori',
+    'You can pin up to 6 colours',
+    'Tu peux épingler 6 couleurs au maximum',
+    'Puedes fijar hasta 6 colores',
+    'Podes fixar no máximo 6 cores',
+    'Du kannst höchstens 6 Farben anheften',
+  );
+  static String get paletteTitle =>
+      _t('Tavolozza', 'Palette', 'Palette', 'Paleta', 'Paleta', 'Palette');
   static String get octoNewsTitle => _t(
     'Novità: OctoSmash!',
     'New: OctoSmash!',

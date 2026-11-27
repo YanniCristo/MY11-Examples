@@ -114,6 +114,9 @@ class _EditorScreenState extends State<EditorScreen>
     // OctoSmash: animazione e suoni di chi spruzzerà, pronti prima di "Fatto"
     // (solo quelli: tutti insieme su iPhone sono troppo pesanti)
     c.addListener(_prepareOcto);
+    // i colori presi con la pipetta restano anche chiudendo l'app
+    c.pickedColors.addAll(_rubble.octoRecent);
+    c.onColorPicked = _rubble.addPickedColor;
     c.onOctoSound = (line) {
       if (_rubble.sound) SoundFx.instance.octo(line);
     };
@@ -400,7 +403,7 @@ class _EditorScreenState extends State<EditorScreen>
 
   Future<void> _palette() async {
     c.cancelPicking();
-    final color = await showModalBottomSheet<int>(
+    final choice = await showModalBottomSheet<PaletteChoice>(
       context: context,
       backgroundColor: AppColors.surface,
       showDragHandle: true,
@@ -408,11 +411,15 @@ class _EditorScreenState extends State<EditorScreen>
       constraints: BoxConstraints(
         maxHeight: MediaQuery.sizeOf(context).height * .75,
       ),
-      builder: (ctx) => OctoPalette(recent: List.of(c.pickedColors)),
+      builder: (ctx) => OctoPalette(store: _rubble),
     );
-    if (color != null) {
+    if (choice != null) {
       HapticFeedback.selectionClick();
-      c.addOctoRect(color: color, tool: OctoTool.multicolor);
+      // i colori presi con la pipetta li spruzza sempre il Pipetta
+      c.addOctoRect(
+        color: choice.color,
+        tool: choice.picked ? OctoTool.pipetta : OctoTool.multicolor,
+      );
     }
   }
 
