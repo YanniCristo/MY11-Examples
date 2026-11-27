@@ -96,6 +96,36 @@ class SoundFx {
   /// Suoni dello spruzzo per ogni OctoSmash (4 varianti ciascuno, come per
   /// SMASH). Chi non li ha ancora resta muto.
   static const Map<String, List<String>> _octo = {
+    'bianco': [
+      'sounds/octo/octo_bianco_1.mp3',
+      'sounds/octo/octo_bianco_2.mp3',
+      'sounds/octo/octo_bianco_3.mp3',
+      'sounds/octo/octo_bianco_4.mp3',
+    ],
+    'nero': [
+      'sounds/octo/octo_nero_1.mp3',
+      'sounds/octo/octo_nero_2.mp3',
+      'sounds/octo/octo_nero_3.mp3',
+      'sounds/octo/octo_nero_4.mp3',
+    ],
+    'pipetta': [
+      'sounds/octo/octo_pipetta_1.mp3',
+      'sounds/octo/octo_pipetta_2.mp3',
+      'sounds/octo/octo_pipetta_3.mp3',
+      'sounds/octo/octo_pipetta_4.mp3',
+    ],
+    'multicolor': [
+      'sounds/octo/octo_multicolor_1.mp3',
+      'sounds/octo/octo_multicolor_2.mp3',
+      'sounds/octo/octo_multicolor_3.mp3',
+      'sounds/octo/octo_multicolor_4.mp3',
+    ],
+    'fusione': [
+      'sounds/octo/octo_fusione_1.mp3',
+      'sounds/octo/octo_fusione_2.mp3',
+      'sounds/octo/octo_fusione_3.mp3',
+      'sounds/octo/octo_fusione_4.mp3',
+    ],
     'stampa': [
       'sounds/octo/octo_stampa_1.mp3',
       'sounds/octo/octo_stampa_2.mp3',
