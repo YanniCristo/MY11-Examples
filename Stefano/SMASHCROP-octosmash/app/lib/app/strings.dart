@@ -660,6 +660,15 @@ class S {
 
   // --- più immagini ---------------------------------------------------------
 
+  /// Dopo aver scelto un personaggio nella Collezione.
+  static String nowUsing(String name) => _t(
+    '$name in uso',
+    '$name selected',
+    '$name sélectionné',
+    '$name seleccionado',
+    '$name selecionado',
+    '$name ausgewählt',
+  );
   static String get myColors => _t(
     'I tuoi colori',
     'Your colours',

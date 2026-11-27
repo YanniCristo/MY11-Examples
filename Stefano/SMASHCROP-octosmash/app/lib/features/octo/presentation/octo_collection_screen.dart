@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../app/strings.dart';
 import '../../../app/theme.dart';
+import '../../../core/widgets/swipe_down_to_close.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/close_square_button.dart';
 import '../../premium/lifetime_sheet.dart';
@@ -29,7 +30,9 @@ class OctoCollectionScreen extends StatefulWidget {
     return Navigator.of(context).push(
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) => OctoCollectionScreen(store: store),
+        // si chiude anche trascinando verso il basso
+        builder: (_) =>
+            SwipeDownToClose(child: OctoCollectionScreen(store: store)),
       ),
     );
   }
@@ -88,13 +91,23 @@ class _OctoCollectionScreenState extends State<OctoCollectionScreen> {
       s.markFusionSeen();
     }
     s.chooseOcto(id);
+    if (!mounted) return;
+    // scelto: si torna subito all'editor col personaggio nuovo
+    final m = ScaffoldMessenger.of(context);
+    Navigator.pop(context);
+    m.showSnackBar(
+      SnackBar(
+        content: Text(S.nowUsing(_sel.name)),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   void _toSmash() {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) => CollectionScreen(store: s),
+        builder: (_) => SwipeDownToClose(child: CollectionScreen(store: s)),
       ),
     );
   }
@@ -284,6 +297,8 @@ class _OctoCollectionScreenState extends State<OctoCollectionScreen> {
               Expanded(
                 flex: 4,
                 child: GridView.count(
+                  // niente rimbalzo: tirando giù dalla cima si chiude
+                  physics: const ClampingScrollPhysics(),
                   crossAxisCount: 3,
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8,

@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../app/strings.dart';
 import '../../../app/theme.dart';
+import '../../../core/widgets/swipe_down_to_close.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/close_square_button.dart';
 import '../../premium/lifetime_sheet.dart';
@@ -40,10 +41,13 @@ class CollectionScreen extends StatefulWidget {
     return Navigator.of(context).push(
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) => CollectionScreen(
-          store: store,
-          highlight: highlight,
-          afterEvolution: afterEvolution,
+        // si chiude anche trascinando verso il basso
+        builder: (_) => SwipeDownToClose(
+          child: CollectionScreen(
+            store: store,
+            highlight: highlight,
+            afterEvolution: afterEvolution,
+          ),
         ),
       ),
     );
@@ -249,9 +253,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                 : AppButtonStyle.primary,
                             height: 48,
                             fontSize: 16,
-                            onPressed: unlocked && !inUse
-                                ? () => s.choose(_sel)
-                                : null,
+                            onPressed: unlocked && !inUse ? _choose : null,
                           ),
                   ),
                   const SizedBox(width: 8),
@@ -272,6 +274,8 @@ class _CollectionScreenState extends State<CollectionScreen> {
               Expanded(
                 flex: 4,
                 child: GridView.count(
+                  // niente rimbalzo: tirando giù dalla cima si chiude
+                  physics: const ClampingScrollPhysics(),
                   crossAxisCount: 3,
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8,
@@ -293,6 +297,19 @@ class _CollectionScreenState extends State<CollectionScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  /// Scelto: si torna subito all'editor col personaggio nuovo.
+  void _choose() {
+    s.choose(_sel);
+    final m = ScaffoldMessenger.of(context);
+    Navigator.pop(context);
+    m.showSnackBar(
+      SnackBar(
+        content: Text(S.nowUsing(_sel.name)),
+        duration: const Duration(seconds: 2),
       ),
     );
   }

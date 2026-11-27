@@ -1240,6 +1240,16 @@ class S {
     'Com SmashCrop vitalício',
     'Mit SmashCrop für immer',
   );
+
+  /// Dopo aver scelto un personaggio nella Collezione.
+  static String nowUsing(String name) => _t(
+    '$name in uso',
+    '$name selected',
+    '$name sélectionné',
+    '$name seleccionado',
+    '$name selecionado',
+    '$name ausgewählt',
+  );
   static String get evolvedTitle => _t(
     'SMASH si è evoluto!',
     'SMASH has evolved!',
