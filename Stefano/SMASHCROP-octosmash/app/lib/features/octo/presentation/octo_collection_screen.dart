@@ -415,6 +415,7 @@ class _OctoPreviewState extends State<_OctoPreview>
     with SingleTickerProviderStateMixin {
   late final Ticker _ticker;
   int _ms = 0;
+  int _startedAt = 0;
 
   @override
   void initState() {
@@ -423,16 +424,18 @@ class _OctoPreviewState extends State<_OctoPreview>
       ..start();
   }
 
-  static const _loop = 2200; // 18 fotogrammi + una pausa
+  // come SMASH: fa una volta tutta l'animazione, poi resta a riposo
+  // dondolando tra due fotogrammi (il 14 e il 15) ogni 0,6 secondi
+  static const _fd = 100; // 10 fotogrammi al secondo
+  static const _restA = 13, _restB = 14;
   static const _squad = [
     ('bianco', 0xFF000000),
     ('nero', 0xFFFFFFFF),
     ('pipetta', 0xFF22B8F2),
     ('multicolor', 0xFFF7E15A),
   ];
-  static const _inks = [0xFF000000, 0xFFFFFFFF, 0xFF3E63DD, 0xFF30A46C];
 
-  int _lastSound = -1;
+  int _soundDone = -1;
 
   @override
   void dispose() {
@@ -440,34 +443,64 @@ class _OctoPreviewState extends State<_OctoPreview>
     super.dispose();
   }
 
-  // il suono dello spruzzo, a ogni giro, quando parte lo "SPLASH!"
-  void _sound(int round, String line) {
-    if (round == _lastSound) return;
-    _lastSound = round;
+  /// Un tocco: l'animazione riparte da capo.
+  void _replay() => setState(() {
+    _startedAt = _ms;
+    _soundDone = -1;
+  });
+
+  // il suono dello spruzzo, una volta per ogni personaggio che spruzza
+  void _sound(int k, String line) {
+    if (k <= _soundDone) return;
+    _soundDone = k;
     if (RubbleStore.instance.sound) SoundFx.instance.octo(line);
   }
 
   @override
   Widget build(BuildContext context) {
-    final round = _ms ~/ _loop;
-    final frame = ((_ms % _loop) ~/ 100).clamp(0, OctoFrames.count - 1);
-    final String line;
-    final int ink;
-    if (widget.char.isSquad) {
-      (line, ink) = _squad[round % _squad.length];
+    final t = _ms - _startedAt;
+    // la Squadra: i 4 spruzzano uno dopo l'altro (i primi 3 escono di
+    // scena, l'ultimo resta); un'evoluzione: lei sola, col suo colore
+    final cast = widget.char.isSquad
+        ? _squad
+        : [(widget.char.id, widget.char.color.toARGB32())];
+    const full = OctoFrames.count * _fd; // con l'uscita
+    const toRest = (_restA) * _fd; // fino al riposo
+    var k = cast.length - 1;
+    var local = t - (cast.length - 1) * full;
+    if (t < (cast.length - 1) * full) {
+      k = t ~/ full;
+      local = t % full;
+    }
+    final (line, ink) = cast[k];
+    final last = k == cast.length - 1;
+    final int frame;
+    if (!last || local < toRest) {
+      frame = (local ~/ _fd).clamp(0, OctoFrames.count - 1);
     } else {
-      line = widget.char.id;
-      ink = _inks[round % _inks.length];
+      frame = ((local - toRest) ~/ 600).isEven ? _restA : _restB;
+    }
+
+    // il prossimo della Squadra si prepara mentre spruzza questo
+    if (!last) {
+      final next = cast[k + 1].$1;
+      if (OctoFrames.line(next) == null) OctoFrames.ensure(next);
     }
     final l = OctoFrames.line(line);
     if (l == null) {
       OctoFrames.ensure(line);
       SoundFx.instance.prepareOctoLine(line);
-    } else if (frame >= 5) {
-      _sound(round, line);
+      // si aspetta che arrivi prima di partire
+      _startedAt = _ms - (t < 0 ? 0 : (k * full));
+    } else if (frame >= 5 && local < toRest) {
+      _sound(k, line);
     }
-    return CustomPaint(
-      painter: _PreviewPainter(line: l, frame: frame, color: Color(ink)),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _replay,
+      child: CustomPaint(
+        painter: _PreviewPainter(line: l, frame: frame, color: Color(ink)),
+      ),
     );
   }
 }
