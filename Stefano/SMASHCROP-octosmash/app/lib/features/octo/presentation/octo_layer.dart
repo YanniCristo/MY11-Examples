@@ -156,7 +156,42 @@ abstract final class OctoFrames {
   static final Map<String, List<ui.Image>> lines = {};
   static final Set<String> _loading = {};
 
+  /// Effetti speciali delle evoluzioni: 6 elementi che volano allo spruzzo.
+  static final Map<String, List<ui.Image>> effects = {};
+
+  static void _loadEffects() {
+    for (final evo in const [
+      'fusione',
+      'stampa',
+      'abisso',
+      'diluvio',
+      'imperatore',
+    ]) {
+      if (effects.containsKey(evo) || !_loading.add('fx:$evo')) continue;
+      Future.wait([
+        for (var i = 1; i <= 6; i++)
+          () async {
+            final data = await rootBundle.load(
+              'assets/octo/effetti/${evo}_$i.webp',
+            );
+            final codec = await ui.instantiateImageCodec(
+              data.buffer.asUint8List(),
+            );
+            final img = (await codec.getNextFrame()).image;
+            codec.dispose();
+            return img;
+          }(),
+      ]).then(
+        (l) => effects[evo] = l,
+        onError: (_) {
+          _loading.remove('fx:$evo');
+        },
+      );
+    }
+  }
+
   static void load() {
+    _loadEffects();
     // 'pipetta:ink' = solo l'inchiostro magenta della Pipetta, in grigio,
     // da ricolorare col colore preso
     for (final line in const [
@@ -223,7 +258,10 @@ class OctoPainter extends CustomPainter {
     canvas.clipRect(Offset.zero & size);
     final splash = c.octoSplash;
     if (splash != null) _paintSplash(canvas, splash);
-    if (c.octoAnimating) _paintRobot(canvas, size);
+    if (c.octoAnimating) {
+      _paintRobot(canvas, size);
+      _paintEffects(canvas);
+    }
     final pick = c.octoPickAt;
     if (c.octoPicking && pick != null) _paintLoupe(canvas, size, pick);
     if (c.octoPicking && pick == null) _hint(canvas, size);
@@ -359,6 +397,46 @@ class OctoPainter extends CustomPainter {
       Paint()..color = _cyan,
     );
     tp.paint(canvas, box.center - Offset(tp.width / 2, tp.height / 2));
+  }
+
+  /// Gli elementi dell'evoluzione (scintille, bollicine, monetine...)
+  /// schizzano fuori dal rettangolo quando arriva lo spruzzo, ricadono e
+  /// svaniscono in meno di un secondo.
+  void _paintEffects(Canvas canvas) {
+    final evo = c.octoEvolution;
+    final target = c.octoAnimTarget;
+    if (evo == null || target == null) return;
+    final imgs = OctoFrames.effects[evo];
+    if (imgs == null) return;
+    final t =
+        (DateTime.now().millisecondsSinceEpoch - c.octoSplashStart) / 1000;
+    if (t < 0 || t > 1) return;
+    final o = c.contentToScreen(target);
+    final rnd = math.Random(c.octoAnimStart);
+    for (var k = 0; k < 12; k++) {
+      final img = imgs[k % imgs.length];
+      final ang = -math.pi / 2 + (rnd.nextDouble() - .5) * math.pi * 1.6;
+      final speed = 160 + rnd.nextDouble() * 220;
+      final p =
+          o +
+          Offset(math.cos(ang), math.sin(ang)) * speed * t +
+          Offset(0, 420 * t * t); // ricade
+      final size = 26 + rnd.nextDouble() * 22;
+      final spin = (rnd.nextDouble() - .5) * 6 * t;
+      final alpha = (1 - t).clamp(0.0, 1.0);
+      canvas.save();
+      canvas.translate(p.dx, p.dy);
+      canvas.rotate(spin);
+      canvas.drawImageRect(
+        img,
+        Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
+        Rect.fromCenter(center: Offset.zero, width: size, height: size),
+        Paint()
+          ..filterQuality = FilterQuality.medium
+          ..color = Color.fromRGBO(0, 0, 0, alpha),
+      );
+      canvas.restore();
+    }
   }
 
   static Color _veil(int color) => Color(color).withValues(alpha: .5);

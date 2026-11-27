@@ -101,6 +101,7 @@ flutter:
     - assets/octo/diluvio/
     - assets/octo/imperatore/
     - assets/octo/scena/
+    - assets/octo/effetti/
     - assets/octo/contenitori/
     - assets/rubble/burp/
     - assets/rubble/popcorn/

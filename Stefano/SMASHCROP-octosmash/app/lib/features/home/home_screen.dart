@@ -1,3 +1,5 @@
+import '../octo/presentation/octo_news.dart';
+
 import 'dart:typed_data';
 
 import 'package:material_ui/material_ui.dart';
@@ -47,7 +49,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _saved = SavedWork.decode(widget.preferences.savedWork);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _refreshSaved());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshSaved();
+      // una volta sola: la novità di OctoSmash
+      if (mounted) OctoNews.maybeShow(context);
+    });
   }
 
   /// Copia del file del lavoro in sospeso, letta in anticipo: così

@@ -304,15 +304,10 @@ class _OctoCollectionScreenState extends State<OctoCollectionScreen> {
     final inUse = s.octoSkin == c.id;
     Widget head;
     if (c.isSquad) {
-      // i 4 di base, piccoli, a quadrifoglio
-      head = GridView.count(
-        crossAxisCount: 2,
-        physics: const NeverScrollableScrollPhysics(),
-        padding: EdgeInsets.zero,
-        children: [
-          for (final n in const ['bianco', 'nero', 'pipetta', 'multicolor'])
-            Image.asset('assets/octo/teste/${n}_testa.webp'),
-        ],
+      // la foto di gruppo dei 4 di base
+      head = Image.asset(
+        'assets/octo/teste/squadra_posa.webp',
+        fit: BoxFit.contain,
       );
     } else if (!c.ready) {
       head = const Icon(Icons.help_outline, size: 40, color: AppColors.border);

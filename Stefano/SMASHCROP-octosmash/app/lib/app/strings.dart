@@ -660,6 +660,22 @@ class S {
 
   // --- più immagini ---------------------------------------------------------
 
+  static String get octoNewsTitle => _t(
+    'Novità: OctoSmash!',
+    'New: OctoSmash!',
+    'Nouveau : OctoSmash !',
+    '¡Novedad: OctoSmash!',
+    'Novidade: OctoSmash!',
+    'Neu: OctoSmash!',
+  );
+  static String get octoNewsBody => _t(
+    'Copre parti di immagini e PDF con inchiostro bianco, nero o del colore che vuoi. Tieni premuto «Rimuovi porzione» oppure scegli «Passa a OctoSmash» dal menu.',
+    'Cover parts of images and PDFs with white, black or any colour of ink. Press and hold “Remove section” or choose “Switch to OctoSmash” in the menu.',
+    'Recouvre des parties d’images et de PDF avec de l’encre blanche, noire ou de la couleur de ton choix. Maintiens « Supprimer la partie » ou choisis « Passer à OctoSmash » dans le menu.',
+    'Cubre partes de imágenes y PDF con tinta blanca, negra o del color que quieras. Mantén pulsado «Eliminar sección» o elige «Cambiar a OctoSmash» en el menú.',
+    'Cobre partes de imagens e PDFs com tinta branca, preta ou da cor que quiser. Mantenha pressionado «Remover parte» ou escolha «Mudar para OctoSmash» no menu.',
+    'Überdeckt Teile von Bildern und PDFs mit weißer, schwarzer oder beliebig farbiger Tinte. Halte „Bereich entfernen“ gedrückt oder wähle „Zu OctoSmash wechseln“ im Menü.',
+  );
   static String get useOcto => _t(
     'Usa questo OctoSmash',
     'Use this OctoSmash',
