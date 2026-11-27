@@ -492,6 +492,18 @@ class _OctoPreviewState extends State<_OctoPreview>
       SoundFx.instance.prepareOctoLine(line);
       // si aspetta che arrivi prima di partire
       _startedAt = _ms - (t < 0 ? 0 : (k * full));
+      // intanto, come SMASH, si vede subito la posa da eroe
+      if (k == 0) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Image.asset(
+            'assets/octo/teste/${widget.char.isSquad ? 'squadra' : line}'
+            '_posa.webp',
+            fit: BoxFit.contain,
+            gaplessPlayback: true,
+          ),
+        );
+      }
     } else if (frame >= 5 && local < toRest) {
       _sound(k, line);
     }

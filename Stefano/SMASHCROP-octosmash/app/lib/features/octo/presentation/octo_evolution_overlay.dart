@@ -143,8 +143,8 @@ class _OctoEvolutionState extends State<_OctoEvolution>
                             1,
                           ),
                           child: Container(
-                            width: 230,
-                            height: 230,
+                            width: 270,
+                            height: 270,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               boxShadow: [
@@ -155,16 +155,11 @@ class _OctoEvolutionState extends State<_OctoEvolution>
                                 ),
                               ],
                             ),
-                            // nelle pose il personaggio occupa poco più di un
-                            // quarto della larghezza: si ingrandisce l'immagine
-                            child: OverflowBox(
-                              maxWidth: 700,
-                              maxHeight: 451,
-                              child: Image.asset(
-                                'assets/octo/teste/${ch.id}_posa.webp',
-                                width: 700,
-                                filterQuality: FilterQuality.high,
-                              ),
+                            // posa grande (800×800, il personaggio la riempie)
+                            child: Image.asset(
+                              'assets/octo/teste/${ch.id}_posa.webp',
+                              fit: BoxFit.contain,
+                              filterQuality: FilterQuality.high,
                             ),
                           ),
                         ),
