@@ -12,6 +12,7 @@ import '../../rubble/application/rubble_store.dart';
 import '../../rubble/presentation/collection_screen.dart';
 import '../domain/ink_math.dart';
 import '../domain/octo_chars.dart';
+import 'fusion_scene.dart';
 import 'octo_layer.dart';
 
 /// La Collezione di OctoSmash: stessa idea di quella di SMASH (anteprima
@@ -74,6 +75,17 @@ class _OctoCollectionScreenState extends State<OctoCollectionScreen> {
     }
     if (c.lifetime) return S.lifetimeName;
     return 'Hai riempito ${c.goalWithArticle} · fa tutto lui';
+  }
+
+  /// Scelta di un OctoSmash: la prima volta che si usa Fusione si vede la
+  /// scena dei 4 che si uniscono.
+  Future<void> _use() async {
+    final id = _sel.id;
+    if (id == 'fusione' && !s.fusionSeen) {
+      await FusionScene.show(context);
+      s.markFusionSeen();
+    }
+    s.chooseOcto(id);
   }
 
   void _toSmash() {
@@ -174,6 +186,19 @@ class _OctoCollectionScreenState extends State<OctoCollectionScreen> {
                                 ),
                         ),
                       ),
+                      // Fusione: si può rivedere la scena della fusione
+                      if (_sel.id == 'fusione' && open)
+                        Positioned(
+                          top: 10,
+                          left: 10,
+                          child: AppButton(
+                            label: 'Fusione',
+                            icon: const Icon(Icons.replay),
+                            height: 32,
+                            fontSize: 12,
+                            onPressed: () => FusionScene.show(context),
+                          ),
+                        ),
                       // il contenitore che lo sblocca, bello grande
                       if (_sel.goalImage != null)
                         Positioned(
@@ -251,9 +276,7 @@ class _OctoCollectionScreenState extends State<OctoCollectionScreen> {
                           : AppButtonStyle.primary,
                       height: 48,
                       fontSize: 16,
-                      onPressed: open && !inUse
-                          ? () => s.chooseOcto(_sel.id)
-                          : null,
+                      onPressed: open && !inUse ? _use : null,
                     ),
               const SizedBox(height: 10),
               Expanded(

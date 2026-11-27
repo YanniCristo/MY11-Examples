@@ -38,6 +38,15 @@ class RubbleStore extends ChangeNotifier {
   /// suo tasto; altrimenti un'evoluzione che fa tutto lei.
   String octoSkin = 'squadra';
 
+  /// La scena della fusione (i 4 che si uniscono) è già stata vista.
+  bool fusionSeen = false;
+
+  void markFusionSeen() {
+    if (fusionSeen) return;
+    fusionSeen = true;
+    _save();
+  }
+
   void chooseOcto(String id) {
     if (id == octoSkin) return;
     octoSkin = id;
@@ -165,6 +174,7 @@ class RubbleStore extends ChangeNotifier {
       inkBlackMl = (m['ib'] as num?)?.toInt() ?? 0;
       inkWhiteMl = (m['iw'] as num?)?.toInt() ?? 0;
       octoSkin = m['os'] as String? ?? 'squadra';
+      fusionSeen = m['fs'] == true;
       unlocked.addAll((m['u'] as List).cast<String>());
       seen.addAll((m['seen'] as List? ?? const []).cast<String>());
       milestonesDone.addAll((m['ms'] as List? ?? const []).cast<String>());
@@ -192,6 +202,7 @@ class RubbleStore extends ChangeNotifier {
     'ib': inkBlackMl,
     'iw': inkWhiteMl,
     'os': octoSkin,
+    'fs': fusionSeen,
     'u': unlocked.toList(),
     'seen': seen.toList(),
     'ms': milestonesDone.toList(),
