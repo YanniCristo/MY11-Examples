@@ -1,7 +1,0 @@
-{
-  "nome": "SMASH Burp",
-  "fotogramma_colpo": 6,
-  "punto_colpo": [485, 192],
-  "nota": "Immagini 1, 2, 3 ingrandite e 6, 7, 8 rimpicciolite per avere la testa a y≈75 e i piedi a y=349 come nelle altre; per questo il centro del vortice dell'immagine 6 è a y=192 invece di 215. L'app usa questo punto al posto di quello di SMASH.",
-  "effetto_fascia": "gas del rutto"
-}
