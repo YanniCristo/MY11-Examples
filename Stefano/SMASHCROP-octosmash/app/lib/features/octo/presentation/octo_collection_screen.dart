@@ -9,6 +9,7 @@ import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/close_square_button.dart';
 import '../../premium/lifetime_sheet.dart';
 import '../../rubble/application/rubble_store.dart';
+import '../../rubble/application/sound_fx.dart';
 import '../../rubble/presentation/collection_screen.dart';
 import '../domain/ink_math.dart';
 import '../domain/octo_chars.dart';
@@ -46,6 +47,7 @@ class _OctoCollectionScreenState extends State<OctoCollectionScreen> {
   void initState() {
     super.initState();
     OctoFrames.load();
+    if (s.sound) SoundFx.instance.prepareOcto();
     s.addListener(_changed);
   }
 
@@ -438,10 +440,19 @@ class _OctoPreviewState extends State<_OctoPreview>
   ];
   static const _inks = [0xFF000000, 0xFFFFFFFF, 0xFF3E63DD, 0xFF30A46C];
 
+  int _lastSound = -1;
+
   @override
   void dispose() {
     _ticker.dispose();
     super.dispose();
+  }
+
+  // il suono dello spruzzo, a ogni giro, quando parte lo "SPLASH!"
+  void _sound(int round, String line) {
+    if (round == _lastSound) return;
+    _lastSound = round;
+    if (RubbleStore.instance.sound) SoundFx.instance.octo(line);
   }
 
   @override
@@ -456,6 +467,7 @@ class _OctoPreviewState extends State<_OctoPreview>
       line = widget.char.id;
       ink = _inks[round % _inks.length];
     }
+    if (frame >= 5) _sound(round, line);
     return CustomPaint(
       painter: _PreviewPainter(
         body: OctoFrames.lines[line]?[frame],

@@ -319,6 +319,8 @@ class _EditorScreenState extends State<EditorScreen>
   void _enterOcto() {
     if (!c.canEnterOcto) return;
     HapticFeedback.heavyImpact();
+    // i suoni pronti anche se l'audio è stato acceso dopo l'apertura
+    if (_rubble.sound) SoundFx.instance.prepareOcto();
     c.enterOcto();
   }
 
