@@ -123,6 +123,8 @@ class _EditorScreenState extends State<EditorScreen>
     c.addListener(_syncTicker);
     _rubble.addListener(_onRubble);
     _loadSkin();
+    // la spruzzata dell'entrata in OctoSmash è piccola: pronta da subito
+    if (_rubble.sound) SoundFx.instance.prepareInkSplash();
   }
 
   /// Carica le immagini dello SMASH in uso (e le ricarica se cambia).
@@ -372,6 +374,7 @@ class _EditorScreenState extends State<EditorScreen>
     if (!c.canEnterOcto) return;
     // un grande schizzo copre lo schermo e, colando via, scopre OctoSmash
     OctoFrames.ensure(c.octoNextLine);
+    if (_rubble.sound) SoundFx.instance.inkSplash();
     InkSplashTransition.play(context, () {
       if (mounted && c.canEnterOcto) c.enterOcto();
     });

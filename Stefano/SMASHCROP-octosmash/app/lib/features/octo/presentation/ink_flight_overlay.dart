@@ -59,6 +59,14 @@ class _Drip {
   final int image;
 }
 
+/// Uno schizzo che vola via dal rettangolo e poi cade per la gravità.
+class _Fall {
+  _Fall(this.from, this.v, this.size, this.image, this.spin, this.delay);
+  final Offset from, v; // posizione iniziale e velocità (px/s)
+  final double size, spin, delay;
+  final int image;
+}
+
 class _Scene {
   _Scene(this.rect, this.color, this.litres);
   final Rect rect; // sullo schermo
@@ -67,6 +75,7 @@ class _Scene {
   final drops = <_Drop>[];
   final blobs = <_Blob>[];
   final drips = <_Drip>[];
+  final falls = <_Fall>[];
   int word = 0;
   double wordTilt = 0;
 }
@@ -80,7 +89,7 @@ class _InkFlightOverlayState extends State<InkFlightOverlay>
   bool _done = true;
 
   static const _fly = 1.15; // secondi fino all'ultima goccia
-  static const _end = 1.9; // fine di colature e pozza
+  static const _end = 2.4; // fine di colature, pozza e pioggia di schizzi
 
   EditorController get c => widget.controller;
 
@@ -192,6 +201,30 @@ class _InkFlightOverlayState extends State<InkFlightOverlay>
         ),
       );
     }
+    // pioggia di schizzi: volano in ogni direzione (soprattutto in su e di
+    // lato) anche lontano dal rettangolo, poi cadono verso il basso
+    final screen = (context.findRenderObject() as RenderBox?)?.size;
+    final reach = screen == null ? 500.0 : screen.longestSide;
+    final nf = (26 + f.litres * 30).clamp(26, 44).round();
+    for (var k = 0; k < nf; k++) {
+      final dir = -math.pi / 2 + (rnd.nextDouble() - .5) * math.pi * 1.7;
+      final speed = reach * (.35 + rnd.nextDouble() * .7);
+      s.falls.add(
+        _Fall(
+          r.center +
+              Offset(
+                (rnd.nextDouble() - .5) * r.width * .8,
+                (rnd.nextDouble() - .5) * r.height * .6,
+              ),
+          Offset.fromDirection(dir, speed),
+          8 + math.pow(rnd.nextDouble(), 2) * 26,
+          rnd.nextInt(6),
+          (rnd.nextDouble() - .5) * 10,
+          rnd.nextDouble() * .12,
+        ),
+      );
+    }
+
     s.word = rnd.nextInt(4);
     s.wordTilt = (rnd.nextDouble() - .5) * .35;
 
@@ -264,6 +297,16 @@ class _FxPainter extends CustomPainter {
   final double Function(_Drop) progress;
 
   Color? get tint => fx.tint ? s.color : null;
+
+  /// Verso in cui "punta" ogni forma di goccia (null: gira su sé stessa).
+  static const List<double?> _heading = [
+    math.pi * .75, // A1 lacrima: testa in basso a sinistra
+    null, // A2 schizzo
+    math.pi, // A3 striscia
+    math.pi / 2, // A4 gocce: testa in basso
+    null, // A5 pallina
+    null, // A6 ricciolo
+  ];
 
   static double _fade(double t, double from, double to) =>
       (1 - (t - from) / (to - from)).clamp(0.0, 1.0);
@@ -344,6 +387,31 @@ class _FxPainter extends CustomPainter {
         fx.words[s.word],
         Rect.fromCenter(center: Offset.zero, width: w, height: w / 2),
         opacity: _fade(t, .85, 1.15),
+      );
+      canvas.restore();
+    }
+
+    // pioggia di schizzi: volano via e poi cadono verso il basso
+    const g = 1400.0; // gravità, px/s²
+    for (final f in s.falls) {
+      final tt = t - f.delay;
+      if (tt <= 0) continue;
+      // un po' d'attrito nell'aria: rallentano mentre la gravità li tira giù
+      final drag = (1 - math.exp(-2.5 * tt)) / 2.5;
+      final pos = f.from + f.v * drag + Offset(0, .5 * g * tt * tt);
+      if (pos.dy > size.height + 40) continue;
+      final vel = f.v * math.exp(-2.5 * tt) + Offset(0, g * tt);
+      canvas.save();
+      canvas.translate(pos.dx, pos.dy);
+      // le gocce allungate puntano dove vanno, le altre girano
+      final along = _heading[f.image];
+      canvas.rotate(along == null ? f.spin * tt : vel.direction - along);
+      drawInk(
+        canvas,
+        fx.drops[f.image],
+        Rect.fromCenter(center: Offset.zero, width: f.size, height: f.size),
+        tint: tint,
+        opacity: _fade(tt, 1.7, 2.2),
       );
       canvas.restore();
     }

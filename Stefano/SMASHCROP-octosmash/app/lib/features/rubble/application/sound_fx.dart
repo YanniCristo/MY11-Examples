@@ -201,6 +201,14 @@ class SoundFx {
   /// La scena dei 4 che si fondono.
   void fusionScene() => _pick('scena', _fusionScene);
 
+  static const _inkSplash = 'sounds/octo/schizzo_entrata.mp3';
+
+  /// Carica in anticipo la spruzzata dell'entrata in OctoSmash.
+  Future<void> prepareInkSplash() => _load(const [_inkSplash]);
+
+  /// La spruzzata d'inchiostro che copre lo schermo entrando in OctoSmash.
+  void inkSplash() => _playReady(_inkSplash);
+
   /// I pezzi arrivano alla barra: un "pling" chiaro e breve.
   void pling() => _play(_pling, volume: .55);
 
