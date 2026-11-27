@@ -40,6 +40,9 @@ class OctoChar {
 
   String? get goalName => goal == null ? null : InkMath.goalNames[goal!];
 
+  String? get goalWithArticle =>
+      goal == null ? null : InkMath.goalWithArticle[goal!];
+
   /// Immagine del contenitore che lo sblocca.
   String? get goalImage => goal == null
       ? null
@@ -74,7 +77,6 @@ const List<OctoChar> kOctoChars = [
     name: 'OctoSmash Diluvio',
     color: Color(0xFF3FA7B5),
     goal: 3,
-    ready: false,
   ),
   OctoChar(
     id: 'imperatore',

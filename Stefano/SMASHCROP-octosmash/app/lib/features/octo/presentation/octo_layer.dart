@@ -172,6 +172,8 @@ abstract final class OctoFrames {
       'stampa:ink',
       'abisso',
       'abisso:ink',
+      'diluvio',
+      'diluvio:ink',
     ]) {
       if (lines.containsKey(line) || !_loading.add(line)) continue;
       () async {

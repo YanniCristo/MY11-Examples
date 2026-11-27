@@ -64,7 +64,7 @@ class _OctoCollectionScreenState extends State<OctoCollectionScreen> {
     if (!c.ready) return 'In arrivo';
     if (c.lifetime) return S.lockedLifetime;
     final miss = (c.litres - _litres).clamp(0, double.infinity);
-    return 'Riempi un ${c.goalName} · mancano '
+    return 'Riempi ${c.goalWithArticle} · mancano '
         '${InkMath.format(miss.toDouble(), comma: S.decimalComma)} L';
   }
 
@@ -73,7 +73,7 @@ class _OctoCollectionScreenState extends State<OctoCollectionScreen> {
       return 'Bianco, Nero, Pipetta e Multicolor: ognuno col suo tasto';
     }
     if (c.lifetime) return S.lifetimeName;
-    return 'Hai riempito un ${c.goalName} · fa tutto lui';
+    return 'Hai riempito ${c.goalWithArticle} · fa tutto lui';
   }
 
   void _toSmash() {

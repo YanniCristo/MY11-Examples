@@ -9,6 +9,14 @@ class InkMath {
   static const goals = [5.0, 50.0, 200.0, 1000.0];
   static const goalNames = ['Calamaio', 'Tanica', 'Bidone', 'Autocisterna'];
 
+  /// "un Calamaio", "una Tanica", "un Bidone", "un'Autocisterna".
+  static const goalWithArticle = [
+    'un Calamaio',
+    'una Tanica',
+    'un Bidone',
+    "un'Autocisterna",
+  ];
+
   /// Indice del prossimo contenitore, o `null` se sono tutti pieni.
   static int? nextGoal(double l) {
     for (var i = 0; i < goals.length; i++) {
