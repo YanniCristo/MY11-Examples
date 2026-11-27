@@ -83,7 +83,6 @@ const List<OctoChar> kOctoChars = [
     name: 'OctoSmash Imperatore',
     color: Color(0xFFE0B64A),
     lifetime: true,
-    ready: false,
   ),
 ];
 
